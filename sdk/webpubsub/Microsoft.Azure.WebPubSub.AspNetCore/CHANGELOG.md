@@ -1,14 +1,24 @@
 # Release History
 
-## 1.1.0-beta.1 (Unreleased)
+## 1.3.0 (2024-04-10)
 
 ### Features Added
 
-### Breaking Changes
+- Upgrade `Azure.Messaging.WebPubSub` to 1.3.0.
+- Improve Hub method to support more accurate exceptions.
+
+## 1.2.0 (2023-08-28)
 
 ### Bugs Fixed
 
-### Other Changes
+- Fix multi request origins validation.
+
+## 1.1.0 (2023-07-12)
+
+### Bugs Fixed
+
+- Fix secondary key validation failed.
+- Fix multi request origins validation.
 
 ## 1.0.0 (2023-03-22)
 

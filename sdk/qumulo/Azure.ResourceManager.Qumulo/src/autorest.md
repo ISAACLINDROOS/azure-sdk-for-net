@@ -7,13 +7,24 @@ azure-arm: true
 csharp: true
 library-name: Qumulo
 namespace: Azure.ResourceManager.Qumulo
-require: https://github.com/Azure/azure-rest-api-specs/blob/aceee26b40a3251a1dbcc76e57fb1e0860f1c76d/specification/liftrqumulo/resource-manager/readme.md
+require: https://github.com/Azure/azure-rest-api-specs/blob/b73e2d320f1ae530ea5e78625dfe14a921dcf011/specification/liftrqumulo/resource-manager/readme.md
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
+sample-gen:
+  output-folder: $(this-folder)/../samples/Generated
+  clear-output-folder: true
 skip-csproj: true
-generate-model-factory: false
 modelerfour:
   flatten-payloads: false
+use-model-reader-writer: true
+
+#mgmt-debug:
+#  show-serialized-names: true
+
+directive:
+  - from: Qumulo.Storage.json
+    where: $.definitions
+    transform: delete $.UserDetails.required
 
 format-by-name-rules:
   'tenantId': 'uuid'
@@ -22,7 +33,7 @@ format-by-name-rules:
   '*Uri': 'Uri'
   '*Uris': 'Uri'
 
-rename-rules:
+acronym-mapping:
   CPU: Cpu
   CPUs: Cpus
   Os: OS
@@ -72,5 +83,7 @@ rename-mapping:
     JobRunData.SourceResourceId: -|arm-id
     QumuloAgentData.LocalIPAddress: -|ip-address
     AzureStorageBlobContainerQumuloEndpointProperties.StorageAccountResourceId: -|arm-id
+    FileSystemResourceUpdateProperties.delegatedSubnetId: -|arm-id
+    FileSystemResource.properties.privateIPs: -|ip-address
 
 ```

@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Advisor.Models;
@@ -187,7 +186,7 @@ namespace Azure.ResourceManager.Advisor
 
         /// <summary> Obtains cached recommendations for a subscription. The recommendations are generated or computed by invoking generateRecommendations. </summary>
         /// <param name="subscriptionId"> The Azure subscription ID. </param>
-        /// <param name="filter"> The filter to apply to the recommendations.&lt;br&gt;Filter can be applied to properties [&apos;ResourceId&apos;, &apos;ResourceGroup&apos;, &apos;RecommendationTypeGuid&apos;, &apos;[Category](#category)&apos;] with operators [&apos;eq&apos;, &apos;and&apos;, &apos;or&apos;].&lt;br&gt;Example:&lt;br&gt;- $filter=Category eq &apos;Cost&apos; and ResourceGroup eq &apos;MyResourceGroup&apos;. </param>
+        /// <param name="filter"> The filter to apply to the recommendations.&lt;br&gt;Filter can be applied to properties ['ResourceId', 'ResourceGroup', 'RecommendationTypeGuid', '[Category](#category)'] with operators ['eq', 'and', 'or'].&lt;br&gt;Example:&lt;br&gt;- $filter=Category eq 'Cost' and ResourceGroup eq 'MyResourceGroup'. </param>
         /// <param name="top"> The number of recommendations per page if a paged version of this API is being used. </param>
         /// <param name="skipToken"> The page-continuation token to use with a paged version of this API. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -215,7 +214,7 @@ namespace Azure.ResourceManager.Advisor
 
         /// <summary> Obtains cached recommendations for a subscription. The recommendations are generated or computed by invoking generateRecommendations. </summary>
         /// <param name="subscriptionId"> The Azure subscription ID. </param>
-        /// <param name="filter"> The filter to apply to the recommendations.&lt;br&gt;Filter can be applied to properties [&apos;ResourceId&apos;, &apos;ResourceGroup&apos;, &apos;RecommendationTypeGuid&apos;, &apos;[Category](#category)&apos;] with operators [&apos;eq&apos;, &apos;and&apos;, &apos;or&apos;].&lt;br&gt;Example:&lt;br&gt;- $filter=Category eq &apos;Cost&apos; and ResourceGroup eq &apos;MyResourceGroup&apos;. </param>
+        /// <param name="filter"> The filter to apply to the recommendations.&lt;br&gt;Filter can be applied to properties ['ResourceId', 'ResourceGroup', 'RecommendationTypeGuid', '[Category](#category)'] with operators ['eq', 'and', 'or'].&lt;br&gt;Example:&lt;br&gt;- $filter=Category eq 'Cost' and ResourceGroup eq 'MyResourceGroup'. </param>
         /// <param name="top"> The number of recommendations per page if a paged version of this API is being used. </param>
         /// <param name="skipToken"> The page-continuation token to use with a paged version of this API. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -334,7 +333,7 @@ namespace Azure.ResourceManager.Advisor
         /// <summary> Obtains cached recommendations for a subscription. The recommendations are generated or computed by invoking generateRecommendations. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The Azure subscription ID. </param>
-        /// <param name="filter"> The filter to apply to the recommendations.&lt;br&gt;Filter can be applied to properties [&apos;ResourceId&apos;, &apos;ResourceGroup&apos;, &apos;RecommendationTypeGuid&apos;, &apos;[Category](#category)&apos;] with operators [&apos;eq&apos;, &apos;and&apos;, &apos;or&apos;].&lt;br&gt;Example:&lt;br&gt;- $filter=Category eq &apos;Cost&apos; and ResourceGroup eq &apos;MyResourceGroup&apos;. </param>
+        /// <param name="filter"> The filter to apply to the recommendations.&lt;br&gt;Filter can be applied to properties ['ResourceId', 'ResourceGroup', 'RecommendationTypeGuid', '[Category](#category)'] with operators ['eq', 'and', 'or'].&lt;br&gt;Example:&lt;br&gt;- $filter=Category eq 'Cost' and ResourceGroup eq 'MyResourceGroup'. </param>
         /// <param name="top"> The number of recommendations per page if a paged version of this API is being used. </param>
         /// <param name="skipToken"> The page-continuation token to use with a paged version of this API. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -364,7 +363,7 @@ namespace Azure.ResourceManager.Advisor
         /// <summary> Obtains cached recommendations for a subscription. The recommendations are generated or computed by invoking generateRecommendations. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The Azure subscription ID. </param>
-        /// <param name="filter"> The filter to apply to the recommendations.&lt;br&gt;Filter can be applied to properties [&apos;ResourceId&apos;, &apos;ResourceGroup&apos;, &apos;RecommendationTypeGuid&apos;, &apos;[Category](#category)&apos;] with operators [&apos;eq&apos;, &apos;and&apos;, &apos;or&apos;].&lt;br&gt;Example:&lt;br&gt;- $filter=Category eq &apos;Cost&apos; and ResourceGroup eq &apos;MyResourceGroup&apos;. </param>
+        /// <param name="filter"> The filter to apply to the recommendations.&lt;br&gt;Filter can be applied to properties ['ResourceId', 'ResourceGroup', 'RecommendationTypeGuid', '[Category](#category)'] with operators ['eq', 'and', 'or'].&lt;br&gt;Example:&lt;br&gt;- $filter=Category eq 'Cost' and ResourceGroup eq 'MyResourceGroup'. </param>
         /// <param name="top"> The number of recommendations per page if a paged version of this API is being used. </param>
         /// <param name="skipToken"> The page-continuation token to use with a paged version of this API. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>

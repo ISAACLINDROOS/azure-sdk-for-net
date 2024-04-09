@@ -8,18 +8,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.Core;
 
 namespace Azure.Communication.PhoneNumbers
 {
     /// <summary> The result of a phone number search operation. </summary>
     public partial class PhoneNumberSearchResult
     {
-        /// <summary> Initializes a new instance of PhoneNumberSearchResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="PhoneNumberSearchResult"/>. </summary>
         /// <param name="searchId"> The search id. </param>
         /// <param name="phoneNumbers"> The phone numbers that are available. Can be fewer than the desired search quantity. </param>
-        /// <param name="phoneNumberType"> The phone number&apos;s type, e.g. geographic, or tollFree. </param>
-        /// <param name="assignmentType"> Phone number&apos;s assignment type. </param>
+        /// <param name="phoneNumberType"> The phone number's type, e.g. geographic, or tollFree. </param>
+        /// <param name="assignmentType"> Phone number's assignment type. </param>
         /// <param name="capabilities"> Capabilities of a phone number. </param>
         /// <param name="cost"> The incurred cost for a single phone number. </param>
         /// <param name="searchExpiresOn"> The date that this search result expires and phone numbers are no longer on hold. A search result expires in less than 15min, e.g. 2020-11-19T16:31:49.048Z. </param>
@@ -40,11 +39,11 @@ namespace Azure.Communication.PhoneNumbers
             SearchExpiresOn = searchExpiresOn;
         }
 
-        /// <summary> Initializes a new instance of PhoneNumberSearchResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="PhoneNumberSearchResult"/>. </summary>
         /// <param name="searchId"> The search id. </param>
         /// <param name="phoneNumbers"> The phone numbers that are available. Can be fewer than the desired search quantity. </param>
-        /// <param name="phoneNumberType"> The phone number&apos;s type, e.g. geographic, or tollFree. </param>
-        /// <param name="assignmentType"> Phone number&apos;s assignment type. </param>
+        /// <param name="phoneNumberType"> The phone number's type, e.g. geographic, or tollFree. </param>
+        /// <param name="assignmentType"> Phone number's assignment type. </param>
         /// <param name="capabilities"> Capabilities of a phone number. </param>
         /// <param name="cost"> The incurred cost for a single phone number. </param>
         /// <param name="searchExpiresOn"> The date that this search result expires and phone numbers are no longer on hold. A search result expires in less than 15min, e.g. 2020-11-19T16:31:49.048Z. </param>
@@ -67,9 +66,9 @@ namespace Azure.Communication.PhoneNumbers
         public string SearchId { get; }
         /// <summary> The phone numbers that are available. Can be fewer than the desired search quantity. </summary>
         public IReadOnlyList<string> PhoneNumbers { get; }
-        /// <summary> The phone number&apos;s type, e.g. geographic, or tollFree. </summary>
+        /// <summary> The phone number's type, e.g. geographic, or tollFree. </summary>
         public PhoneNumberType PhoneNumberType { get; }
-        /// <summary> Phone number&apos;s assignment type. </summary>
+        /// <summary> Phone number's assignment type. </summary>
         public PhoneNumberAssignmentType AssignmentType { get; }
         /// <summary> Capabilities of a phone number. </summary>
         public PhoneNumberCapabilities Capabilities { get; }

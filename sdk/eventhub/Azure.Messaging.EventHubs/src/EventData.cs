@@ -243,6 +243,7 @@ namespace Azure.Messaging.EventHubs
         ///     <item><description>Stream</description></item>
         ///     <item><description>Uri</description></item>
         ///     <item><description>TimeSpan</description></item>
+        ///     <item><description>byte[]</description></item>
         ///   </list>
         /// </remarks>
         ///
@@ -523,7 +524,7 @@ namespace Azure.Messaging.EventHubs
         ///
         /// <param name="amqpMessage">The <see cref="AmqpAnnotatedMessage" /> on which to base the event.</param>
         ///
-        internal EventData(AmqpAnnotatedMessage amqpMessage)
+        public EventData(AmqpAnnotatedMessage amqpMessage)
         {
             _amqpMessage = amqpMessage;
         }

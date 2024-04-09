@@ -10,7 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.OperationalInsights.Models
 {
-    /// <summary> Table&apos;s current provisioning state. If set to &apos;updating&apos;, indicates a resource lock due to ongoing operation, forbidding any update to the table until the ongoing operation is concluded. </summary>
+    /// <summary> Table's current provisioning state. If set to 'updating', indicates a resource lock due to ongoing operation, forbidding any update to the table until the ongoing operation is concluded. </summary>
     public readonly partial struct OperationalInsightsTableProvisioningState : IEquatable<OperationalInsightsTableProvisioningState>
     {
         private readonly string _value;
@@ -25,6 +25,7 @@ namespace Azure.ResourceManager.OperationalInsights.Models
         private const string UpdatingValue = "Updating";
         private const string InProgressValue = "InProgress";
         private const string SucceededValue = "Succeeded";
+        private const string DeletingValue = "Deleting";
 
         /// <summary> Table schema is still being built and updated, table is currently locked for any changes till the procedure is done. </summary>
         public static OperationalInsightsTableProvisioningState Updating { get; } = new OperationalInsightsTableProvisioningState(UpdatingValue);
@@ -32,6 +33,8 @@ namespace Azure.ResourceManager.OperationalInsights.Models
         public static OperationalInsightsTableProvisioningState InProgress { get; } = new OperationalInsightsTableProvisioningState(InProgressValue);
         /// <summary> Table state is stable and without changes, table is unlocked and open for new updates. </summary>
         public static OperationalInsightsTableProvisioningState Succeeded { get; } = new OperationalInsightsTableProvisioningState(SucceededValue);
+        /// <summary> Table state is deleting. </summary>
+        public static OperationalInsightsTableProvisioningState Deleting { get; } = new OperationalInsightsTableProvisioningState(DeletingValue);
         /// <summary> Determines if two <see cref="OperationalInsightsTableProvisioningState"/> values are the same. </summary>
         public static bool operator ==(OperationalInsightsTableProvisioningState left, OperationalInsightsTableProvisioningState right) => left.Equals(right);
         /// <summary> Determines if two <see cref="OperationalInsightsTableProvisioningState"/> values are not the same. </summary>

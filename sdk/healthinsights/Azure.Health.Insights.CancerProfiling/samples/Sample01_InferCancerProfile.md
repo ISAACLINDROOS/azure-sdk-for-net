@@ -27,14 +27,7 @@ To get the inferred pTNM staging and histology codes for an oncology patient, ca
 
 ```C# Snippet:HealthInsightsOncoPhenotypeData
 // Create Patient
-PatientRecord patient1 = new PatientRecord("patient_id")
-{
-    Info = new PatientInfo
-    {
-        BirthDate = new System.DateTime(1979, 10, 08),
-        Sex = PatientInfoSex.Female
-    }
-};
+PatientRecord patient1 = new PatientRecord("patient_id");
 
 // Add imaging document
 string docContent1 = @"
@@ -133,8 +126,8 @@ PatientDocument patientDocument3 = new PatientDocument(DocumentType.Note,
 };
 patient1.Data.Add(patientDocument3);
 
-// Set configuration to include evidence for the cancer staging inferences
-var configuration = new OncoPhenotypeModelConfiguration() { IncludeEvidence = true };
+// Set configuration to include evidence for the cancer staging inferences and to check for whether a cancer case exists in the text
+var configuration = new OncoPhenotypeModelConfiguration() { IncludeEvidence = true, CheckForCancerCase = true };
 
 // Create OncoPhenotypeData with patient and configration
 var oncoPhenotypeData = new OncoPhenotypeData(new List<PatientRecord> { patient1 }) { Configuration = configuration };
@@ -144,11 +137,11 @@ Call InferCancerProfile to submit an Oncology request and get the Onco-Phenotype
 
 
 ```C# Snippet:HealthInsightsCancerProfilingClientInferCancerProfile
-OncoPhenotypeResult oncoPhenotypeResult = default;
+OncoPhenotypeResults oncoResults = default;
 try
 {
-    Operation<OncoPhenotypeResult> operation = client.InferCancerProfile(WaitUntil.Completed, oncoPhenotypeData);
-    oncoPhenotypeResult = operation.Value;
+    Operation<OncoPhenotypeResults> operation = client.InferCancerProfile(WaitUntil.Completed, oncoPhenotypeData);
+    oncoResults = operation.Value;
 }
 catch (Exception ex)
 {
@@ -161,37 +154,25 @@ To view the oncology inferences:
 
 ```C# Snippet:HealthInsightsCancerProfilingInferCancerProfileViewResults
 // View operation results
-if (oncoPhenotypeResult.Status == JobStatus.Succeeded)
+foreach (OncoPhenotypePatientResult patientResult in oncoResults.Patients)
 {
-    OncoPhenotypeResults oncoResults = oncoPhenotypeResult.Results;
-    foreach (OncoPhenotypePatientResult patientResult in oncoResults.Patients)
+    Console.WriteLine($"\n==== Inferences of Patient {patientResult.Id} ====");
+    foreach (OncoPhenotypeInference oncoInference in patientResult.Inferences)
     {
-        Console.WriteLine($"\n==== Inferences of Patient {patientResult.Id} ====");
-        foreach (OncoPhenotypeInference oncoInference in patientResult.Inferences)
+        Console.WriteLine($"\n=== Clinical Type: {oncoInference.Type.ToString()}  Value: {oncoInference.Value}   ConfidenceScore: {oncoInference.ConfidenceScore} ===");
+        foreach (InferenceEvidence evidence in oncoInference.Evidence)
         {
-            Console.WriteLine($"\n=== Clinical Type: {oncoInference.Type.ToString()}  Value: {oncoInference.Value}   ConfidenceScore: {oncoInference.ConfidenceScore} ===");
-            foreach (InferenceEvidence evidence in oncoInference.Evidence)
+            if (evidence.PatientDataEvidence != null)
             {
-                if (evidence.PatientDataEvidence != null)
-                {
-                    var dataEvidence = evidence.PatientDataEvidence;
-                    Console.WriteLine($"Evidence {dataEvidence.Id} {dataEvidence.Offset} {dataEvidence.Length} {dataEvidence.Text}");
-                }
-                if (evidence.PatientInfoEvidence != null)
-                {
-                    var infoEvidence = evidence.PatientInfoEvidence;
-                    Console.WriteLine($"Evidence {infoEvidence.System} {infoEvidence.Code} {infoEvidence.Name} {infoEvidence.Value}");
-                }
+                var dataEvidence = evidence.PatientDataEvidence;
+                Console.WriteLine($"Evidence {dataEvidence.Id} {dataEvidence.Offset} {dataEvidence.Length} {dataEvidence.Text}");
+            }
+            if (evidence.PatientInfoEvidence != null)
+            {
+                var infoEvidence = evidence.PatientInfoEvidence;
+                Console.WriteLine($"Evidence {infoEvidence.System} {infoEvidence.Code} {infoEvidence.Name} {infoEvidence.Value}");
             }
         }
-    }
-}
-else
-{
-    IReadOnlyList<ResponseError> oncoErrors = oncoPhenotypeResult.Errors;
-    foreach (ResponseError error in oncoErrors)
-    {
-        Console.WriteLine($"{error.Code} : {error.Message}");
     }
 }
 ```

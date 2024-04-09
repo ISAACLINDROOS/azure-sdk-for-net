@@ -5,17 +5,52 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Hci.Models
 {
     /// <summary> Cluster node details. </summary>
     public partial class HciClusterNode
     {
-        /// <summary> Initializes a new instance of HciClusterNode. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="HciClusterNode"/>. </summary>
         internal HciClusterNode()
         {
         }
 
-        /// <summary> Initializes a new instance of HciClusterNode. </summary>
+        /// <summary> Initializes a new instance of <see cref="HciClusterNode"/>. </summary>
         /// <param name="name"> Name of the cluster node. </param>
         /// <param name="id"> Id of the node in the cluster. </param>
         /// <param name="windowsServerSubscription"> State of Windows Server Subscription. </param>
@@ -29,7 +64,9 @@ namespace Azure.ResourceManager.Hci.Models
         /// <param name="serialNumber"> Immutable id of the cluster node. </param>
         /// <param name="coreCount"> Number of physical cores on the cluster node. </param>
         /// <param name="memoryInGiB"> Total available memory on the cluster node (in GiB). </param>
-        internal HciClusterNode(string name, float? id, WindowsServerSubscription? windowsServerSubscription, ClusterNodeType? nodeType, string ehcResourceId, string manufacturer, string model, string osName, string osVersion, string osDisplayVersion, string serialNumber, float? coreCount, float? memoryInGiB)
+        /// <param name="lastLicensingTimestamp"> Most recent licensing timestamp. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal HciClusterNode(string name, float? id, WindowsServerSubscription? windowsServerSubscription, ClusterNodeType? nodeType, string ehcResourceId, string manufacturer, string model, string osName, string osVersion, string osDisplayVersion, string serialNumber, float? coreCount, float? memoryInGiB, DateTimeOffset? lastLicensingTimestamp, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Name = name;
             Id = id;
@@ -44,6 +81,8 @@ namespace Azure.ResourceManager.Hci.Models
             SerialNumber = serialNumber;
             CoreCount = coreCount;
             MemoryInGiB = memoryInGiB;
+            LastLicensingTimestamp = lastLicensingTimestamp;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> Name of the cluster node. </summary>
@@ -72,5 +111,7 @@ namespace Azure.ResourceManager.Hci.Models
         public float? CoreCount { get; }
         /// <summary> Total available memory on the cluster node (in GiB). </summary>
         public float? MemoryInGiB { get; }
+        /// <summary> Most recent licensing timestamp. </summary>
+        public DateTimeOffset? LastLicensingTimestamp { get; }
     }
 }

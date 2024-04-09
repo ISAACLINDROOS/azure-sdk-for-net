@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Batch.Models;
 using Azure.ResourceManager.Models;
@@ -20,7 +19,39 @@ namespace Azure.ResourceManager.Batch
     /// </summary>
     public partial class BatchAccountPoolData : ResourceData
     {
-        /// <summary> Initializes a new instance of BatchAccountPoolData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="BatchAccountPoolData"/>. </summary>
         public BatchAccountPoolData()
         {
             UserAccounts = new ChangeTrackingList<BatchUserAccount>();
@@ -29,9 +60,10 @@ namespace Azure.ResourceManager.Batch
             ApplicationPackages = new ChangeTrackingList<BatchApplicationPackageReference>();
             ApplicationLicenses = new ChangeTrackingList<string>();
             MountConfiguration = new ChangeTrackingList<BatchMountConfiguration>();
+            ResourceTags = new ChangeTrackingDictionary<string, string>();
         }
 
-        /// <summary> Initializes a new instance of BatchAccountPoolData. </summary>
+        /// <summary> Initializes a new instance of <see cref="BatchAccountPoolData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
@@ -48,9 +80,9 @@ namespace Azure.ResourceManager.Batch
         /// <param name="deploymentConfiguration"> Using CloudServiceConfiguration specifies that the nodes should be creating using Azure Cloud Services (PaaS), while VirtualMachineConfiguration uses Azure Virtual Machines (IaaS). </param>
         /// <param name="currentDedicatedNodes"> The number of dedicated compute nodes currently in the pool. </param>
         /// <param name="currentLowPriorityNodes"> The number of Spot/low-priority compute nodes currently in the pool. </param>
-        /// <param name="scaleSettings"> Defines the desired size of the pool. This can either be &apos;fixedScale&apos; where the requested targetDedicatedNodes is specified, or &apos;autoScale&apos; which defines a formula which is periodically reevaluated. If this property is not specified, the pool will have a fixed scale with 0 targetDedicatedNodes. </param>
+        /// <param name="scaleSettings"> Defines the desired size of the pool. This can either be 'fixedScale' where the requested targetDedicatedNodes is specified, or 'autoScale' which defines a formula which is periodically reevaluated. If this property is not specified, the pool will have a fixed scale with 0 targetDedicatedNodes. </param>
         /// <param name="autoScaleRun"> This property is set only if the pool automatically scales, i.e. autoScaleSettings are used. </param>
-        /// <param name="interNodeCommunication"> This imposes restrictions on which nodes can be assigned to the pool. Enabling this value can reduce the chance of the requested number of nodes to be allocated in the pool. If not specified, this value defaults to &apos;Disabled&apos;. </param>
+        /// <param name="interNodeCommunication"> This imposes restrictions on which nodes can be assigned to the pool. Enabling this value can reduce the chance of the requested number of nodes to be allocated in the pool. If not specified, this value defaults to 'Disabled'. </param>
         /// <param name="networkConfiguration"> The network configuration for a pool. </param>
         /// <param name="taskSlotsPerNode"> The default value is 1. The maximum value is the smaller of 4 times the number of cores of the vmSize of the pool or 256. </param>
         /// <param name="taskSchedulingPolicy"> If not specified, the default is spread. </param>
@@ -58,8 +90,8 @@ namespace Azure.ResourceManager.Batch
         /// <param name="metadata"> The Batch service does not assign any meaning to metadata; it is solely for the use of user code. </param>
         /// <param name="startTask"> In an PATCH (update) operation, this property can be set to an empty object to remove the start task from the pool. </param>
         /// <param name="certificates">
-        /// For Windows compute nodes, the Batch service installs the certificates to the specified certificate store and location. For Linux compute nodes, the certificates are stored in a directory inside the task working directory and an environment variable AZ_BATCH_CERTIFICATES_DIR is supplied to the task to query for this location. For certificates with visibility of &apos;remoteUser&apos;, a &apos;certs&apos; directory is created in the user&apos;s home directory (e.g., /home/{user-name}/certs) and certificates are placed in that directory.
-        /// 
+        /// For Windows compute nodes, the Batch service installs the certificates to the specified certificate store and location. For Linux compute nodes, the certificates are stored in a directory inside the task working directory and an environment variable AZ_BATCH_CERTIFICATES_DIR is supplied to the task to query for this location. For certificates with visibility of 'remoteUser', a 'certs' directory is created in the user's home directory (e.g., /home/{user-name}/certs) and certificates are placed in that directory.
+        ///
         /// Warning: This property is deprecated and will be removed after February, 2024. Please use the [Azure KeyVault Extension](https://learn.microsoft.com/azure/batch/batch-certificate-migration-guide) instead.
         /// </param>
         /// <param name="applicationPackages"> Changes to application package references affect all new compute nodes joining the pool, but do not affect compute nodes that are already in the pool until they are rebooted or reimaged. There is a maximum of 10 application package references on any given pool. </param>
@@ -68,8 +100,11 @@ namespace Azure.ResourceManager.Batch
         /// <param name="mountConfiguration"> This supports Azure Files, NFS, CIFS/SMB, and Blobfuse. </param>
         /// <param name="targetNodeCommunicationMode"> If omitted, the default value is Default. </param>
         /// <param name="currentNodeCommunicationMode"> Determines how a pool communicates with the Batch service. </param>
+        /// <param name="upgradePolicy"> Describes an upgrade policy - automatic, manual, or rolling. </param>
+        /// <param name="resourceTags"> The user-defined tags to be associated with the Azure Batch Pool. When specified, these tags are propagated to the backing Azure resources associated with the pool. This property can only be specified when the Batch account was created with the poolAllocationMode property set to 'UserSubscription'. </param>
         /// <param name="etag"> The ETag of the resource, used for concurrency statements. </param>
-        internal BatchAccountPoolData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, ManagedServiceIdentity identity, string displayName, DateTimeOffset? lastModifiedOn, DateTimeOffset? createdOn, BatchAccountPoolProvisioningState? provisioningState, DateTimeOffset? provisioningStateTransitOn, BatchAccountPoolAllocationState? allocationState, DateTimeOffset? allocationStateTransitionOn, string vmSize, BatchDeploymentConfiguration deploymentConfiguration, int? currentDedicatedNodes, int? currentLowPriorityNodes, BatchAccountPoolScaleSettings scaleSettings, BatchAccountPoolAutoScaleRun autoScaleRun, InterNodeCommunicationState? interNodeCommunication, BatchNetworkConfiguration networkConfiguration, int? taskSlotsPerNode, TaskSchedulingPolicy taskSchedulingPolicy, IList<BatchUserAccount> userAccounts, IList<BatchAccountPoolMetadataItem> metadata, BatchAccountPoolStartTask startTask, IList<BatchCertificateReference> certificates, IList<BatchApplicationPackageReference> applicationPackages, IList<string> applicationLicenses, BatchResizeOperationStatus resizeOperationStatus, IList<BatchMountConfiguration> mountConfiguration, NodeCommunicationMode? targetNodeCommunicationMode, NodeCommunicationMode? currentNodeCommunicationMode, ETag? etag) : base(id, name, resourceType, systemData)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal BatchAccountPoolData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, ManagedServiceIdentity identity, string displayName, DateTimeOffset? lastModifiedOn, DateTimeOffset? createdOn, BatchAccountPoolProvisioningState? provisioningState, DateTimeOffset? provisioningStateTransitOn, BatchAccountPoolAllocationState? allocationState, DateTimeOffset? allocationStateTransitionOn, string vmSize, BatchDeploymentConfiguration deploymentConfiguration, int? currentDedicatedNodes, int? currentLowPriorityNodes, BatchAccountPoolScaleSettings scaleSettings, BatchAccountPoolAutoScaleRun autoScaleRun, InterNodeCommunicationState? interNodeCommunication, BatchNetworkConfiguration networkConfiguration, int? taskSlotsPerNode, TaskSchedulingPolicy taskSchedulingPolicy, IList<BatchUserAccount> userAccounts, IList<BatchAccountPoolMetadataItem> metadata, BatchAccountPoolStartTask startTask, IList<BatchCertificateReference> certificates, IList<BatchApplicationPackageReference> applicationPackages, IList<string> applicationLicenses, BatchResizeOperationStatus resizeOperationStatus, IList<BatchMountConfiguration> mountConfiguration, NodeCommunicationMode? targetNodeCommunicationMode, NodeCommunicationMode? currentNodeCommunicationMode, UpgradePolicy upgradePolicy, IDictionary<string, string> resourceTags, ETag? etag, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData)
         {
             Identity = identity;
             DisplayName = displayName;
@@ -99,7 +134,10 @@ namespace Azure.ResourceManager.Batch
             MountConfiguration = mountConfiguration;
             TargetNodeCommunicationMode = targetNodeCommunicationMode;
             CurrentNodeCommunicationMode = currentNodeCommunicationMode;
+            UpgradePolicy = upgradePolicy;
+            ResourceTags = resourceTags;
             ETag = etag;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> The type of identity used for the Batch Pool. Current supported identity types: UserAssigned, None. </summary>
@@ -126,11 +164,11 @@ namespace Azure.ResourceManager.Batch
         public int? CurrentDedicatedNodes { get; }
         /// <summary> The number of Spot/low-priority compute nodes currently in the pool. </summary>
         public int? CurrentLowPriorityNodes { get; }
-        /// <summary> Defines the desired size of the pool. This can either be &apos;fixedScale&apos; where the requested targetDedicatedNodes is specified, or &apos;autoScale&apos; which defines a formula which is periodically reevaluated. If this property is not specified, the pool will have a fixed scale with 0 targetDedicatedNodes. </summary>
+        /// <summary> Defines the desired size of the pool. This can either be 'fixedScale' where the requested targetDedicatedNodes is specified, or 'autoScale' which defines a formula which is periodically reevaluated. If this property is not specified, the pool will have a fixed scale with 0 targetDedicatedNodes. </summary>
         public BatchAccountPoolScaleSettings ScaleSettings { get; set; }
         /// <summary> This property is set only if the pool automatically scales, i.e. autoScaleSettings are used. </summary>
         public BatchAccountPoolAutoScaleRun AutoScaleRun { get; }
-        /// <summary> This imposes restrictions on which nodes can be assigned to the pool. Enabling this value can reduce the chance of the requested number of nodes to be allocated in the pool. If not specified, this value defaults to &apos;Disabled&apos;. </summary>
+        /// <summary> This imposes restrictions on which nodes can be assigned to the pool. Enabling this value can reduce the chance of the requested number of nodes to be allocated in the pool. If not specified, this value defaults to 'Disabled'. </summary>
         public InterNodeCommunicationState? InterNodeCommunication { get; set; }
         /// <summary> The network configuration for a pool. </summary>
         public BatchNetworkConfiguration NetworkConfiguration { get; set; }
@@ -155,8 +193,8 @@ namespace Azure.ResourceManager.Batch
         /// <summary> In an PATCH (update) operation, this property can be set to an empty object to remove the start task from the pool. </summary>
         public BatchAccountPoolStartTask StartTask { get; set; }
         /// <summary>
-        /// For Windows compute nodes, the Batch service installs the certificates to the specified certificate store and location. For Linux compute nodes, the certificates are stored in a directory inside the task working directory and an environment variable AZ_BATCH_CERTIFICATES_DIR is supplied to the task to query for this location. For certificates with visibility of &apos;remoteUser&apos;, a &apos;certs&apos; directory is created in the user&apos;s home directory (e.g., /home/{user-name}/certs) and certificates are placed in that directory.
-        /// 
+        /// For Windows compute nodes, the Batch service installs the certificates to the specified certificate store and location. For Linux compute nodes, the certificates are stored in a directory inside the task working directory and an environment variable AZ_BATCH_CERTIFICATES_DIR is supplied to the task to query for this location. For certificates with visibility of 'remoteUser', a 'certs' directory is created in the user's home directory (e.g., /home/{user-name}/certs) and certificates are placed in that directory.
+        ///
         /// Warning: This property is deprecated and will be removed after February, 2024. Please use the [Azure KeyVault Extension](https://learn.microsoft.com/azure/batch/batch-certificate-migration-guide) instead.
         /// </summary>
         public IList<BatchCertificateReference> Certificates { get; }
@@ -172,6 +210,10 @@ namespace Azure.ResourceManager.Batch
         public NodeCommunicationMode? TargetNodeCommunicationMode { get; set; }
         /// <summary> Determines how a pool communicates with the Batch service. </summary>
         public NodeCommunicationMode? CurrentNodeCommunicationMode { get; }
+        /// <summary> Describes an upgrade policy - automatic, manual, or rolling. </summary>
+        public UpgradePolicy UpgradePolicy { get; set; }
+        /// <summary> The user-defined tags to be associated with the Azure Batch Pool. When specified, these tags are propagated to the backing Azure resources associated with the pool. This property can only be specified when the Batch account was created with the poolAllocationMode property set to 'UserSubscription'. </summary>
+        public IDictionary<string, string> ResourceTags { get; }
         /// <summary> The ETag of the resource, used for concurrency statements. </summary>
         public ETag? ETag { get; }
     }

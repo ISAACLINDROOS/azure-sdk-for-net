@@ -5,7 +5,6 @@ Run `dotnet build /t:GenerateCode` to generate code.
 ``` yaml
 
 azure-arm: true
-generate-model-factory: false
 csharp: true
 library-name: DataLakeStore
 namespace: Azure.ResourceManager.DataLakeStore
@@ -16,6 +15,7 @@ clear-output-folder: true
 skip-csproj: true
 modelerfour:
   flatten-payloads: false
+use-model-reader-writer: true
 
 request-path-to-parent:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeStore/accounts: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeStore/accounts/{accountName}
@@ -75,7 +75,7 @@ prepend-rp-prefix:
   - VirtualNetworkRuleListResult
   - CapabilityInformation
   - FirewallState
-  - FirewallAllowAzureIPsState
+  - FirewallAllowAzureIpsState
   - EncryptionProvisioningState
   - EncryptionState
   - FirewallRuleListResult
@@ -93,7 +93,7 @@ format-by-name-rules:
   '*Uri': 'Uri'
   '*Uris': 'Uri'
 
-rename-rules:
+acronym-mapping:
   CPU: Cpu
   CPUs: Cpus
   Os: OS

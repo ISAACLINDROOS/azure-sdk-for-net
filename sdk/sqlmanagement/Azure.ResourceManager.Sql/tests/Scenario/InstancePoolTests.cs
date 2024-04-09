@@ -11,9 +11,9 @@ using Azure.ResourceManager.Resources.Models;
 using Azure.ResourceManager.Sql.Models;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Sql.Tests.Scenario
+namespace Azure.ResourceManager.Sql.Tests
 {
-    public class InstancePoolTests : SqlManagementClientBase
+    public class InstancePoolTests : SqlManagementTestBase
     {
         private ResourceGroupResource _resourceGroup;
         private ResourceIdentifier _resourceGroupIdentifier;
@@ -56,7 +56,7 @@ namespace Azure.ResourceManager.Sql.Tests.Scenario
             ResourceIdentifier subnetId = SubnetResource.CreateResourceIdentifier(_resourceGroup.Id.SubscriptionId, _resourceGroup.Id.Name, vnetName, "ManagedInstance");
             InstancePoolData data = new InstancePoolData(AzureLocation.WestUS2)
             {
-                Sku = new SqlSku("GP_Gen5", "GeneralPurpose", null, "Gen5", null),
+                Sku = new SqlSku("GP_Gen5", "GeneralPurpose", null, "Gen5", null, null),
                 LicenseType = InstancePoolLicenseType.LicenseIncluded,
                 Location = AzureLocation.WestUS2,
                 SubnetId = subnetId,

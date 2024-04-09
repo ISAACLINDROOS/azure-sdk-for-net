@@ -50,20 +50,24 @@ namespace Azure.Identity.Tests
 
             var options = new OnBehalfOfCredentialOptions
             {
-                Transport = config.Transport,
                 AdditionallyAllowedTenants = config.AdditionallyAllowedTenants,
-                DisableAuthorityValidationAndInstanceDiscovery = config.DisableAuthorityValidationAndInstanceDiscovery
+                DisableInstanceDiscovery = config.DisableInstanceDiscovery,
+                IsUnsafeSupportLoggingEnabled = config.IsUnsafeSupportLoggingEnabled,
             };
+            if (config.Transport != null)
+            {
+                options.Transport = config.Transport;
+            }
             var pipeline = CredentialPipeline.GetInstance(options);
             return InstrumentClient(
                 new OnBehalfOfCredential(
                     config.TenantId,
                     ClientId,
                     "secret",
-                    Guid.NewGuid().ToString(),
+                    expectedUserAssertion,
                     options,
                     pipeline,
-                    null));
+                    config.MockConfidentialMsalClient));
         }
 
         [Test]
@@ -116,7 +120,7 @@ namespace Azure.Identity.Tests
             TestSetup();
             options = new OnBehalfOfCredentialOptions() { AdditionallyAllowedTenants = { TenantIdHint } };
             var context = new TokenRequestContext(new[] { Scope }, tenantId: tenantId);
-            expectedTenantId = TenantIdResolver.Resolve(explicitTenantId, context, TenantIdResolver.AllTenants);
+            expectedTenantId = TenantIdResolverBase.Default.Resolve(explicitTenantId, context, TenantIdResolverBase.AllTenants);
             OnBehalfOfCredential client = InstrumentClient(
                 new OnBehalfOfCredential(
                     TenantId,

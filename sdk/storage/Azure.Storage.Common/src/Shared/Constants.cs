@@ -25,7 +25,7 @@ namespace Azure.Storage
         /// Gets the default service version to use when building shared access
         /// signatures.
         /// </summary>
-        public const string DefaultSasVersion = "2023-01-03";
+        public const string DefaultSasVersion = "2024-05-04";
 
         /// <summary>
         /// Max download range size while requesting a transactional hash.
@@ -66,6 +66,7 @@ namespace Azure.Storage
         public const int DefaultDownloadCopyBufferSize = 16384;
 
         public const int StorageCrc64SizeInBytes = 8;
+        public const int MD5SizeInBytes = 16;
 
         /// <summary>
         /// Backwards compatible default value for trimming slashes on object name.
@@ -390,6 +391,8 @@ namespace Azure.Storage
             public const string GroupHeaderName = "x-ms-group";
 
             public const string PermissionsHeaderName = "x-ms-permissions";
+
+            public const string AclHeaderName = "x-ms-acl";
         }
 
         /// <summary>
@@ -652,6 +655,9 @@ namespace Azure.Storage
 
         internal static class ClientSideEncryption
         {
+            public const string HttpMessagePropertyKeyV1 = "Azure.Storage.StorageTelemetryPolicy.ClientSideEncryption.V1";
+            public const string HttpMessagePropertyKeyV2 = "Azure.Storage.StorageTelemetryPolicy.ClientSideEncryption.V2";
+
             public const string AgentMetadataKey = "EncryptionLibrary";
 
             public const string AesCbcPkcs5Padding = "AES/CBC/PKCS5Padding";
@@ -712,6 +718,12 @@ namespace Azure.Storage
         {
             internal const string HttpMessagePropertyKey = "Azure.Storage.StorageServerTimeoutPolicy.Timeout";
             internal const string QueryParameterKey = "timeout";
+        }
+
+        internal static class CopyHttpAuthorization
+        {
+            internal static readonly string[] Scopes = { "https://storage.azure.com/.default" };
+            internal const string BearerScheme = "Bearer";
         }
     }
 }

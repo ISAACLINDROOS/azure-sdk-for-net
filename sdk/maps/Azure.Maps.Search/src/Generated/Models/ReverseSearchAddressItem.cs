@@ -6,27 +6,26 @@
 #nullable disable
 
 using System.Collections.Generic;
-using Azure.Core;
-using Azure.Maps.Search;
+using Azure.Maps.Common;
 
 namespace Azure.Maps.Search.Models
 {
     /// <summary> Result object for a Search Address Reverse response. </summary>
     public partial class ReverseSearchAddressItem
     {
-        /// <summary> Initializes a new instance of ReverseSearchAddressItem. </summary>
+        /// <summary> Initializes a new instance of <see cref="ReverseSearchAddressItem"/>. </summary>
         internal ReverseSearchAddressItem()
         {
             RoadUse = new ChangeTrackingList<RoadKind>();
         }
 
-        /// <summary> Initializes a new instance of ReverseSearchAddressItem. </summary>
+        /// <summary> Initializes a new instance of <see cref="ReverseSearchAddressItem"/>. </summary>
         /// <param name="address"> The address of the result. </param>
-        /// <param name="position"> Position property in the form of &quot;{latitude},{longitude}&quot;. </param>
+        /// <param name="position"> Position property in the form of "{latitude},{longitude}". </param>
         /// <param name="roadUse"></param>
         /// <param name="matchType">
         /// Information on the type of match.
-        /// 
+        ///
         /// One of:
         ///   * AddressPoint
         ///   * HouseNumberRange
@@ -42,13 +41,13 @@ namespace Azure.Maps.Search.Models
 
         /// <summary> The address of the result. </summary>
         public MapsAddress Address { get; }
-        /// <summary> Position property in the form of &quot;{latitude},{longitude}&quot;. </summary>
+        /// <summary> Position property in the form of "{latitude},{longitude}". </summary>
         public string Position { get; }
         /// <summary> Gets the road use. </summary>
         public IReadOnlyList<RoadKind> RoadUse { get; }
         /// <summary>
         /// Information on the type of match.
-        /// 
+        ///
         /// One of:
         ///   * AddressPoint
         ///   * HouseNumberRange

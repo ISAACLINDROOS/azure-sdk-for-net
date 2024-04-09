@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.DataMigration.Models;
@@ -150,7 +150,7 @@ namespace Azure.ResourceManager.DataMigration
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<ProjectTaskData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -356,7 +356,7 @@ namespace Azure.ResourceManager.DataMigration
             return message;
         }
 
-        /// <summary> The tasks resource is a nested, proxy-only resource representing work performed by a DMS instance. The DELETE method deletes a task, canceling it first if it&apos;s running. </summary>
+        /// <summary> The tasks resource is a nested, proxy-only resource representing work performed by a DMS instance. The DELETE method deletes a task, canceling it first if it's running. </summary>
         /// <param name="subscriptionId"> Subscription ID that identifies an Azure subscription. </param>
         /// <param name="groupName"> Name of the resource group. </param>
         /// <param name="serviceName"> Name of the service. </param>
@@ -386,7 +386,7 @@ namespace Azure.ResourceManager.DataMigration
             }
         }
 
-        /// <summary> The tasks resource is a nested, proxy-only resource representing work performed by a DMS instance. The DELETE method deletes a task, canceling it first if it&apos;s running. </summary>
+        /// <summary> The tasks resource is a nested, proxy-only resource representing work performed by a DMS instance. The DELETE method deletes a task, canceling it first if it's running. </summary>
         /// <param name="subscriptionId"> Subscription ID that identifies an Azure subscription. </param>
         /// <param name="groupName"> Name of the resource group. </param>
         /// <param name="serviceName"> Name of the service. </param>
@@ -438,7 +438,7 @@ namespace Azure.ResourceManager.DataMigration
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<ProjectTaskData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -539,7 +539,7 @@ namespace Azure.ResourceManager.DataMigration
             return message;
         }
 
-        /// <summary> The tasks resource is a nested, proxy-only resource representing work performed by a DMS instance. This method cancels a task if it&apos;s currently queued or running. </summary>
+        /// <summary> The tasks resource is a nested, proxy-only resource representing work performed by a DMS instance. This method cancels a task if it's currently queued or running. </summary>
         /// <param name="subscriptionId"> Subscription ID that identifies an Azure subscription. </param>
         /// <param name="groupName"> Name of the resource group. </param>
         /// <param name="serviceName"> Name of the service. </param>
@@ -572,7 +572,7 @@ namespace Azure.ResourceManager.DataMigration
             }
         }
 
-        /// <summary> The tasks resource is a nested, proxy-only resource representing work performed by a DMS instance. This method cancels a task if it&apos;s currently queued or running. </summary>
+        /// <summary> The tasks resource is a nested, proxy-only resource representing work performed by a DMS instance. This method cancels a task if it's currently queued or running. </summary>
         /// <param name="subscriptionId"> Subscription ID that identifies an Azure subscription. </param>
         /// <param name="groupName"> Name of the resource group. </param>
         /// <param name="serviceName"> Name of the service. </param>
@@ -628,7 +628,7 @@ namespace Azure.ResourceManager.DataMigration
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(commandProperties);
+            content.JsonWriter.WriteObjectValue<CommandProperties>(commandProperties, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;

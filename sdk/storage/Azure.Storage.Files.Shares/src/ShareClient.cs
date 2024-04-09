@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.Pipeline;
+using Azure.Storage.Common;
 using Azure.Storage.Files.Shares.Models;
 using Azure.Storage.Sas;
 using Metadata = System.Collections.Generic.IDictionary<string, string>;
@@ -182,7 +183,13 @@ namespace Azure.Storage.Files.Shares
         public ShareClient(
             Uri shareUri,
             ShareClientOptions options = default)
-            : this(shareUri, (HttpPipelinePolicy)null, options, sasCredential: null)
+            : this(
+                  shareUri,
+                  (HttpPipelinePolicy)null,
+                  options,
+                  storageSharedKeyCredential: default,
+                  sasCredential: default,
+                  tokenCredential: default)
         {
         }
 
@@ -206,7 +213,13 @@ namespace Azure.Storage.Files.Shares
             Uri shareUri,
             StorageSharedKeyCredential credential,
             ShareClientOptions options = default)
-            : this(shareUri, credential.AsPolicy(), options, credential)
+            : this(
+                  shareUri,
+                  credential.AsPolicy(),
+                  options,
+                  storageSharedKeyCredential: credential,
+                  sasCredential: default,
+                  tokenCredential: default)
         {
         }
 
@@ -238,7 +251,13 @@ namespace Azure.Storage.Files.Shares
             Uri shareUri,
             AzureSasCredential credential,
             ShareClientOptions options = default)
-            : this(shareUri, credential.AsPolicy<ShareUriBuilder>(shareUri), options, sasCredential: credential)
+            : this(
+                  shareUri,
+                  credential.AsPolicy<ShareUriBuilder>(shareUri),
+                  options,
+                  storageSharedKeyCredential: default,
+                  sasCredential: credential,
+                  tokenCredential: default)
         {
         }
 
@@ -275,9 +294,13 @@ namespace Azure.Storage.Files.Shares
             ShareClientOptions options = default)
             : this(
                   shareUri: shareUri,
-                  authentication: credential.AsPolicy(options),
+                  authentication: credential.AsPolicy(
+                    string.IsNullOrEmpty(options?.Audience?.ToString()) ? ShareAudience.DefaultAudience.CreateDefaultScope() : options.Audience.Value.CreateDefaultScope(),
+                    options),
                   options: options ?? new ShareClientOptions(),
-                  storageSharedKeyCredential: default)
+                  storageSharedKeyCredential: default,
+                  sasCredential: default,
+                  tokenCredential: credential)
         {
             Errors.VerifyHttpsTokenAuth(shareUri);
         }
@@ -301,11 +324,19 @@ namespace Azure.Storage.Files.Shares
         /// <param name="storageSharedKeyCredential">
         /// The shared key credential used to sign requests.
         /// </param>
+        /// <param name="sasCredential">
+        /// The SAS credential used to sign requests.
+        /// </param>
+        /// <param name="tokenCredential">
+        /// The token credential used to sign requests.
+        /// </param>
         internal ShareClient(
             Uri shareUri,
             HttpPipelinePolicy authentication,
             ShareClientOptions options,
-            StorageSharedKeyCredential storageSharedKeyCredential)
+            StorageSharedKeyCredential storageSharedKeyCredential,
+            AzureSasCredential sasCredential,
+            TokenCredential tokenCredential)
         {
             Argument.AssertNotNull(shareUri, nameof(shareUri));
             options ??= new ShareClientOptions();
@@ -313,45 +344,13 @@ namespace Azure.Storage.Files.Shares
             _clientConfiguration = new ShareClientConfiguration(
                 pipeline: options.Build(authentication),
                 sharedKeyCredential: storageSharedKeyCredential,
-                sasCredential: default,
-                clientDiagnostics: new ClientDiagnostics(options),
-                clientOptions: options);
-            _shareRestClient = BuildShareRestClient(shareUri);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ShareClient"/>
-        /// class.
-        /// </summary>
-        /// <param name="shareUri">
-        /// A <see cref="Uri"/> referencing the share that includes the
-        /// name of the account and the name of the share.
-        /// </param>
-        /// <param name="authentication">
-        /// An optional authentication policy used to sign requests.
-        /// </param>
-        /// <param name="options">
-        /// Optional client options that define the transport pipeline
-        /// policies for authentication, retries, etc., that are applied to
-        /// every request.
-        /// </param>
-        /// <param name="sasCredential">
-        /// The shared access signature used to sign requests.
-        /// </param>
-        internal ShareClient(
-            Uri shareUri,
-            HttpPipelinePolicy authentication,
-            ShareClientOptions options,
-            AzureSasCredential sasCredential)
-        {
-            Argument.AssertNotNull(shareUri, nameof(shareUri));
-            options ??= new ShareClientOptions();
-            _uri = shareUri;
-            _clientConfiguration = new ShareClientConfiguration(
-                pipeline: options.Build(authentication),
                 sasCredential: sasCredential,
+                tokenCredential: tokenCredential,
                 clientDiagnostics: new ClientDiagnostics(options),
-                clientOptions: options);
+                clientOptions: options)
+            {
+                Audience = options.Audience ?? ShareAudience.DefaultAudience,
+            };
             _shareRestClient = BuildShareRestClient(shareUri);
         }
 
@@ -1151,9 +1150,7 @@ namespace Azure.Storage.Files.Shares
         /// a failure occurs.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
-#pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
         public virtual Response<bool> DeleteIfExists(
-#pragma warning restore AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
             bool includeSnapshots = true,
             CancellationToken cancellationToken = default) =>
             DeleteIfExistsInternal(
@@ -1186,9 +1183,7 @@ namespace Azure.Storage.Files.Shares
         /// a failure occurs.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
-#pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
         public virtual async Task<Response<bool>> DeleteIfExistsAsync(
-#pragma warning restore AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
             bool includeSnapshots = true,
             CancellationToken cancellationToken = default) =>
             await DeleteIfExistsInternal(
@@ -2695,6 +2690,7 @@ namespace Azure.Storage.Files.Shares
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
         /// </remarks>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
         public virtual Response<ShareInfo> SetAccessPolicy(
             IEnumerable<ShareSignedIdentifier> permissions,
             ShareFileRequestConditions conditions = default,
@@ -2735,6 +2731,7 @@ namespace Azure.Storage.Files.Shares
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
         /// </remarks>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
         public virtual async Task<Response<ShareInfo>> SetAccessPolicyAsync(
             IEnumerable<ShareSignedIdentifier> permissions,
             ShareFileRequestConditions conditions = default,
@@ -2772,7 +2769,7 @@ namespace Azure.Storage.Files.Shares
         /// a failure occurs.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
-
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
 #pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
         public virtual Response<ShareInfo> SetAccessPolicy(
 #pragma warning restore AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
@@ -2811,7 +2808,7 @@ namespace Azure.Storage.Files.Shares
         /// a failure occurs.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
-
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
 #pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
         public virtual async Task<Response<ShareInfo>> SetAccessPolicyAsync(
 #pragma warning restore AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
@@ -3116,6 +3113,7 @@ namespace Azure.Storage.Files.Shares
         #region GetPermission
         /// <summary>
         /// Gets the file permission in Security Descriptor Definition Language (SDDL).
+        /// Note that this API is not applicable for Share Snapshots.
         /// </summary>
         /// <param name="filePermissionKey">
         /// The file permission key.
@@ -3138,6 +3136,7 @@ namespace Azure.Storage.Files.Shares
 
         /// <summary>
         /// Gets the file permission in Security Descriptor Definition Language (SDDL).
+        /// Note that this API is not applicable for Share Snapshots.
         /// </summary>
         /// <param name="filePermissionKey">
         /// The file permission key.
@@ -3227,6 +3226,7 @@ namespace Azure.Storage.Files.Shares
         /// <returns>
         /// A <see cref="Response{PermissionInfo}"/> with ID of the newly created file permission.
         /// </returns>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
         public virtual Response<PermissionInfo> CreatePermission(
             string permission,
             CancellationToken cancellationToken = default) =>
@@ -3252,6 +3252,7 @@ namespace Azure.Storage.Files.Shares
         /// <returns>
         /// A <see cref="Response{PermissionInfo}"/> with ID of the newly created file permission.
         /// </returns>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
         public virtual async Task<Response<PermissionInfo>> CreatePermissionAsync(
             string permission,
             CancellationToken cancellationToken = default) =>
@@ -3509,6 +3510,7 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="Exception"/> will be thrown if a failure occurs.
         /// </remarks>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
         public virtual Uri GenerateSasUri(ShareSasPermissions permissions, DateTimeOffset expiresOn) =>
             GenerateSasUri(new ShareSasBuilder(permissions, expiresOn) { ShareName = Name });
 
@@ -3534,6 +3536,7 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="Exception"/> will be thrown if a failure occurs.
         /// </remarks>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
         public virtual Uri GenerateSasUri(ShareSasBuilder builder)
         {
             builder = builder ?? throw Errors.ArgumentNull(nameof(builder));

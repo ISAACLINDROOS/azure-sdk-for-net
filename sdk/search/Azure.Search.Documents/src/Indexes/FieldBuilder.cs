@@ -27,6 +27,8 @@ namespace Azure.Search.Documents.Indexes
                 new Dictionary<Type, SearchFieldDataType>()
                 {
                     [typeof(string)] = SearchFieldDataType.String,
+                    [typeof(sbyte)] = SearchFieldDataType.SByte,
+                    [typeof(short)] = SearchFieldDataType.Int16,
                     [typeof(int)] = SearchFieldDataType.Int32,
                     [typeof(long)] = SearchFieldDataType.Int64,
                     [typeof(double)] = SearchFieldDataType.Double,
@@ -34,6 +36,7 @@ namespace Azure.Search.Documents.Indexes
                     [typeof(DateTime)] = SearchFieldDataType.DateTimeOffset,
                     [typeof(DateTimeOffset)] = SearchFieldDataType.DateTimeOffset,
                     [typeof(GeoPoint)] = SearchFieldDataType.GeographyPoint,
+                    [typeof(Single)] = SearchFieldDataType.Single
                 });
 
         private static readonly ISet<Type> s_unsupportedTypes =
@@ -180,6 +183,10 @@ namespace Azure.Search.Documents.Indexes
 
                             case SimpleFieldAttribute simpleFieldAttribute:
                                 ((ISearchFieldAttribute)simpleFieldAttribute).SetField(field);
+                                break;
+
+                            case VectorSearchFieldAttribute vectorSearchFieldAttribute:
+                                ((ISearchFieldAttribute)vectorSearchFieldAttribute).SetField(field);
                                 break;
 
                             default:

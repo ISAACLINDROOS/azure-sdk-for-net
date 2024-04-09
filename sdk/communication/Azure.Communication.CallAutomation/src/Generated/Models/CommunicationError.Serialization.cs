@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Communication.CallAutomation
 {
@@ -19,11 +18,11 @@ namespace Azure.Communication.CallAutomation
             {
                 return null;
             }
-            Optional<string> code = default;
-            Optional<string> message = default;
-            Optional<string> target = default;
-            Optional<IReadOnlyList<CommunicationError>> details = default;
-            Optional<CommunicationError> innererror = default;
+            string code = default;
+            string message = default;
+            string target = default;
+            IReadOnlyList<CommunicationError> details = default;
+            CommunicationError innererror = default;
             foreach (var property in element.EnumerateObject())
             {
                 if (property.NameEquals("code"u8))
@@ -65,7 +64,15 @@ namespace Azure.Communication.CallAutomation
                     continue;
                 }
             }
-            return new CommunicationError(code.Value, message.Value, target.Value, Optional.ToList(details), innererror.Value);
+            return new CommunicationError(code, message, target, details ?? new ChangeTrackingList<CommunicationError>(), innererror);
+        }
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static CommunicationError FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content);
+            return DeserializeCommunicationError(document.RootElement);
         }
     }
 }

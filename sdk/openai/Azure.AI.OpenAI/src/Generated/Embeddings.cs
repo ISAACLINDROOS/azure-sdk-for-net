@@ -8,14 +8,49 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.Core;
 
 namespace Azure.AI.OpenAI
 {
-    /// <summary> Expected response schema to embeddings request. </summary>
+    /// <summary>
+    /// Representation of the response data from an embeddings request.
+    /// Embeddings measure the relatedness of text strings and are commonly used for search, clustering,
+    /// recommendations, and other similar scenarios.
+    /// </summary>
     public partial class Embeddings
     {
-        /// <summary> Initializes a new instance of Embeddings. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="Embeddings"/>. </summary>
         /// <param name="data"> Embedding values for the prompts submitted in the request. </param>
         /// <param name="usage"> Usage counts for tokens input using the embeddings API. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="data"/> or <paramref name="usage"/> is null. </exception>
@@ -28,24 +63,24 @@ namespace Azure.AI.OpenAI
             Usage = usage;
         }
 
-        /// <summary> Initializes a new instance of Embeddings. </summary>
+        /// <summary> Initializes a new instance of <see cref="Embeddings"/>. </summary>
         /// <param name="data"> Embedding values for the prompts submitted in the request. </param>
-        /// <param name="model"> ID of the model to use. </param>
         /// <param name="usage"> Usage counts for tokens input using the embeddings API. </param>
-        internal Embeddings(IReadOnlyList<EmbeddingItem> data, string model, EmbeddingsUsage usage)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal Embeddings(IReadOnlyList<EmbeddingItem> data, EmbeddingsUsage usage, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Data = data;
-            Model = model;
             Usage = usage;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary> Type of the data field. </summary>
-        internal string Object { get; } = "list";
+        /// <summary> Initializes a new instance of <see cref="Embeddings"/> for deserialization. </summary>
+        internal Embeddings()
+        {
+        }
 
         /// <summary> Embedding values for the prompts submitted in the request. </summary>
         public IReadOnlyList<EmbeddingItem> Data { get; }
-        /// <summary> ID of the model to use. </summary>
-        public string Model { get; }
         /// <summary> Usage counts for tokens input using the embeddings API. </summary>
         public EmbeddingsUsage Usage { get; }
     }

@@ -6,9 +6,9 @@
 #nullable disable
 
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 
@@ -64,35 +64,35 @@ namespace Azure.Health.Insights.CancerProfiling
         /// <summary> Create Onco Phenotype job. </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="oncoPhenotypeData"> The body of the Onco Phenotype request. </param>
-        /// <param name="repeatabilityRequestId"> An opaque, globally-unique, client-generated string identifier for the request. </param>
-        /// <param name="repeatabilityFirstSent"> Specifies the date and time at which the request was first created. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="oncoPhenotypeData"/> is null. </exception>
         /// <remarks> Creates an Onco Phenotype job with the given request body. </remarks>
-        public virtual async Task<Operation<OncoPhenotypeResult>> InferCancerProfileAsync(WaitUntil waitUntil, OncoPhenotypeData oncoPhenotypeData, string repeatabilityRequestId = null, DateTimeOffset? repeatabilityFirstSent = null, CancellationToken cancellationToken = default)
+        /// <include file="Docs/CancerProfilingClient.xml" path="doc/members/member[@name='InferCancerProfileAsync(WaitUntil,OncoPhenotypeData,CancellationToken)']/*" />
+        public virtual async Task<Operation<OncoPhenotypeResults>> InferCancerProfileAsync(WaitUntil waitUntil, OncoPhenotypeData oncoPhenotypeData, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(oncoPhenotypeData, nameof(oncoPhenotypeData));
 
             RequestContext context = FromCancellationToken(cancellationToken);
-            Operation<BinaryData> response = await InferCancerProfileAsync(waitUntil, oncoPhenotypeData.ToRequestContent(), repeatabilityRequestId, repeatabilityFirstSent, context).ConfigureAwait(false);
-            return ProtocolOperationHelpers.Convert(response, OncoPhenotypeResult.FromResponse, ClientDiagnostics, "CancerProfilingClient.InferCancerProfile");
+            using RequestContent content = oncoPhenotypeData.ToRequestContent();
+            Operation<BinaryData> response = await InferCancerProfileAsync(waitUntil, content, context).ConfigureAwait(false);
+            return ProtocolOperationHelpers.Convert(response, FetchOncoPhenotypeResultsFromOncoPhenotypeResult, ClientDiagnostics, "CancerProfilingClient.InferCancerProfile");
         }
 
         /// <summary> Create Onco Phenotype job. </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="oncoPhenotypeData"> The body of the Onco Phenotype request. </param>
-        /// <param name="repeatabilityRequestId"> An opaque, globally-unique, client-generated string identifier for the request. </param>
-        /// <param name="repeatabilityFirstSent"> Specifies the date and time at which the request was first created. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="oncoPhenotypeData"/> is null. </exception>
         /// <remarks> Creates an Onco Phenotype job with the given request body. </remarks>
-        public virtual Operation<OncoPhenotypeResult> InferCancerProfile(WaitUntil waitUntil, OncoPhenotypeData oncoPhenotypeData, string repeatabilityRequestId = null, DateTimeOffset? repeatabilityFirstSent = null, CancellationToken cancellationToken = default)
+        /// <include file="Docs/CancerProfilingClient.xml" path="doc/members/member[@name='InferCancerProfile(WaitUntil,OncoPhenotypeData,CancellationToken)']/*" />
+        public virtual Operation<OncoPhenotypeResults> InferCancerProfile(WaitUntil waitUntil, OncoPhenotypeData oncoPhenotypeData, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(oncoPhenotypeData, nameof(oncoPhenotypeData));
 
             RequestContext context = FromCancellationToken(cancellationToken);
-            Operation<BinaryData> response = InferCancerProfile(waitUntil, oncoPhenotypeData.ToRequestContent(), repeatabilityRequestId, repeatabilityFirstSent, context);
-            return ProtocolOperationHelpers.Convert(response, OncoPhenotypeResult.FromResponse, ClientDiagnostics, "CancerProfilingClient.InferCancerProfile");
+            using RequestContent content = oncoPhenotypeData.ToRequestContent();
+            Operation<BinaryData> response = InferCancerProfile(waitUntil, content, context);
+            return ProtocolOperationHelpers.Convert(response, FetchOncoPhenotypeResultsFromOncoPhenotypeResult, ClientDiagnostics, "CancerProfilingClient.InferCancerProfile");
         }
 
         /// <summary>
@@ -100,26 +100,24 @@ namespace Azure.Health.Insights.CancerProfiling
         /// <list type="bullet">
         /// <item>
         /// <description>
-        /// Creates an Onco Phenotype job with the given request body.
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
         /// </description>
         /// </item>
         /// <item>
         /// <description>
-        /// Please try the simpler <see cref="InferCancerProfileAsync(WaitUntil,OncoPhenotypeData,string,DateTimeOffset?,CancellationToken)"/> convenience overload with strongly typed models first.
+        /// Please try the simpler <see cref="InferCancerProfileAsync(WaitUntil,OncoPhenotypeData,CancellationToken)"/> convenience overload with strongly typed models first.
         /// </description>
         /// </item>
         /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
-        /// <param name="repeatabilityRequestId"> An opaque, globally-unique, client-generated string identifier for the request. </param>
-        /// <param name="repeatabilityFirstSent"> Specifies the date and time at which the request was first created. </param>
+        /// <param name="content"> The content to send as the body of the request. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The <see cref="Operation{T}"/> from the service that will contain a <see cref="BinaryData"/> object once the asynchronous operation on the service has completed. Details of the body schema for the operation's final value are in the Remarks section below. </returns>
-        /// <include file="Docs/CancerProfilingClient.xml" path="doc/members/member[@name='InferCancerProfileAsync(WaitUntil,RequestContent,string,DateTimeOffset?,RequestContext)']/*" />
-        public virtual async Task<Operation<BinaryData>> InferCancerProfileAsync(WaitUntil waitUntil, RequestContent content, string repeatabilityRequestId = null, DateTimeOffset? repeatabilityFirstSent = null, RequestContext context = null)
+        /// <returns> The <see cref="Operation"/> representing an asynchronous operation on the service. </returns>
+        /// <include file="Docs/CancerProfilingClient.xml" path="doc/members/member[@name='InferCancerProfileAsync(WaitUntil,RequestContent,RequestContext)']/*" />
+        public virtual async Task<Operation<BinaryData>> InferCancerProfileAsync(WaitUntil waitUntil, RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNull(content, nameof(content));
 
@@ -127,8 +125,8 @@ namespace Azure.Health.Insights.CancerProfiling
             scope.Start();
             try
             {
-                using HttpMessage message = CreateInferCancerProfileRequest(content, repeatabilityRequestId, repeatabilityFirstSent, context);
-                return await ProtocolOperationHelpers.ProcessMessageAsync(_pipeline, message, ClientDiagnostics, "CancerProfilingClient.InferCancerProfile", OperationFinalStateVia.Location, context, waitUntil).ConfigureAwait(false);
+                using HttpMessage message = CreateInferCancerProfileRequest(content, context);
+                return await ProtocolOperationHelpers.ProcessMessageAsync(_pipeline, message, ClientDiagnostics, "CancerProfilingClient.InferCancerProfile", OperationFinalStateVia.OperationLocation, context, waitUntil).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -142,26 +140,24 @@ namespace Azure.Health.Insights.CancerProfiling
         /// <list type="bullet">
         /// <item>
         /// <description>
-        /// Creates an Onco Phenotype job with the given request body.
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
         /// </description>
         /// </item>
         /// <item>
         /// <description>
-        /// Please try the simpler <see cref="InferCancerProfile(WaitUntil,OncoPhenotypeData,string,DateTimeOffset?,CancellationToken)"/> convenience overload with strongly typed models first.
+        /// Please try the simpler <see cref="InferCancerProfile(WaitUntil,OncoPhenotypeData,CancellationToken)"/> convenience overload with strongly typed models first.
         /// </description>
         /// </item>
         /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
-        /// <param name="repeatabilityRequestId"> An opaque, globally-unique, client-generated string identifier for the request. </param>
-        /// <param name="repeatabilityFirstSent"> Specifies the date and time at which the request was first created. </param>
+        /// <param name="content"> The content to send as the body of the request. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The <see cref="Operation{T}"/> from the service that will contain a <see cref="BinaryData"/> object once the asynchronous operation on the service has completed. Details of the body schema for the operation's final value are in the Remarks section below. </returns>
-        /// <include file="Docs/CancerProfilingClient.xml" path="doc/members/member[@name='InferCancerProfile(WaitUntil,RequestContent,string,DateTimeOffset?,RequestContext)']/*" />
-        public virtual Operation<BinaryData> InferCancerProfile(WaitUntil waitUntil, RequestContent content, string repeatabilityRequestId = null, DateTimeOffset? repeatabilityFirstSent = null, RequestContext context = null)
+        /// <returns> The <see cref="Operation"/> representing an asynchronous operation on the service. </returns>
+        /// <include file="Docs/CancerProfilingClient.xml" path="doc/members/member[@name='InferCancerProfile(WaitUntil,RequestContent,RequestContext)']/*" />
+        public virtual Operation<BinaryData> InferCancerProfile(WaitUntil waitUntil, RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNull(content, nameof(content));
 
@@ -169,8 +165,8 @@ namespace Azure.Health.Insights.CancerProfiling
             scope.Start();
             try
             {
-                using HttpMessage message = CreateInferCancerProfileRequest(content, repeatabilityRequestId, repeatabilityFirstSent, context);
-                return ProtocolOperationHelpers.ProcessMessage(_pipeline, message, ClientDiagnostics, "CancerProfilingClient.InferCancerProfile", OperationFinalStateVia.Location, context, waitUntil);
+                using HttpMessage message = CreateInferCancerProfileRequest(content, context);
+                return ProtocolOperationHelpers.ProcessMessage(_pipeline, message, ClientDiagnostics, "CancerProfilingClient.InferCancerProfile", OperationFinalStateVia.OperationLocation, context, waitUntil);
             }
             catch (Exception e)
             {
@@ -179,7 +175,7 @@ namespace Azure.Health.Insights.CancerProfiling
             }
         }
 
-        internal HttpMessage CreateInferCancerProfileRequest(RequestContent content, string repeatabilityRequestId, DateTimeOffset? repeatabilityFirstSent, RequestContext context)
+        internal HttpMessage CreateInferCancerProfileRequest(RequestContent content, RequestContext context)
         {
             var message = _pipeline.CreateMessage(context, ResponseClassifier200202);
             var request = message.Request;
@@ -190,15 +186,9 @@ namespace Azure.Health.Insights.CancerProfiling
             uri.AppendPath("/oncophenotype/jobs", false);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
-            if (repeatabilityRequestId != null)
-            {
-                request.Headers.Add("Repeatability-Request-ID", repeatabilityRequestId);
-            }
-            if (repeatabilityFirstSent != null)
-            {
-                request.Headers.Add("Repeatability-First-Sent", repeatabilityFirstSent.Value, "O");
-            }
             request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Repeatability-Request-ID", Guid.NewGuid());
+            request.Headers.Add("Repeatability-First-Sent", DateTimeOffset.Now, "R");
             request.Headers.Add("Content-Type", "application/json");
             request.Content = content;
             return message;
@@ -217,5 +207,11 @@ namespace Azure.Health.Insights.CancerProfiling
 
         private static ResponseClassifier _responseClassifier200202;
         private static ResponseClassifier ResponseClassifier200202 => _responseClassifier200202 ??= new StatusCodeClassifier(stackalloc ushort[] { 200, 202 });
+
+        private OncoPhenotypeResults FetchOncoPhenotypeResultsFromOncoPhenotypeResult(Response response)
+        {
+            var resultJsonElement = JsonDocument.Parse(response.Content).RootElement.GetProperty("results");
+            return OncoPhenotypeResults.DeserializeOncoPhenotypeResults(resultJsonElement);
+        }
     }
 }

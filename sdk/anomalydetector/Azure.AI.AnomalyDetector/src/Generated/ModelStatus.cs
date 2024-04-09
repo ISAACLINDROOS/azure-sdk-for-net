@@ -10,6 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.AI.AnomalyDetector
 {
+    /// <summary> The ModelStatus. </summary>
     public readonly partial struct ModelStatus : IEquatable<ModelStatus>
     {
         private readonly string _value;
@@ -26,13 +27,13 @@ namespace Azure.AI.AnomalyDetector
         private const string ReadyValue = "READY";
         private const string FailedValue = "FAILED";
 
-        /// <summary> CREATED. </summary>
+        /// <summary> The model has been created. Training has been scheduled but not yet started. </summary>
         public static ModelStatus Created { get; } = new ModelStatus(CreatedValue);
-        /// <summary> RUNNING. </summary>
+        /// <summary> The model is being trained. </summary>
         public static ModelStatus Running { get; } = new ModelStatus(RunningValue);
-        /// <summary> READY. </summary>
+        /// <summary> The model has been trained and is ready to be used for anomaly detection. </summary>
         public static ModelStatus Ready { get; } = new ModelStatus(ReadyValue);
-        /// <summary> FAILED. </summary>
+        /// <summary> The model training failed. </summary>
         public static ModelStatus Failed { get; } = new ModelStatus(FailedValue);
         /// <summary> Determines if two <see cref="ModelStatus"/> values are the same. </summary>
         public static bool operator ==(ModelStatus left, ModelStatus right) => left.Equals(right);

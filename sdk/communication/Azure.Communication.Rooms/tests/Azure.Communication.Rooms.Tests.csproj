@@ -13,6 +13,7 @@
     <ProjectReference Include="$(AzureCoreTestFramework)" />
     <ProjectReference Include="..\..\Azure.Communication.Identity\src\Azure.Communication.Identity.csproj" />
     <ProjectReference Include="..\src\Azure.Communication.Rooms.csproj" />
+    <Compile Include="..\..\Shared\tests\AuthMethod.cs" LinkBase="Shared\Communication.Tests" />
     <Compile Include="..\..\Shared\tests\CommunicationTestEnvironment.cs" LinkBase="Shared\Communication.Tests" />
   </ItemGroup>
   <ItemGroup>
@@ -20,9 +21,5 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(AzureCoreSharedSources)ConnectionString.cs" Link="Shared\\ConnectionString.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="SessionRecords\RoomsClientLiveTests\" />
-    <Folder Include="SessionRecords\Sample1_RoomsClient\" />
   </ItemGroup>
 </Project>

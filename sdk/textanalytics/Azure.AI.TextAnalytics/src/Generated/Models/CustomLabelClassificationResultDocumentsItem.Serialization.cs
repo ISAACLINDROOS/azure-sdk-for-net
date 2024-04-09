@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.AI.TextAnalytics;
 using Azure.Core;
 
 namespace Azure.AI.TextAnalytics.Models
@@ -17,16 +16,11 @@ namespace Azure.AI.TextAnalytics.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            if (Optional.IsDefined(DetectedLanguage))
-            {
-                writer.WritePropertyName("detectedLanguage"u8);
-                writer.WriteObjectValue(DetectedLanguage.Value);
-            }
             writer.WritePropertyName("class"u8);
             writer.WriteStartArray();
             foreach (var item in Class)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<ClassificationResult>(item);
             }
             writer.WriteEndArray();
             writer.WritePropertyName("id"u8);
@@ -35,13 +29,13 @@ namespace Azure.AI.TextAnalytics.Models
             writer.WriteStartArray();
             foreach (var item in Warnings)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<DocumentWarning>(item);
             }
             writer.WriteEndArray();
             if (Optional.IsDefined(Statistics))
             {
                 writer.WritePropertyName("statistics"u8);
-                writer.WriteObjectValue(Statistics.Value);
+                writer.WriteObjectValue<TextDocumentStatistics?>(Statistics);
             }
             writer.WriteEndObject();
         }
@@ -52,22 +46,12 @@ namespace Azure.AI.TextAnalytics.Models
             {
                 return null;
             }
-            Optional<DetectedLanguageInternal> detectedLanguage = default;
             IList<ClassificationResult> @class = default;
             string id = default;
             IList<DocumentWarning> warnings = default;
-            Optional<TextDocumentStatistics> statistics = default;
+            TextDocumentStatistics? statistics = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("detectedLanguage"u8))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        continue;
-                    }
-                    detectedLanguage = DetectedLanguageInternal.DeserializeDetectedLanguageInternal(property.Value);
-                    continue;
-                }
                 if (property.NameEquals("class"u8))
                 {
                     List<ClassificationResult> array = new List<ClassificationResult>();
@@ -103,7 +87,23 @@ namespace Azure.AI.TextAnalytics.Models
                     continue;
                 }
             }
-            return new CustomLabelClassificationResultDocumentsItem(id, warnings, Optional.ToNullable(statistics), @class, Optional.ToNullable(detectedLanguage));
+            return new CustomLabelClassificationResultDocumentsItem(id, warnings, statistics, @class);
+        }
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static new CustomLabelClassificationResultDocumentsItem FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content);
+            return DeserializeCustomLabelClassificationResultDocumentsItem(document.RootElement);
+        }
+
+        /// <summary> Convert into a Utf8JsonRequestContent. </summary>
+        internal override RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue<CustomLabelClassificationResultDocumentsItem>(this);
+            return content;
         }
     }
 }

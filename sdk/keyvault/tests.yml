@@ -4,9 +4,10 @@ extends:
   template: ../../eng/pipelines/templates/stages/archetype-sdk-tests.yml
   parameters:
     ServiceDirectory: keyvault
+    SDKType: client
     MaxParallel: 5
     TimeoutInMinutes: 240
-    SupportedClouds: 'Public,UsGov,China,Canary'
+    SupportedClouds: 'Public,UsGov,Canary'
     CloudConfig:
       Public:
         SubscriptionConfiguration: $(sub-config-azure-cloud-test-resources)
@@ -15,7 +16,7 @@ extends:
             - ArmTemplateParameters=^(?!.*enableHsm.*true)
       Canary:
         SubscriptionConfiguration: $(sub-config-azure-cloud-test-resources)
-        Location: 'eastus2euap'
+        Location: 'centraluseuap'
         # Managed HSM test resources are expensive and provisioning has not been reliable.
         # Given test coverage of non-canary regions we probably don't need to test in canary.
         MatrixFilters:
@@ -27,10 +28,6 @@ extends:
         SubscriptionConfiguration: $(sub-config-gov-test-resources)
         MatrixFilters:
          - ArmTemplateParameters=^(?!.*enableHsm.*true)
-      China:
-        SubscriptionConfiguration: $(sub-config-cn-test-resources)
-        MatrixFilters:
-          - ArmTemplateParameters=^(?!.*enableHsm.*true)
     MatrixConfigs:
       - Name: keyvault_test_matrix
         Path: sdk/keyvault/platform-matrix.json

@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.ApiManagement.Models;
@@ -60,7 +59,7 @@ namespace Azure.ResourceManager.ApiManagement
             return message;
         }
 
-        /// <summary> Lists developer portal&apos;s content items specified by the provided content type. </summary>
+        /// <summary> Lists developer portal's content items specified by the provided content type. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -91,7 +90,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Lists developer portal&apos;s content items specified by the provided content type. </summary>
+        /// <summary> Lists developer portal's content items specified by the provided content type. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -146,7 +145,7 @@ namespace Azure.ResourceManager.ApiManagement
             return message;
         }
 
-        /// <summary> Returns the entity state (ETag) version of the developer portal&apos;s content item specified by its identifier. </summary>
+        /// <summary> Returns the entity state (ETag) version of the developer portal's content item specified by its identifier. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -182,7 +181,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Returns the entity state (ETag) version of the developer portal&apos;s content item specified by its identifier. </summary>
+        /// <summary> Returns the entity state (ETag) version of the developer portal's content item specified by its identifier. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -242,7 +241,7 @@ namespace Azure.ResourceManager.ApiManagement
             return message;
         }
 
-        /// <summary> Returns the developer portal&apos;s content item specified by its identifier. </summary>
+        /// <summary> Returns the developer portal's content item specified by its identifier. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -275,7 +274,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Returns the developer portal&apos;s content item specified by its identifier. </summary>
+        /// <summary> Returns the developer portal's content item specified by its identifier. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -336,7 +335,7 @@ namespace Azure.ResourceManager.ApiManagement
             return message;
         }
 
-        /// <summary> Creates a new developer portal&apos;s content item specified by the provided content type. </summary>
+        /// <summary> Creates a new developer portal's content item specified by the provided content type. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -371,7 +370,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Creates a new developer portal&apos;s content item specified by the provided content type. </summary>
+        /// <summary> Creates a new developer portal's content item specified by the provided content type. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -431,7 +430,7 @@ namespace Azure.ResourceManager.ApiManagement
             return message;
         }
 
-        /// <summary> Removes the specified developer portal&apos;s content item. </summary>
+        /// <summary> Removes the specified developer portal's content item. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -461,7 +460,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Removes the specified developer portal&apos;s content item. </summary>
+        /// <summary> Removes the specified developer portal's content item. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -505,7 +504,7 @@ namespace Azure.ResourceManager.ApiManagement
             return message;
         }
 
-        /// <summary> Lists developer portal&apos;s content items specified by the provided content type. </summary>
+        /// <summary> Lists developer portal's content items specified by the provided content type. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
@@ -538,7 +537,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Lists developer portal&apos;s content items specified by the provided content type. </summary>
+        /// <summary> Lists developer portal's content items specified by the provided content type. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>

@@ -8,7 +8,6 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Core;
 
 namespace Azure.Messaging.EventGrid.SystemEvents
 {
@@ -21,13 +20,19 @@ namespace Azure.Messaging.EventGrid.SystemEvents
             {
                 return null;
             }
-            Optional<string> imageStudyInstanceUid = default;
-            Optional<string> imageSeriesInstanceUid = default;
-            Optional<string> imageSopInstanceUid = default;
-            Optional<string> serviceHostName = default;
-            Optional<long> sequenceNumber = default;
+            string partitionName = default;
+            string imageStudyInstanceUid = default;
+            string imageSeriesInstanceUid = default;
+            string imageSopInstanceUid = default;
+            string serviceHostName = default;
+            long? sequenceNumber = default;
             foreach (var property in element.EnumerateObject())
             {
+                if (property.NameEquals("partitionName"u8))
+                {
+                    partitionName = property.Value.GetString();
+                    continue;
+                }
                 if (property.NameEquals("imageStudyInstanceUid"u8))
                 {
                     imageStudyInstanceUid = property.Value.GetString();
@@ -58,7 +63,21 @@ namespace Azure.Messaging.EventGrid.SystemEvents
                     continue;
                 }
             }
-            return new HealthcareDicomImageCreatedEventData(imageStudyInstanceUid.Value, imageSeriesInstanceUid.Value, imageSopInstanceUid.Value, serviceHostName.Value, Optional.ToNullable(sequenceNumber));
+            return new HealthcareDicomImageCreatedEventData(
+                partitionName,
+                imageStudyInstanceUid,
+                imageSeriesInstanceUid,
+                imageSopInstanceUid,
+                serviceHostName,
+                sequenceNumber);
+        }
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static HealthcareDicomImageCreatedEventData FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content);
+            return DeserializeHealthcareDicomImageCreatedEventData(document.RootElement);
         }
 
         internal partial class HealthcareDicomImageCreatedEventDataConverter : JsonConverter<HealthcareDicomImageCreatedEventData>
@@ -67,6 +86,7 @@ namespace Azure.Messaging.EventGrid.SystemEvents
             {
                 throw new NotImplementedException();
             }
+
             public override HealthcareDicomImageCreatedEventData Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
                 using var document = JsonDocument.ParseValue(ref reader);

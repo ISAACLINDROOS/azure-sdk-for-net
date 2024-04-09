@@ -10,23 +10,23 @@ namespace Azure.Maps.Search.Models
     /// <summary> The viewport that covers the result represented by the top-left and bottom-right coordinates of the viewport. </summary>
     internal partial class BoundingBox
     {
-        /// <summary> Initializes a new instance of BoundingBox. </summary>
+        /// <summary> Initializes a new instance of <see cref="BoundingBox"/>. </summary>
         internal BoundingBox()
         {
         }
 
-        /// <summary> Initializes a new instance of BoundingBox. </summary>
-        /// <param name="topLeft"> A location represented as a latitude and longitude using short names &apos;lat&apos; &amp; &apos;lon&apos;. </param>
-        /// <param name="bottomRight"> A location represented as a latitude and longitude using short names &apos;lat&apos; &amp; &apos;lon&apos;. </param>
+        /// <summary> Initializes a new instance of <see cref="BoundingBox"/>. </summary>
+        /// <param name="topLeft"> A location represented as a latitude and longitude using short names 'lat' &amp; 'lon'. </param>
+        /// <param name="bottomRight"> A location represented as a latitude and longitude using short names 'lat' &amp; 'lon'. </param>
         internal BoundingBox(LatLongPairAbbreviated topLeft, LatLongPairAbbreviated bottomRight)
         {
             TopLeft = topLeft;
             BottomRight = bottomRight;
         }
 
-        /// <summary> A location represented as a latitude and longitude using short names &apos;lat&apos; &amp; &apos;lon&apos;. </summary>
+        /// <summary> A location represented as a latitude and longitude using short names 'lat' &amp; 'lon'. </summary>
         public LatLongPairAbbreviated TopLeft { get; }
-        /// <summary> A location represented as a latitude and longitude using short names &apos;lat&apos; &amp; &apos;lon&apos;. </summary>
+        /// <summary> A location represented as a latitude and longitude using short names 'lat' &amp; 'lon'. </summary>
         public LatLongPairAbbreviated BottomRight { get; }
     }
 }

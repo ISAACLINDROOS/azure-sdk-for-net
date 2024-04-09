@@ -11,7 +11,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Communication.Sms.Models;
 using Azure.Core;
 using Azure.Core.Pipeline;
@@ -58,14 +57,14 @@ namespace Azure.Communication.Sms
                 SmsSendOptions = smsSendOptions
             };
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(model);
+            content.JsonWriter.WriteObjectValue<SendMessageRequest>(model);
             request.Content = content;
             return message0;
         }
 
         /// <summary> Sends a SMS message from a phone number that belongs to the authenticated account. </summary>
-        /// <param name="from"> The sender&apos;s phone number in E.164 format that is owned by the authenticated account. </param>
-        /// <param name="smsRecipients"> The recipient&apos;s phone number in E.164 format. In this version, a minimum of 1 and upto 100 recipients in the list are supported. </param>
+        /// <param name="from"> The sender's phone number in E.164 format that is owned by the authenticated account. </param>
+        /// <param name="smsRecipients"> The recipient's phone number in E.164 format. In this version, a minimum of 1 and upto 100 recipients in the list are supported. </param>
         /// <param name="message"> The contents of the message that will be sent to the recipient. The allowable content is defined by RFC 5724. </param>
         /// <param name="smsSendOptions"> Optional configuration for sending SMS messages. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -102,8 +101,8 @@ namespace Azure.Communication.Sms
         }
 
         /// <summary> Sends a SMS message from a phone number that belongs to the authenticated account. </summary>
-        /// <param name="from"> The sender&apos;s phone number in E.164 format that is owned by the authenticated account. </param>
-        /// <param name="smsRecipients"> The recipient&apos;s phone number in E.164 format. In this version, a minimum of 1 and upto 100 recipients in the list are supported. </param>
+        /// <param name="from"> The sender's phone number in E.164 format that is owned by the authenticated account. </param>
+        /// <param name="smsRecipients"> The recipient's phone number in E.164 format. In this version, a minimum of 1 and upto 100 recipients in the list are supported. </param>
         /// <param name="message"> The contents of the message that will be sent to the recipient. The allowable content is defined by RFC 5724. </param>
         /// <param name="smsSendOptions"> Optional configuration for sending SMS messages. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>

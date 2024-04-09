@@ -5,16 +5,20 @@ Run `dotnet build /t:GenerateCode` to generate code.
 ``` yaml
 
 azure-arm: true
-generate-model-factory: false
 csharp: true
 library-name: Batch
 namespace: Azure.ResourceManager.Batch
-require: https://github.com/Azure/azure-rest-api-specs/blob/8c9845c7190792cb95c0deda1cb787512c4c7ca1/specification/batch/resource-manager/readme.md
+require: https://github.com/Azure/azure-rest-api-specs/blob/d6fcc46341f274b8af42a4cdcfa14e1f8d472619/specification/batch/resource-manager/readme.md
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
 skip-csproj: true
 modelerfour:
   flatten-payloads: false
+use-model-reader-writer: true
+deserialize-null-collection-as-null-value: true
+
+# mgmt-debug:
+#   show-serialized-names: true
 
 format-by-name-rules:
   'tenantId': 'uuid'
@@ -24,9 +28,8 @@ format-by-name-rules:
   '*Uris': 'Uri'
   'ifMatch': 'etag'
   'locationName': 'azure-location'
-  'thumbprint': 'any'
 
-rename-rules:
+acronym-mapping:
   CPU: Cpu
   CPUs: Cpus
   Os: OS
@@ -172,7 +175,7 @@ rename-mapping:
   NodePlacementPolicyType: BatchNodePlacementPolicyType
   PackageState: BatchApplicationPackageState
   PrivateLinkServiceConnectionStatus: BatchPrivateLinkServiceConnectionStatus
-  PrivateLinkServiceConnectionState.actionsRequired: actionRequired 
+  PrivateLinkServiceConnectionState.actionsRequired: actionRequired
   PublicIPAddressConfiguration: BatchPublicIPAddressConfiguration
   SkuCapability: BatchSkuCapability
   UserIdentity: BatchUserIdentity
@@ -187,6 +190,16 @@ rename-mapping:
   ResourceFile.autoStorageContainerName: AutoBlobContainerName
   AccountKeyType: BatchAccountKeyType
   BatchAccountRegenerateKeyParameters.keyName: KeyType
+  Certificate.properties.thumbprint: ThumbprintString
+  CertificateCreateOrUpdateParameters.properties.thumbprint: ThumbprintString
+  OSDisk: BatchOSDisk
+  OSDisk.writeAcceleratorEnabled: IsWriteAcceleratorEnabled
+  SecurityProfile: BatchSecurityProfile
+  UefiSettings: BatchUefiSettings
+  UefiSettings.secureBootEnabled: IsSecureBootEnabled
+  UefiSettings.vTpmEnabled: IsVTpmEnabled
+  SecurityTypes: BatchSecurityType
+  StorageAccountType.StandardSSD_LRS: StandardSsdLrs
 
 directive:
 # TODO -- remove this and use rename-mapping when it is supported
@@ -245,4 +258,7 @@ directive:
           "type": "string",
           "description": "The error target."
         };
+  - from: swagger-document
+    where: $.definitions.CheckNameAvailabilityParameters.properties.type
+    transform: $["x-ms-constant"] = true;
 ```

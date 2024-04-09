@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.SecurityCenter.Models;
@@ -64,7 +63,7 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary> Use this method to get the aggregated alert list of yours IoT Security solution. </summary>
         /// <param name="subscriptionId"> Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group within the user&apos;s subscription. The name is case insensitive. </param>
+        /// <param name="resourceGroupName"> The name of the resource group within the user's subscription. The name is case insensitive. </param>
         /// <param name="solutionName"> The name of the IoT Security solution. </param>
         /// <param name="top"> Number of results to retrieve. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -94,7 +93,7 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary> Use this method to get the aggregated alert list of yours IoT Security solution. </summary>
         /// <param name="subscriptionId"> Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group within the user&apos;s subscription. The name is case insensitive. </param>
+        /// <param name="resourceGroupName"> The name of the resource group within the user's subscription. The name is case insensitive. </param>
         /// <param name="solutionName"> The name of the IoT Security solution. </param>
         /// <param name="top"> Number of results to retrieve. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -146,7 +145,7 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary> Use this method to get a single the aggregated alert of yours IoT Security solution. This aggregation is performed by alert name. </summary>
         /// <param name="subscriptionId"> Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group within the user&apos;s subscription. The name is case insensitive. </param>
+        /// <param name="resourceGroupName"> The name of the resource group within the user's subscription. The name is case insensitive. </param>
         /// <param name="solutionName"> The name of the IoT Security solution. </param>
         /// <param name="aggregatedAlertName"> Identifier of the aggregated alert. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -179,7 +178,7 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary> Use this method to get a single the aggregated alert of yours IoT Security solution. This aggregation is performed by alert name. </summary>
         /// <param name="subscriptionId"> Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group within the user&apos;s subscription. The name is case insensitive. </param>
+        /// <param name="resourceGroupName"> The name of the resource group within the user's subscription. The name is case insensitive. </param>
         /// <param name="solutionName"> The name of the IoT Security solution. </param>
         /// <param name="aggregatedAlertName"> Identifier of the aggregated alert. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -235,7 +234,7 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary> Use this method to dismiss an aggregated IoT Security Solution Alert. </summary>
         /// <param name="subscriptionId"> Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group within the user&apos;s subscription. The name is case insensitive. </param>
+        /// <param name="resourceGroupName"> The name of the resource group within the user's subscription. The name is case insensitive. </param>
         /// <param name="solutionName"> The name of the IoT Security solution. </param>
         /// <param name="aggregatedAlertName"> Identifier of the aggregated alert. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -261,7 +260,7 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary> Use this method to dismiss an aggregated IoT Security Solution Alert. </summary>
         /// <param name="subscriptionId"> Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group within the user&apos;s subscription. The name is case insensitive. </param>
+        /// <param name="resourceGroupName"> The name of the resource group within the user's subscription. The name is case insensitive. </param>
         /// <param name="solutionName"> The name of the IoT Security solution. </param>
         /// <param name="aggregatedAlertName"> Identifier of the aggregated alert. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -302,7 +301,7 @@ namespace Azure.ResourceManager.SecurityCenter
         /// <summary> Use this method to get the aggregated alert list of yours IoT Security solution. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group within the user&apos;s subscription. The name is case insensitive. </param>
+        /// <param name="resourceGroupName"> The name of the resource group within the user's subscription. The name is case insensitive. </param>
         /// <param name="solutionName"> The name of the IoT Security solution. </param>
         /// <param name="top"> Number of results to retrieve. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -334,7 +333,7 @@ namespace Azure.ResourceManager.SecurityCenter
         /// <summary> Use this method to get the aggregated alert list of yours IoT Security solution. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group within the user&apos;s subscription. The name is case insensitive. </param>
+        /// <param name="resourceGroupName"> The name of the resource group within the user's subscription. The name is case insensitive. </param>
         /// <param name="solutionName"> The name of the IoT Security solution. </param>
         /// <param name="top"> Number of results to retrieve. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>

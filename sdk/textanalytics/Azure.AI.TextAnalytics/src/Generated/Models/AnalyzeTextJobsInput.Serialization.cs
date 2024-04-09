@@ -20,21 +20,24 @@ namespace Azure.AI.TextAnalytics.Models
                 writer.WritePropertyName("displayName"u8);
                 writer.WriteStringValue(DisplayName);
             }
-            if (Optional.IsDefined(DefaultLanguage))
-            {
-                writer.WritePropertyName("defaultLanguage"u8);
-                writer.WriteStringValue(DefaultLanguage);
-            }
             writer.WritePropertyName("analysisInput"u8);
-            writer.WriteObjectValue(AnalysisInput);
+            writer.WriteObjectValue<MultiLanguageAnalysisInput>(AnalysisInput);
             writer.WritePropertyName("tasks"u8);
             writer.WriteStartArray();
             foreach (var item in Tasks)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<AnalyzeTextLROTask>(item);
             }
             writer.WriteEndArray();
             writer.WriteEndObject();
+        }
+
+        /// <summary> Convert into a Utf8JsonRequestContent. </summary>
+        internal virtual RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue<AnalyzeTextJobsInput>(this);
+            return content;
         }
     }
 }

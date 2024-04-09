@@ -6,12 +6,11 @@ using NUnit.Framework;
 using Azure.ResourceManager.Resources;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Storage.Models;
-using Azure.ResourceManager.Storage.Tests.Helpers;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Storage.Tests
 {
-    public class BlobContainerTests : StorageTestBase
+    public class BlobContainerTests : StorageManagementTestBase
     {
         private ResourceGroupResource _resourceGroup;
         private StorageAccountResource _storageAccount;
@@ -515,7 +514,7 @@ namespace Azure.ResourceManager.Storage.Tests
                 {
                     new ObjectReplicationPolicyRule(containerName1, containerName2)
                     {
-                        Filters = new ObjectReplicationPolicyFilter(prefix, minCreationTime),
+                        Filters = new ObjectReplicationPolicyFilter(prefix, minCreationTime, null),
                     },
                     new ObjectReplicationPolicyRule(containerName3, containerName4),
                 }

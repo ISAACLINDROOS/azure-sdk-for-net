@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.KubernetesConfiguration.Models;
 using Azure.ResourceManager.Models;
@@ -20,7 +19,39 @@ namespace Azure.ResourceManager.KubernetesConfiguration
     /// </summary>
     public partial class KubernetesClusterExtensionData : ResourceData
     {
-        /// <summary> Initializes a new instance of KubernetesClusterExtensionData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="KubernetesClusterExtensionData"/>. </summary>
         public KubernetesClusterExtensionData()
         {
             ConfigurationSettings = new ChangeTrackingDictionary<string, string>();
@@ -29,7 +60,7 @@ namespace Azure.ResourceManager.KubernetesConfiguration
             CustomLocationSettings = new ChangeTrackingDictionary<string, string>();
         }
 
-        /// <summary> Initializes a new instance of KubernetesClusterExtensionData. </summary>
+        /// <summary> Initializes a new instance of <see cref="KubernetesClusterExtensionData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
@@ -38,8 +69,8 @@ namespace Azure.ResourceManager.KubernetesConfiguration
         /// <param name="plan"> The plan information. </param>
         /// <param name="extensionType"> Type of the Extension, of which this resource is an instance of.  It must be one of the Extension Types registered with Microsoft.KubernetesConfiguration by the Extension publisher. </param>
         /// <param name="autoUpgradeMinorVersion"> Flag to note if this extension participates in auto upgrade of minor version, or not. </param>
-        /// <param name="releaseTrain"> ReleaseTrain this extension participates in for auto-upgrade (e.g. Stable, Preview, etc.) - only if autoUpgradeMinorVersion is &apos;true&apos;. </param>
-        /// <param name="version"> User-specified version of the extension for this extension to &apos;pin&apos;. To use &apos;version&apos;, autoUpgradeMinorVersion must be &apos;false&apos;. </param>
+        /// <param name="releaseTrain"> ReleaseTrain this extension participates in for auto-upgrade (e.g. Stable, Preview, etc.) - only if autoUpgradeMinorVersion is 'true'. </param>
+        /// <param name="version"> User-specified version of the extension for this extension to 'pin'. To use 'version', autoUpgradeMinorVersion must be 'false'. </param>
         /// <param name="scope"> Scope at which the extension is installed. </param>
         /// <param name="configurationSettings"> Configuration settings, as name-value pairs for configuring this extension. </param>
         /// <param name="configurationProtectedSettings"> Configuration settings that are sensitive, as name-value pairs for configuring this extension. </param>
@@ -51,7 +82,8 @@ namespace Azure.ResourceManager.KubernetesConfiguration
         /// <param name="packageUri"> Uri of the Helm package. </param>
         /// <param name="aksAssignedIdentity"> Identity of the Extension resource in an AKS cluster. Current supported identity types: SystemAssigned, UserAssigned. </param>
         /// <param name="isSystemExtension"> Flag to note if this extension is a system extension. </param>
-        internal KubernetesClusterExtensionData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, ManagedServiceIdentity identity, ArmPlan plan, string extensionType, bool? autoUpgradeMinorVersion, string releaseTrain, string version, KubernetesClusterExtensionScope scope, IDictionary<string, string> configurationSettings, IDictionary<string, string> configurationProtectedSettings, string currentVersion, KubernetesConfigurationProvisioningState? provisioningState, IList<KubernetesClusterExtensionStatus> statuses, ResponseError errorInfo, IReadOnlyDictionary<string, string> customLocationSettings, Uri packageUri, ManagedServiceIdentity aksAssignedIdentity, bool? isSystemExtension) : base(id, name, resourceType, systemData)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal KubernetesClusterExtensionData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, ManagedServiceIdentity identity, ArmPlan plan, string extensionType, bool? autoUpgradeMinorVersion, string releaseTrain, string version, KubernetesClusterExtensionScope scope, IDictionary<string, string> configurationSettings, IDictionary<string, string> configurationProtectedSettings, string currentVersion, KubernetesConfigurationProvisioningState? provisioningState, IList<KubernetesClusterExtensionStatus> statuses, ResponseError errorInfo, IReadOnlyDictionary<string, string> customLocationSettings, Uri packageUri, ManagedServiceIdentity aksAssignedIdentity, bool? isSystemExtension, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData)
         {
             Identity = identity;
             Plan = plan;
@@ -70,6 +102,7 @@ namespace Azure.ResourceManager.KubernetesConfiguration
             PackageUri = packageUri;
             AksAssignedIdentity = aksAssignedIdentity;
             IsSystemExtension = isSystemExtension;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> Identity of the Extension resource. Current supported identity types: SystemAssigned. </summary>
@@ -80,9 +113,9 @@ namespace Azure.ResourceManager.KubernetesConfiguration
         public string ExtensionType { get; set; }
         /// <summary> Flag to note if this extension participates in auto upgrade of minor version, or not. </summary>
         public bool? AutoUpgradeMinorVersion { get; set; }
-        /// <summary> ReleaseTrain this extension participates in for auto-upgrade (e.g. Stable, Preview, etc.) - only if autoUpgradeMinorVersion is &apos;true&apos;. </summary>
+        /// <summary> ReleaseTrain this extension participates in for auto-upgrade (e.g. Stable, Preview, etc.) - only if autoUpgradeMinorVersion is 'true'. </summary>
         public string ReleaseTrain { get; set; }
-        /// <summary> User-specified version of the extension for this extension to &apos;pin&apos;. To use &apos;version&apos;, autoUpgradeMinorVersion must be &apos;false&apos;. </summary>
+        /// <summary> User-specified version of the extension for this extension to 'pin'. To use 'version', autoUpgradeMinorVersion must be 'false'. </summary>
         public string Version { get; set; }
         /// <summary> Scope at which the extension is installed. </summary>
         public KubernetesClusterExtensionScope Scope { get; set; }

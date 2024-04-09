@@ -5,7 +5,6 @@ Run `dotnet build /t:GenerateCode` to generate code.
 ``` yaml
 
 azure-arm: true
-generate-model-factory: false
 csharp: true
 library-name: SecurityInsights
 namespace: Azure.ResourceManager.SecurityInsights
@@ -17,6 +16,7 @@ clear-output-folder: true
 skip-csproj: true
 modelerfour:
   flatten-payloads: false
+use-model-reader-writer: true
 
 request-path-to-resource-name:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/providers/Microsoft.SecurityInsights/threatIntelligence/main/indicators/{name}: SecurityInsightsThreatIntelligenceIndicator
@@ -221,7 +221,7 @@ format-by-name-rules:
   '*Uri': 'Uri'
   '*Uris': 'Uri'
 
-rename-rules:
+acronym-mapping:
   CPU: Cpu
   CPUs: Cpus
   Os: OS
@@ -247,6 +247,14 @@ rename-rules:
   AAD: Aad
   IoT: Iot
 #  Nt: NT
+
+suppress-abstract-base-class:
+- SecurityInsightsAlertRuleData
+- SecurityInsightsAlertRuleTemplateData
+- SecurityInsightsDataConnectorData
+- SecurityInsightsThreatIntelligenceIndicatorBaseData
+- SecurityMLAnalyticsSettingData
+- SecurityInsightsEntity
 
 directive:
   - rename-operation:

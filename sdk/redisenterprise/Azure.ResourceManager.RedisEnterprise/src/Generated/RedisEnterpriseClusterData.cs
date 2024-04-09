@@ -19,7 +19,39 @@ namespace Azure.ResourceManager.RedisEnterprise
     /// </summary>
     public partial class RedisEnterpriseClusterData : TrackedResourceData
     {
-        /// <summary> Initializes a new instance of RedisEnterpriseClusterData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="RedisEnterpriseClusterData"/>. </summary>
         /// <param name="location"> The location. </param>
         /// <param name="sku"> The SKU to create, which affects price, performance, and features. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="sku"/> is null. </exception>
@@ -32,7 +64,7 @@ namespace Azure.ResourceManager.RedisEnterprise
             PrivateEndpointConnections = new ChangeTrackingList<RedisEnterprisePrivateEndpointConnectionData>();
         }
 
-        /// <summary> Initializes a new instance of RedisEnterpriseClusterData. </summary>
+        /// <summary> Initializes a new instance of <see cref="RedisEnterpriseClusterData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
@@ -42,14 +74,15 @@ namespace Azure.ResourceManager.RedisEnterprise
         /// <param name="sku"> The SKU to create, which affects price, performance, and features. </param>
         /// <param name="zones"> The Availability Zones where this cluster will be deployed. </param>
         /// <param name="identity"> The identity of the resource. </param>
-        /// <param name="minimumTlsVersion"> The minimum TLS version for the cluster to support, e.g. &apos;1.2&apos;. </param>
+        /// <param name="minimumTlsVersion"> The minimum TLS version for the cluster to support, e.g. '1.2'. </param>
         /// <param name="encryption"> Encryption-at-rest configuration for the cluster. </param>
         /// <param name="hostName"> DNS name of the cluster endpoint. </param>
         /// <param name="provisioningState"> Current provisioning status of the cluster. </param>
         /// <param name="resourceState"> Current resource status of the cluster. </param>
-        /// <param name="redisVersion"> Version of redis the cluster supports, e.g. &apos;6&apos;. </param>
+        /// <param name="redisVersion"> Version of redis the cluster supports, e.g. '6'. </param>
         /// <param name="privateEndpointConnections"> List of private endpoint connections associated with the specified RedisEnterprise cluster. </param>
-        internal RedisEnterpriseClusterData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, RedisEnterpriseSku sku, IList<string> zones, ManagedServiceIdentity identity, RedisEnterpriseTlsVersion? minimumTlsVersion, ClusterPropertiesEncryption encryption, string hostName, RedisEnterpriseProvisioningStatus? provisioningState, RedisEnterpriseClusterResourceState? resourceState, string redisVersion, IReadOnlyList<RedisEnterprisePrivateEndpointConnectionData> privateEndpointConnections) : base(id, name, resourceType, systemData, tags, location)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal RedisEnterpriseClusterData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, RedisEnterpriseSku sku, IList<string> zones, ManagedServiceIdentity identity, RedisEnterpriseTlsVersion? minimumTlsVersion, ClusterPropertiesEncryption encryption, string hostName, RedisEnterpriseProvisioningStatus? provisioningState, RedisEnterpriseClusterResourceState? resourceState, string redisVersion, IReadOnlyList<RedisEnterprisePrivateEndpointConnectionData> privateEndpointConnections, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData, tags, location)
         {
             Sku = sku;
             Zones = zones;
@@ -61,6 +94,12 @@ namespace Azure.ResourceManager.RedisEnterprise
             ResourceState = resourceState;
             RedisVersion = redisVersion;
             PrivateEndpointConnections = privateEndpointConnections;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="RedisEnterpriseClusterData"/> for deserialization. </summary>
+        internal RedisEnterpriseClusterData()
+        {
         }
 
         /// <summary> The SKU to create, which affects price, performance, and features. </summary>
@@ -69,7 +108,7 @@ namespace Azure.ResourceManager.RedisEnterprise
         public IList<string> Zones { get; }
         /// <summary> The identity of the resource. </summary>
         public ManagedServiceIdentity Identity { get; set; }
-        /// <summary> The minimum TLS version for the cluster to support, e.g. &apos;1.2&apos;. </summary>
+        /// <summary> The minimum TLS version for the cluster to support, e.g. '1.2'. </summary>
         public RedisEnterpriseTlsVersion? MinimumTlsVersion { get; set; }
         /// <summary> Encryption-at-rest configuration for the cluster. </summary>
         internal ClusterPropertiesEncryption Encryption { get; set; }
@@ -91,7 +130,7 @@ namespace Azure.ResourceManager.RedisEnterprise
         public RedisEnterpriseProvisioningStatus? ProvisioningState { get; }
         /// <summary> Current resource status of the cluster. </summary>
         public RedisEnterpriseClusterResourceState? ResourceState { get; }
-        /// <summary> Version of redis the cluster supports, e.g. &apos;6&apos;. </summary>
+        /// <summary> Version of redis the cluster supports, e.g. '6'. </summary>
         public string RedisVersion { get; }
         /// <summary> List of private endpoint connections associated with the specified RedisEnterprise cluster. </summary>
         public IReadOnlyList<RedisEnterprisePrivateEndpointConnectionData> PrivateEndpointConnections { get; }

@@ -62,15 +62,19 @@ namespace Azure.Identity.Tests
             expectedCode = Guid.NewGuid().ToString();
             var options = new DeviceCodeCredentialOptions
             {
-                Transport = config.Transport,
                 AdditionallyAllowedTenants = config.AdditionallyAllowedTenants,
-                DisableAuthorityValidationAndInstanceDiscovery = config.DisableAuthorityValidationAndInstanceDiscovery
+                DisableInstanceDiscovery = config.DisableInstanceDiscovery,
+                IsUnsafeSupportLoggingEnabled = config.IsUnsafeSupportLoggingEnabled,
             };
+            if (config.Transport != null)
+            {
+                options.Transport = config.Transport;
+            }
             var pipeline = CredentialPipeline.GetInstance(options);
             return InstrumentClient(new DeviceCodeCredential((code, _) =>
             {
                 return Task.CompletedTask;
-            }, config.TenantId, ClientId, options, pipeline, null));
+            }, config.TenantId, ClientId, options, pipeline, config.MockPublicMsalClient));
         }
 
         [SetUp]
@@ -84,7 +88,7 @@ namespace Azure.Identity.Tests
         {
             var options = new DeviceCodeCredentialOptions { AdditionallyAllowedTenants = { TenantIdHint } };
             var context = new TokenRequestContext(new[] { Scope }, tenantId: tenantId);
-            expectedTenantId = TenantIdResolver.Resolve(TenantId, context, TenantIdResolver.AllTenants);
+            expectedTenantId = TenantIdResolverBase.Default.Resolve(TenantId, context, TenantIdResolverBase.AllTenants);
             var cred = InstrumentClient(
                 new DeviceCodeCredential((code, _) => VerifyDeviceCode(code, expectedCode), TenantId, ClientId, options, null, mockPublicMsalClient));
 
@@ -95,15 +99,6 @@ namespace Azure.Identity.Tests
             token = await cred.GetTokenAsync(context);
 
             Assert.AreEqual(token.Token, expectedToken);
-        }
-
-        [Test]
-        public void RespectsIsPIILoggingEnabled([Values(true, false)] bool isLoggingPIIEnabled)
-        {
-            var credential = new DeviceCodeCredential(new DeviceCodeCredentialOptions { IsLoggingPIIEnabled = isLoggingPIIEnabled });
-
-            Assert.NotNull(credential.Client);
-            Assert.AreEqual(isLoggingPIIEnabled, credential.Client.IsPiiLoggingEnabled);
         }
 
         [Test]

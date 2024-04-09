@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Consumption.Models;
@@ -60,7 +59,7 @@ namespace Azure.ResourceManager.Consumption
         }
 
         /// <summary> Details of a reservation recommendation for what-if analysis of reserved instances. </summary>
-        /// <param name="resourceScope"> The scope associated with reservation recommendation details operations. This includes &apos;/subscriptions/{subscriptionId}/&apos; for subscription scope, &apos;/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}&apos; for resource group scope, /providers/Microsoft.Billing/billingAccounts/{billingAccountId}&apos; for BillingAccount scope, and &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}&apos; for billingProfile scope. </param>
+        /// <param name="resourceScope"> The scope associated with reservation recommendation details operations. This includes '/subscriptions/{subscriptionId}/' for subscription scope, '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}' for resource group scope, /providers/Microsoft.Billing/billingAccounts/{billingAccountId}' for BillingAccount scope, and '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}' for billingProfile scope. </param>
         /// <param name="reservationScope"> Scope of the reservation. </param>
         /// <param name="region"> Used to select the region the recommendation should be generated for. </param>
         /// <param name="term"> Specify length of reservation recommendation term. </param>
@@ -93,7 +92,7 @@ namespace Azure.ResourceManager.Consumption
         }
 
         /// <summary> Details of a reservation recommendation for what-if analysis of reserved instances. </summary>
-        /// <param name="resourceScope"> The scope associated with reservation recommendation details operations. This includes &apos;/subscriptions/{subscriptionId}/&apos; for subscription scope, &apos;/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}&apos; for resource group scope, /providers/Microsoft.Billing/billingAccounts/{billingAccountId}&apos; for BillingAccount scope, and &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}&apos; for billingProfile scope. </param>
+        /// <param name="resourceScope"> The scope associated with reservation recommendation details operations. This includes '/subscriptions/{subscriptionId}/' for subscription scope, '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}' for resource group scope, /providers/Microsoft.Billing/billingAccounts/{billingAccountId}' for BillingAccount scope, and '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}' for billingProfile scope. </param>
         /// <param name="reservationScope"> Scope of the reservation. </param>
         /// <param name="region"> Used to select the region the recommendation should be generated for. </param>
         /// <param name="term"> Specify length of reservation recommendation term. </param>

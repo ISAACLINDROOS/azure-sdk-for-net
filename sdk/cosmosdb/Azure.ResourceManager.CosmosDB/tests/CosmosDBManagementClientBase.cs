@@ -47,6 +47,7 @@ namespace Azure.ResourceManager.CosmosDB.Tests
         protected CosmosDBManagementClientBase(bool isAsync, RecordedTestMode? mode = default)
             : base(isAsync, mode)
         {
+            IgnoreNetworkDependencyVersions();
             JsonPathSanitizers.Add("$..primaryMasterKey");
             JsonPathSanitizers.Add("$..primaryReadonlyMasterKey");
             JsonPathSanitizers.Add("$..secondaryMasterKey");
@@ -58,19 +59,19 @@ namespace Azure.ResourceManager.CosmosDB.Tests
             return await CreateDatabaseAccount(name, kind, null, enableContinuousModeBackup);
         }
 
-        protected async Task<CosmosDBAccountResource> CreateDatabaseAccount(string name, CosmosDBAccountKind kind, List<CosmosDBAccountCapability> capabilities, bool enableContinuousModeBackup = false)
+        protected async Task<CosmosDBAccountResource> CreateDatabaseAccount(string name, CosmosDBAccountKind kind, List<CosmosDBAccountCapability> capabilities, bool enableContinuousModeBackup = false, bool enablePartitionMerge = false)
         {
             var locations = new List<CosmosDBAccountLocation>()
             {
-                new CosmosDBAccountLocation(id: null, locationName: AzureLocation.WestUS, documentEndpoint: null, provisioningState: null, failoverPriority: null, isZoneRedundant: false)
+                new CosmosDBAccountLocation(id: null, locationName: AzureLocation.WestUS, documentEndpoint: null, provisioningState: null, failoverPriority: null, isZoneRedundant: false, null)
             };
 
             var createParameters = enableContinuousModeBackup ?
                 new CosmosDBAccountCreateOrUpdateContent(AzureLocation.WestUS2, locations)
                 {
                     Kind = kind,
-                    ConsistencyPolicy = new ConsistencyPolicy(DefaultConsistencyLevel.BoundedStaleness, MaxStalenessPrefix, MaxIntervalInSeconds),
-                    IPRules = { new CosmosDBIPAddressOrRange("23.43.230.120") },
+                    ConsistencyPolicy = new ConsistencyPolicy(DefaultConsistencyLevel.BoundedStaleness, MaxStalenessPrefix, MaxIntervalInSeconds,null),
+                    IPRules = { new CosmosDBIPAddressOrRange("23.43.230.120",null) },
                     IsVirtualNetworkFilterEnabled = true,
                     EnableAutomaticFailover = false,
                     ConnectorOffer = ConnectorOffer.Small,
@@ -80,8 +81,8 @@ namespace Azure.ResourceManager.CosmosDB.Tests
                 : new CosmosDBAccountCreateOrUpdateContent(AzureLocation.WestUS2, locations)
                 {
                     Kind = kind,
-                    ConsistencyPolicy = new ConsistencyPolicy(DefaultConsistencyLevel.BoundedStaleness, MaxStalenessPrefix, MaxIntervalInSeconds),
-                    IPRules = { new CosmosDBIPAddressOrRange("23.43.230.120") },
+                    ConsistencyPolicy = new ConsistencyPolicy(DefaultConsistencyLevel.BoundedStaleness, MaxStalenessPrefix, MaxIntervalInSeconds, null),
+                    IPRules = { new CosmosDBIPAddressOrRange("23.43.230.120", null) },
                     IsVirtualNetworkFilterEnabled = true,
                     EnableAutomaticFailover = false,
                     ConnectorOffer = ConnectorOffer.Small,
@@ -92,7 +93,7 @@ namespace Azure.ResourceManager.CosmosDB.Tests
             {
                 capabilities.ForEach(x => createParameters.Capabilities.Add(x));
             }
-
+            createParameters.EnablePartitionMerge = enablePartitionMerge;
             createParameters.Tags.Add("key1", "value1");
             createParameters.Tags.Add("key2", "value2");
             _databaseAccountName = name;
@@ -124,19 +125,9 @@ namespace Azure.ResourceManager.CosmosDB.Tests
         protected async Task<ResourceIdentifier> GetSubnetId(string vnetName, VirtualNetworkData vnet)
         {
             ResourceIdentifier subnetID;
-            if (Mode == RecordedTestMode.Playback)
-            {
-                subnetID = SubnetResource.CreateResourceIdentifier(_resourceGroup.Id.SubscriptionId, _resourceGroup.Id.Name, vnetName, "default");
-            }
-            else
-            {
-                using (Recording.DisableRecording())
-                {
-                    VirtualNetworkResource vnetResource = (await _resourceGroup.GetVirtualNetworks().CreateOrUpdateAsync(WaitUntil.Completed, vnetName, vnet)).Value;
-                    var subnetCollection = vnetResource.GetSubnets();
-                    subnetID = vnetResource.Data.Subnets[0].Id;
-                }
-            };
+            VirtualNetworkResource vnetResource = (await _resourceGroup.GetVirtualNetworks().CreateOrUpdateAsync(WaitUntil.Completed, vnetName, vnet)).Value;
+            var subnetCollection = vnetResource.GetSubnets();
+            subnetID = vnetResource.Data.Subnets[0].Id;
             return subnetID;
         }
 

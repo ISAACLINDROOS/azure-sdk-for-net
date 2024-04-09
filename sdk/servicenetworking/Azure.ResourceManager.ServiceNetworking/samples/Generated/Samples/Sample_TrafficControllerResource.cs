@@ -6,14 +6,10 @@
 #nullable disable
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Identity;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
-using Azure.ResourceManager.ServiceNetworking;
 using Azure.ResourceManager.ServiceNetworking.Models;
 
 namespace Azure.ResourceManager.ServiceNetworking.Samples
@@ -25,7 +21,7 @@ namespace Azure.ResourceManager.ServiceNetworking.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task GetTrafficControllers_GetTrafficControllersList()
         {
-            // Generated from example definition: specification/servicenetworking/resource-manager/Microsoft.ServiceNetworking/cadl/examples/TrafficControllersGetList.json
+            // Generated from example definition: specification/servicenetworking/resource-manager/Microsoft.ServiceNetworking/stable/2023-11-01/examples/TrafficControllersGetList.json
             // this example is just showing the usage of "TrafficControllerInterface_ListBySubscription" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -57,7 +53,7 @@ namespace Azure.ResourceManager.ServiceNetworking.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Get_GetTrafficController()
         {
-            // Generated from example definition: specification/servicenetworking/resource-manager/Microsoft.ServiceNetworking/cadl/examples/TrafficControllerGet.json
+            // Generated from example definition: specification/servicenetworking/resource-manager/Microsoft.ServiceNetworking/stable/2023-11-01/examples/TrafficControllerGet.json
             // this example is just showing the usage of "TrafficControllerInterface_Get" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -69,7 +65,7 @@ namespace Azure.ResourceManager.ServiceNetworking.Samples
             // for more information of creating TrafficControllerResource, please refer to the document of TrafficControllerResource
             string subscriptionId = "subid";
             string resourceGroupName = "rg1";
-            string trafficControllerName = "TC1";
+            string trafficControllerName = "tc1";
             ResourceIdentifier trafficControllerResourceId = TrafficControllerResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, trafficControllerName);
             TrafficControllerResource trafficController = client.GetTrafficControllerResource(trafficControllerResourceId);
 
@@ -88,7 +84,7 @@ namespace Azure.ResourceManager.ServiceNetworking.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Update_PatchTrafficController()
         {
-            // Generated from example definition: specification/servicenetworking/resource-manager/Microsoft.ServiceNetworking/cadl/examples/TrafficControllerPatch.json
+            // Generated from example definition: specification/servicenetworking/resource-manager/Microsoft.ServiceNetworking/stable/2023-11-01/examples/TrafficControllerPatch.json
             // this example is just showing the usage of "TrafficControllerInterface_Update" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -100,17 +96,17 @@ namespace Azure.ResourceManager.ServiceNetworking.Samples
             // for more information of creating TrafficControllerResource, please refer to the document of TrafficControllerResource
             string subscriptionId = "subid";
             string resourceGroupName = "rg1";
-            string trafficControllerName = "TC1";
+            string trafficControllerName = "tc1";
             ResourceIdentifier trafficControllerResourceId = TrafficControllerResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, trafficControllerName);
             TrafficControllerResource trafficController = client.GetTrafficControllerResource(trafficControllerResourceId);
 
             // invoke the operation
             TrafficControllerPatch patch = new TrafficControllerPatch()
             {
-                Properties = BinaryData.FromObjectAsJson(new Dictionary<string, object>()
-                {
-                    ["configurationEndpoints"] = new object[] { "abc.eastus.trafficcontroller.azure.net" }
-                }),
+                Tags =
+{
+["key1"] = "value1",
+},
             };
             TrafficControllerResource result = await trafficController.UpdateAsync(patch);
 
@@ -126,7 +122,7 @@ namespace Azure.ResourceManager.ServiceNetworking.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Delete_DeleteTrafficController()
         {
-            // Generated from example definition: specification/servicenetworking/resource-manager/Microsoft.ServiceNetworking/cadl/examples/TrafficControllerDelete.json
+            // Generated from example definition: specification/servicenetworking/resource-manager/Microsoft.ServiceNetworking/stable/2023-11-01/examples/TrafficControllerDelete.json
             // this example is just showing the usage of "TrafficControllerInterface_Delete" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -138,7 +134,7 @@ namespace Azure.ResourceManager.ServiceNetworking.Samples
             // for more information of creating TrafficControllerResource, please refer to the document of TrafficControllerResource
             string subscriptionId = "subid";
             string resourceGroupName = "rg1";
-            string trafficControllerName = "TC1";
+            string trafficControllerName = "tc1";
             ResourceIdentifier trafficControllerResourceId = TrafficControllerResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, trafficControllerName);
             TrafficControllerResource trafficController = client.GetTrafficControllerResource(trafficControllerResourceId);
 

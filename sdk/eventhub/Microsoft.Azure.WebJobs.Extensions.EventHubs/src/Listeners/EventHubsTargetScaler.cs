@@ -86,7 +86,20 @@ namespace Microsoft.Azure.WebJobs.Extensions.EventHubs.Listeners
         internal TargetScalerResult GetScaleResultInternal(TargetScalerContext context, long eventCount, int partitionCount)
         {
             int desiredConcurrency = GetDesiredConcurrencyInternal(context);
-            int desiredWorkerCount = (int)Math.Ceiling(eventCount / (decimal)desiredConcurrency);
+
+            int desiredWorkerCount;
+            try
+            {
+                checked
+                {
+                    desiredWorkerCount = (int)Math.Ceiling(eventCount / (decimal)desiredConcurrency);
+                }
+            }
+            catch (OverflowException)
+            {
+                desiredWorkerCount = int.MaxValue;
+            }
+
             int[] sortedValidWorkerCounts = GetSortedValidWorkerCountsForPartitionCount(partitionCount);
             int validatedTargetWorkerCount = GetValidWorkerCount(desiredWorkerCount, sortedValidWorkerCounts);
 
@@ -95,7 +108,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.EventHubs.Listeners
                 _logger.LogInformation($"Desired target worker count of '{desiredWorkerCount}' is not in list of valid sorted workers: '{string.Join(",", sortedValidWorkerCounts)}'. Using next largest valid worker as target worker count.");
             }
 
-            _logger.LogInformation($"'Target worker count for function '{_functionId}' is '{validatedTargetWorkerCount}' (EventHubName='{_client.EventHubName}', EventCount ='{eventCount}', Concurrency='{desiredConcurrency}', PartitionCount='{partitionCount}').");
+            _logger.LogInformation($"Target worker count for function '{_functionId}' is '{validatedTargetWorkerCount}' (EventHubName='{_client.EventHubName}', EventCount ='{eventCount}', Concurrency='{desiredConcurrency}', PartitionCount='{partitionCount}').");
 
             return new TargetScalerResult
             {

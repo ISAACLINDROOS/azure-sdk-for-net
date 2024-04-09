@@ -7,7 +7,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 
@@ -52,6 +51,13 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <summary>
         /// [Protocol Method] Returns a list of sensor events data. Time span for query is limited to 90 days at a time.
         /// Returns last 90 days events when startDateTime and endDateTime are not provided.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="sensorId"> Id of the associated sensor. </param>
         /// <param name="sensorPartnerId"> Id of the associated sensor partner. </param>
@@ -67,9 +73,9 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="sensorId"/> or <paramref name="sensorPartnerId"/> is null. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
+        /// <returns> The response returned from the service. </returns>
         /// <include file="Docs/SensorEvents.xml" path="doc/members/member[@name='GetSensorEventsAsync(string,string,DateTimeOffset?,DateTimeOffset?,bool?,RequestContext)']/*" />
-        public virtual async Task<Response> GetSensorEventsAsync(string sensorId, string sensorPartnerId, DateTimeOffset? startDateTime = null, DateTimeOffset? endDateTime = null, bool? excludeDuplicateEvents = null, RequestContext context = null)
+        public virtual async Task<Response> GetSensorEventsAsync(string sensorId, string sensorPartnerId, DateTimeOffset? startDateTime, DateTimeOffset? endDateTime, bool? excludeDuplicateEvents, RequestContext context)
         {
             Argument.AssertNotNull(sensorId, nameof(sensorId));
             Argument.AssertNotNull(sensorPartnerId, nameof(sensorPartnerId));
@@ -91,6 +97,13 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <summary>
         /// [Protocol Method] Returns a list of sensor events data. Time span for query is limited to 90 days at a time.
         /// Returns last 90 days events when startDateTime and endDateTime are not provided.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="sensorId"> Id of the associated sensor. </param>
         /// <param name="sensorPartnerId"> Id of the associated sensor partner. </param>
@@ -106,9 +119,9 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="sensorId"/> or <paramref name="sensorPartnerId"/> is null. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
+        /// <returns> The response returned from the service. </returns>
         /// <include file="Docs/SensorEvents.xml" path="doc/members/member[@name='GetSensorEvents(string,string,DateTimeOffset?,DateTimeOffset?,bool?,RequestContext)']/*" />
-        public virtual Response GetSensorEvents(string sensorId, string sensorPartnerId, DateTimeOffset? startDateTime = null, DateTimeOffset? endDateTime = null, bool? excludeDuplicateEvents = null, RequestContext context = null)
+        public virtual Response GetSensorEvents(string sensorId, string sensorPartnerId, DateTimeOffset? startDateTime, DateTimeOffset? endDateTime, bool? excludeDuplicateEvents, RequestContext context)
         {
             Argument.AssertNotNull(sensorId, nameof(sensorId));
             Argument.AssertNotNull(sensorPartnerId, nameof(sensorPartnerId));

@@ -12,14 +12,21 @@ namespace Azure.Communication.CallAutomation
         public bool IsSuccess { get; internal set; }
 
         /// <summary>
-        /// <see cref="CallConnectedEventData"/> event will be returned once the call is established with CreateCall.
+        /// <see cref="CallConnected"/> event will be returned once the call is established with CreateCall.
         /// </summary>
-        public CallConnectedEventData SuccessResult { get; }
+        public CallConnected SuccessResult { get; }
 
-        internal CreateCallEventResult(bool isSuccess, CallConnectedEventData successResult)
+        /// <summary>
+        /// <see cref="CreateCallFailed"/> evnet will be returned when the call was not created.
+        /// </summary>
+        /// <value></value>
+        public CreateCallFailed FailureResult { get; }
+
+        internal CreateCallEventResult(bool isSuccess, CallConnected successResult, CreateCallFailed failureResult)
         {
             IsSuccess = isSuccess;
             SuccessResult = successResult;
+            FailureResult = failureResult;
         }
     }
 }

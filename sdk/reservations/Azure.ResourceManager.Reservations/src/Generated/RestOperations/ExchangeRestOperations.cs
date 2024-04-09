@@ -6,9 +6,9 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Reservations.Models;
@@ -49,7 +49,7 @@ namespace Azure.ResourceManager.Reservations
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue<ExchangeContent>(content, new ModelReaderWriterOptions("W"));
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
@@ -57,7 +57,7 @@ namespace Azure.ResourceManager.Reservations
 
         /// <summary>
         /// Returns one or more `Reservations` in exchange for one or more `Reservation` purchases.
-        /// 
+        ///
         /// </summary>
         /// <param name="content"> Request containing the refunds and purchases that need to be executed. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -80,7 +80,7 @@ namespace Azure.ResourceManager.Reservations
 
         /// <summary>
         /// Returns one or more `Reservations` in exchange for one or more `Reservation` purchases.
-        /// 
+        ///
         /// </summary>
         /// <param name="content"> Request containing the refunds and purchases that need to be executed. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>

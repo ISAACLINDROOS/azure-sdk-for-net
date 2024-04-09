@@ -10,9 +10,9 @@ using Azure.ResourceManager.Resources.Models;
 using Azure.ResourceManager.Sql.Models;
 using NUnit.Framework;
 
-namespace Azure.ResourceManager.Sql.Tests.Scenario
+namespace Azure.ResourceManager.Sql.Tests
 {
-    public class InstanceFailoverGroupTests : SqlManagementClientBase
+    public class InstanceFailoverGroupTests : SqlManagementTestBase
     {
         private ResourceGroupResource _resourceGroup;
         private ResourceIdentifier _resourceGroupIdentifier;
@@ -64,7 +64,7 @@ namespace Azure.ResourceManager.Sql.Tests.Scenario
                 ReadWriteEndpoint = instanceFailoverGroupReadWriteEndpoint,
                 ManagedInstancePairs =
                 {
-                    new ManagedInstancePairInfo(primaryManagedInstanceId, partnerManagedInstanceId),
+                    new ManagedInstancePairInfo(primaryManagedInstanceId, partnerManagedInstanceId, null),
                 },
             };
             var instanceFailoverGroupLro = await _resourceGroup.GetInstanceFailoverGroups(locationName).CreateOrUpdateAsync(WaitUntil.Completed, instanceFailoverGroupName, data);

@@ -7,11 +7,8 @@
 
 using System;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Identity;
-using Azure.ResourceManager;
-using Azure.ResourceManager.Quota;
 using Azure.ResourceManager.Quota.Models;
 
 namespace Azure.ResourceManager.Quota.Samples
@@ -103,8 +100,8 @@ namespace Azure.ResourceManager.Quota.Samples
             {
                 Properties = new QuotaProperties()
                 {
-                    Limit = new LimitObject(10),
-                    Name = new ResourceName()
+                    Limit = new QuotaLimitObject(10),
+                    Name = new QuotaRequestResourceName()
                     {
                         Value = "standardFSv2Family",
                     },
@@ -145,12 +142,12 @@ namespace Azure.ResourceManager.Quota.Samples
             {
                 Properties = new QuotaProperties()
                 {
-                    Limit = new LimitObject(10),
-                    Name = new ResourceName()
+                    Limit = new QuotaLimitObject(10),
+                    Name = new QuotaRequestResourceName()
                     {
                         Value = "MinPublicIpInterNetworkPrefixLength",
                     },
-                    ResourceType = "MinPublicIpInterNetworkPrefixLength",
+                    ResourceTypeName = "MinPublicIpInterNetworkPrefixLength",
                 },
             };
             ArmOperation<CurrentQuotaLimitBaseResource> lro = await currentQuotaLimitBase.UpdateAsync(WaitUntil.Completed, data);

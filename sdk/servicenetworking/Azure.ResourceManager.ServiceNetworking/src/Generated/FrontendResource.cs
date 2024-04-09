@@ -10,23 +10,25 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.ServiceNetworking.Models;
 
 namespace Azure.ResourceManager.ServiceNetworking
 {
     /// <summary>
     /// A Class representing a Frontend along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="FrontendResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetFrontendResource method.
-    /// Otherwise you can get one from its parent resource <see cref="TrafficControllerResource" /> using the GetFrontend method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="FrontendResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetFrontendResource method.
+    /// Otherwise you can get one from its parent resource <see cref="TrafficControllerResource"/> using the GetFrontend method.
     /// </summary>
     public partial class FrontendResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="FrontendResource"/> instance. </summary>
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="resourceGroupName"> The resourceGroupName. </param>
+        /// <param name="trafficControllerName"> The trafficControllerName. </param>
+        /// <param name="frontendName"> The frontendName. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, string resourceGroupName, string trafficControllerName, string frontendName)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceNetworking/trafficControllers/{trafficControllerName}/frontends/{frontendName}";
@@ -37,12 +39,15 @@ namespace Azure.ResourceManager.ServiceNetworking
         private readonly FrontendsInterfaceRestOperations _frontendFrontendsInterfaceRestClient;
         private readonly FrontendData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.ServiceNetworking/trafficControllers/frontends";
+
         /// <summary> Initializes a new instance of the <see cref="FrontendResource"/> class for mocking. </summary>
         protected FrontendResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "FrontendResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="FrontendResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal FrontendResource(ArmClient client, FrontendData data) : this(client, data.Id)
@@ -63,9 +68,6 @@ namespace Azure.ResourceManager.ServiceNetworking
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.ServiceNetworking/trafficControllers/frontends";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -89,7 +91,7 @@ namespace Azure.ResourceManager.ServiceNetworking
         }
 
         /// <summary>
-        /// Get a Traffic Controller Frontend
+        /// Get a Frontend
         /// <list type="bullet">
         /// <item>
         /// <term>Request Path</term>
@@ -98,6 +100,14 @@ namespace Azure.ResourceManager.ServiceNetworking
         /// <item>
         /// <term>Operation Id</term>
         /// <description>FrontendsInterface_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendResource"/></description>
         /// </item>
         /// </list>
         /// </summary>
@@ -121,7 +131,7 @@ namespace Azure.ResourceManager.ServiceNetworking
         }
 
         /// <summary>
-        /// Get a Traffic Controller Frontend
+        /// Get a Frontend
         /// <list type="bullet">
         /// <item>
         /// <term>Request Path</term>
@@ -130,6 +140,14 @@ namespace Azure.ResourceManager.ServiceNetworking
         /// <item>
         /// <term>Operation Id</term>
         /// <description>FrontendsInterface_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendResource"/></description>
         /// </item>
         /// </list>
         /// </summary>
@@ -153,7 +171,7 @@ namespace Azure.ResourceManager.ServiceNetworking
         }
 
         /// <summary>
-        /// Delete a Traffic Controller Frontend
+        /// Delete a Frontend
         /// <list type="bullet">
         /// <item>
         /// <term>Request Path</term>
@@ -162,6 +180,14 @@ namespace Azure.ResourceManager.ServiceNetworking
         /// <item>
         /// <term>Operation Id</term>
         /// <description>FrontendsInterface_Delete</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendResource"/></description>
         /// </item>
         /// </list>
         /// </summary>
@@ -187,7 +213,7 @@ namespace Azure.ResourceManager.ServiceNetworking
         }
 
         /// <summary>
-        /// Delete a Traffic Controller Frontend
+        /// Delete a Frontend
         /// <list type="bullet">
         /// <item>
         /// <term>Request Path</term>
@@ -196,6 +222,14 @@ namespace Azure.ResourceManager.ServiceNetworking
         /// <item>
         /// <term>Operation Id</term>
         /// <description>FrontendsInterface_Delete</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendResource"/></description>
         /// </item>
         /// </list>
         /// </summary>
@@ -221,7 +255,7 @@ namespace Azure.ResourceManager.ServiceNetworking
         }
 
         /// <summary>
-        /// Update a Traffic Controller Frontend
+        /// Update a Frontend
         /// <list type="bullet">
         /// <item>
         /// <term>Request Path</term>
@@ -230,6 +264,14 @@ namespace Azure.ResourceManager.ServiceNetworking
         /// <item>
         /// <term>Operation Id</term>
         /// <description>FrontendsInterface_Update</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendResource"/></description>
         /// </item>
         /// </list>
         /// </summary>
@@ -255,7 +297,7 @@ namespace Azure.ResourceManager.ServiceNetworking
         }
 
         /// <summary>
-        /// Update a Traffic Controller Frontend
+        /// Update a Frontend
         /// <list type="bullet">
         /// <item>
         /// <term>Request Path</term>
@@ -264,6 +306,14 @@ namespace Azure.ResourceManager.ServiceNetworking
         /// <item>
         /// <term>Operation Id</term>
         /// <description>FrontendsInterface_Update</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendResource"/></description>
         /// </item>
         /// </list>
         /// </summary>
@@ -298,6 +348,14 @@ namespace Azure.ResourceManager.ServiceNetworking
         /// <item>
         /// <term>Operation Id</term>
         /// <description>FrontendsInterface_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendResource"/></description>
         /// </item>
         /// </list>
         /// </summary>
@@ -353,6 +411,14 @@ namespace Azure.ResourceManager.ServiceNetworking
         /// <term>Operation Id</term>
         /// <description>FrontendsInterface_Get</description>
         /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendResource"/></description>
+        /// </item>
         /// </list>
         /// </summary>
         /// <param name="key"> The key for the tag. </param>
@@ -407,6 +473,14 @@ namespace Azure.ResourceManager.ServiceNetworking
         /// <term>Operation Id</term>
         /// <description>FrontendsInterface_Get</description>
         /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendResource"/></description>
+        /// </item>
         /// </list>
         /// </summary>
         /// <param name="tags"> The set of tags to use as replacement. </param>
@@ -456,6 +530,14 @@ namespace Azure.ResourceManager.ServiceNetworking
         /// <term>Operation Id</term>
         /// <description>FrontendsInterface_Get</description>
         /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendResource"/></description>
+        /// </item>
         /// </list>
         /// </summary>
         /// <param name="tags"> The set of tags to use as replacement. </param>
@@ -504,6 +586,14 @@ namespace Azure.ResourceManager.ServiceNetworking
         /// <item>
         /// <term>Operation Id</term>
         /// <description>FrontendsInterface_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendResource"/></description>
         /// </item>
         /// </list>
         /// </summary>
@@ -556,6 +646,14 @@ namespace Azure.ResourceManager.ServiceNetworking
         /// <item>
         /// <term>Operation Id</term>
         /// <description>FrontendsInterface_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendResource"/></description>
         /// </item>
         /// </list>
         /// </summary>

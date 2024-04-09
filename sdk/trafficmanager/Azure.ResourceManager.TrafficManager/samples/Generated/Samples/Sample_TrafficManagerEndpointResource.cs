@@ -7,11 +7,8 @@
 
 using System;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Identity;
-using Azure.ResourceManager;
-using Azure.ResourceManager.TrafficManager;
 
 namespace Azure.ResourceManager.TrafficManager.Samples
 {
@@ -22,7 +19,7 @@ namespace Azure.ResourceManager.TrafficManager.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Update_EndpointPATCHExternalTarget()
         {
-            // Generated from example definition: specification/trafficmanager/resource-manager/Microsoft.Network/preview/2022-04-01-preview/examples/Endpoint-PATCH-External-Target.json
+            // Generated from example definition: specification/trafficmanager/resource-manager/Microsoft.Network/stable/2022-04-01/examples/Endpoint-PATCH-External-Target.json
             // this example is just showing the usage of "Endpoints_Update" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -62,7 +59,7 @@ namespace Azure.ResourceManager.TrafficManager.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Get_EndpointGETExternalWithGeoMapping()
         {
-            // Generated from example definition: specification/trafficmanager/resource-manager/Microsoft.Network/preview/2022-04-01-preview/examples/Endpoint-GET-External-WithGeoMapping.json
+            // Generated from example definition: specification/trafficmanager/resource-manager/Microsoft.Network/stable/2022-04-01/examples/Endpoint-GET-External-WithGeoMapping.json
             // this example is just showing the usage of "Endpoints_Get" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -95,7 +92,7 @@ namespace Azure.ResourceManager.TrafficManager.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Get_EndpointGETExternalWithLocation()
         {
-            // Generated from example definition: specification/trafficmanager/resource-manager/Microsoft.Network/preview/2022-04-01-preview/examples/Endpoint-GET-External-WithLocation.json
+            // Generated from example definition: specification/trafficmanager/resource-manager/Microsoft.Network/stable/2022-04-01/examples/Endpoint-GET-External-WithLocation.json
             // this example is just showing the usage of "Endpoints_Get" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -128,7 +125,7 @@ namespace Azure.ResourceManager.TrafficManager.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Get_EndpointGETExternalWithSubnetMapping()
         {
-            // Generated from example definition: specification/trafficmanager/resource-manager/Microsoft.Network/preview/2022-04-01-preview/examples/Endpoint-GET-External-WithSubnetMapping.json
+            // Generated from example definition: specification/trafficmanager/resource-manager/Microsoft.Network/stable/2022-04-01/examples/Endpoint-GET-External-WithSubnetMapping.json
             // this example is just showing the usage of "Endpoints_Get" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -161,7 +158,7 @@ namespace Azure.ResourceManager.TrafficManager.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Delete_EndpointDELETEExternal()
         {
-            // Generated from example definition: specification/trafficmanager/resource-manager/Microsoft.Network/preview/2022-04-01-preview/examples/Endpoint-DELETE-External.json
+            // Generated from example definition: specification/trafficmanager/resource-manager/Microsoft.Network/stable/2022-04-01/examples/Endpoint-DELETE-External.json
             // this example is just showing the usage of "Endpoints_Delete" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line

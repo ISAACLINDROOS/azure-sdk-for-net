@@ -6,11 +6,11 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.DeviceProvisioningServices.Models;
@@ -138,7 +138,7 @@ namespace Azure.ResourceManager.DeviceProvisioningServices
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<DeviceProvisioningServiceData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -216,13 +216,13 @@ namespace Azure.ResourceManager.DeviceProvisioningServices
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(patch);
+            content.JsonWriter.WriteObjectValue<DeviceProvisioningServicePatch>(patch, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
-        /// <summary> Update an existing provisioning service&apos;s tags. to update other fields use the CreateOrUpdate method. </summary>
+        /// <summary> Update an existing provisioning service's tags. to update other fields use the CreateOrUpdate method. </summary>
         /// <param name="subscriptionId"> The subscription identifier. </param>
         /// <param name="resourceGroupName"> Resource group identifier. </param>
         /// <param name="provisioningServiceName"> Name of provisioning service to create or update. </param>
@@ -248,7 +248,7 @@ namespace Azure.ResourceManager.DeviceProvisioningServices
             }
         }
 
-        /// <summary> Update an existing provisioning service&apos;s tags. to update other fields use the CreateOrUpdate method. </summary>
+        /// <summary> Update an existing provisioning service's tags. to update other fields use the CreateOrUpdate method. </summary>
         /// <param name="subscriptionId"> The subscription identifier. </param>
         /// <param name="resourceGroupName"> Resource group identifier. </param>
         /// <param name="provisioningServiceName"> Name of provisioning service to create or update. </param>
@@ -582,7 +582,7 @@ namespace Azure.ResourceManager.DeviceProvisioningServices
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue<DeviceProvisioningServicesNameAvailabilityContent>(content, new ModelReaderWriterOptions("W"));
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
@@ -1170,7 +1170,7 @@ namespace Azure.ResourceManager.DeviceProvisioningServices
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<DeviceProvisioningServicesPrivateEndpointConnectionData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;

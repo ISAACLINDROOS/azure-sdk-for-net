@@ -15,22 +15,26 @@ namespace Azure.Communication.CallAutomation
             string serverCallId,
             IEnumerable<CommunicationIdentifier> targets,
             CallConnectionState callConnectionState,
-            Uri callbackEndpoint,
-            CommunicationIdentifier sourceIdentity,
+            Uri callbackUri,
+            CommunicationIdentifier source,
             PhoneNumberIdentifier sourceCallerIdNumber,
             string sourceDisplayName,
-            string mediaSubscriptionId
+            string mediaSubscriptionId,
+            string dataSubscriptionId,
+            CommunicationUserIdentifier answeredBy
             )
         {
             CallConnectionId = callConnectionId;
             ServerCallId = serverCallId;
             Targets = targets == null ? new List<CommunicationIdentifier>() : targets.ToList();
             CallConnectionState = callConnectionState == default ? CallConnectionState.Unknown : callConnectionState;
-            CallbackEndpoint = callbackEndpoint;
-            SourceIdentity = sourceIdentity;
+            CallbackUri = callbackUri;
+            Source = source;
             SourceCallerIdNumber = sourceCallerIdNumber;
             SourceDisplayName = sourceDisplayName;
             MediaSubscriptionId = mediaSubscriptionId;
+            DataSubscriptionId = dataSubscriptionId;
+            AnsweredBy = answeredBy;
         }
 
         internal CallConnectionProperties(CallConnectionPropertiesInternal callConnectionPropertiesDtoInternal)
@@ -48,10 +52,13 @@ namespace Azure.Communication.CallAutomation
                 CallConnectionState = callConnectionPropertiesDtoInternal.CallConnectionState.Value;
             }
 
-            CallbackEndpoint = new Uri(callConnectionPropertiesDtoInternal.CallbackUri);
+            CallbackUri = new Uri(callConnectionPropertiesDtoInternal.CallbackUri);
             MediaSubscriptionId = callConnectionPropertiesDtoInternal.MediaSubscriptionId;
-            SourceIdentity = CommunicationIdentifierSerializer.Deserialize(callConnectionPropertiesDtoInternal.SourceIdentity);
+            DataSubscriptionId = callConnectionPropertiesDtoInternal.DataSubscriptionId;
+            Source = callConnectionPropertiesDtoInternal.Source == null? null : CommunicationIdentifierSerializer.Deserialize(callConnectionPropertiesDtoInternal.Source);
             SourceDisplayName = callConnectionPropertiesDtoInternal.SourceDisplayName;
+            CorrelationId = callConnectionPropertiesDtoInternal.CorrelationId;
+            AnsweredBy = callConnectionPropertiesDtoInternal.AnsweredBy == null? null : new CommunicationUserIdentifier(callConnectionPropertiesDtoInternal.AnsweredBy.Id);
 
             if (callConnectionPropertiesDtoInternal.SourceCallerIdNumber != null)
             {
@@ -68,9 +75,11 @@ namespace Azure.Communication.CallAutomation
         /// <summary> The state of the call connection. </summary>
         public CallConnectionState CallConnectionState { get; }
         /// <summary> The callback URI. </summary>
-        public Uri CallbackEndpoint { get; }
+        public Uri CallbackUri { get; }
         /// <summary> SubscriptionId for media streaming. </summary>
         public string MediaSubscriptionId { get; }
+        /// <summary> SubscriptionId for transcription. </summary>
+        public string DataSubscriptionId { get; }
         /// <summary>
         /// Caller ID phone number to appear on the invitee.
         /// </summary>
@@ -82,6 +91,16 @@ namespace Azure.Communication.CallAutomation
         /// <summary>
         /// Source identity.
         /// </summary>
-        public CommunicationIdentifier SourceIdentity { get; }
+        public CommunicationIdentifier Source { get; }
+
+        /// <summary>
+        /// The correlation ID.
+        /// </summary>
+        public string CorrelationId { get; }
+
+        /// <summary>
+        /// Identity of the answering entity. Only populated when identity is provided in the request.
+        /// </summary>
+        public CommunicationUserIdentifier AnsweredBy { get; }
     }
 }

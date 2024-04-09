@@ -50,8 +50,18 @@ namespace Azure.Identity
         /// </summary>
         internal string Password { get; set; } = EnvironmentVariables.Password;
 
+        /// <summary>
+        /// MSAL client to be used for testing.
+        /// </summary>
+        internal MsalConfidentialClient MsalConfidentialClient { get; set;}
+
+        /// <summary>
+        /// MSAL client to be used for testing.
+        /// </summary>
+        internal MsalPublicClient MsalPublicClient { get; set;}
+
         /// <inheritdoc/>
-        public bool DisableAuthorityValidationAndInstanceDiscovery { get; set; }
+        public bool DisableInstanceDiscovery { get; set; }
 
         /// <summary>
         /// Specifies tenants in addition to the specified <see cref="TenantId"/> for which the credential may acquire tokens.

@@ -5,16 +5,20 @@ Run `dotnet build /t:GenerateCode` to generate code.
 ``` yaml
 
 azure-arm: true
-generate-model-factory: false
 csharp: true
 library-name: PrivateDns
 namespace: Azure.ResourceManager.PrivateDns
 require: https://github.com/Azure/azure-rest-api-specs/blob/6b08774c89877269e73e11ac3ecbd1bd4e14f5a0/specification/privatedns/resource-manager/readme.md
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
+sample-gen:
+  output-folder: $(this-folder)/../samples/Generated
+  clear-output-folder: true
+  sample: false
 skip-csproj: true
 modelerfour:
   flatten-payloads: false
+use-model-reader-writer: true
 
 format-by-name-rules:
   'tenantId': 'uuid'
@@ -26,8 +30,8 @@ format-by-name-rules:
   'ifMatch': 'etag'
   'IPv6Address': 'ip-address'
   'IPv4Address': 'ip-address'
-  
-rename-rules:
+
+acronym-mapping:
   CPU: Cpu
   CPUs: Cpus
   Os: OS
@@ -57,7 +61,7 @@ rename-rules:
   SoaRecord: PrivateDnsSoaRecordInfo
   SrvRecord: PrivateDnsSrvRecordInfo
   TxtRecord: PrivateDnsTxtRecordInfo
-  ProvisioningState : PrivateDnsProvisioningState 
+  ProvisioningState : PrivateDnsProvisioningState
 
 override-operation-name:
   RecordSets_List: GetRecords

@@ -14,7 +14,9 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
     /// <typeparam name="TData">The EventData model related to the request.</typeparam>
     /// <seealso cref="AuthenticationEventResponse" />
     /// <seealso cref="AuthenticationEventData" />
-    public abstract class AuthenticationEventRequest<TResponse, TData> : AuthenticationEventRequestBase where TResponse : AuthenticationEventResponse where TData : AuthenticationEventData
+    public abstract class AuthenticationEventRequest<TResponse, TData> : AuthenticationEventRequestBase
+        where TResponse : AuthenticationEventResponse , new()
+        where TData : AuthenticationEventData
     {
         /// <summary>Initializes a new instance of the <see cref="AuthenticationEventRequest{T, K}" /> class.</summary>
         /// <param name="request">The request.</param>
@@ -23,7 +25,6 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
         /// <value>The response.</value>
         ///
         [JsonPropertyName("response")]
-        [Required]
         public TResponse Response { get; set; }
 
         /// <summary>Gets or sets the related EventData model.</summary>
@@ -35,35 +36,64 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
 
         /// <summary>Validates the response and creates the IActionResult with the json payload based on the status of the request.</summary>
         /// <returns>IActionResult based on the EventStatus (UnauthorizedResult, BadRequestObjectResult or JsonResult).</returns>
-        public async override Task<AuthenticationEventResponse> Completed()
+        public override AuthenticationEventResponse Completed()
         {
             try
             {
-                if (RequestStatus == RequestStatusType.Failed)
+                if (RequestStatus == RequestStatusType.Failed || RequestStatus == RequestStatusType.ValidationError)
                 {
-                    Response.MarkAsFailed(new Exception(String.IsNullOrEmpty(StatusMessage) ? AuthenticationEventResource.Ex_Gen_Failure : StatusMessage), true);
-                }
-                else if (RequestStatus == RequestStatusType.ValidationError)
-                {
-                    Response.MarkAsFailed(new Exception(String.IsNullOrEmpty(StatusMessage) ? AuthenticationEventResource.Ex_Gen_Failure : StatusMessage), false);
+                    return Failed(new AuthenticationEventTriggerRequestValidationException(string.IsNullOrEmpty(StatusMessage) ? AuthenticationEventResource.Ex_Gen_Failure : StatusMessage));
                 }
                 else if (RequestStatus == RequestStatusType.TokenInvalid)
                 {
-                    Response.MarkAsUnauthorized();
+                    SetResponseUnauthorized();
                 }
             }
             catch (Exception ex)
             {
-                return await Failed(ex, true).ConfigureAwait(false);
+                return Failed(ex);
             }
 
             return Response;
         }
 
-        internal override Task<AuthenticationEventResponse> Failed(Exception exception, bool internalError)
+        /// <summary>
+        /// Sets the response statuscode, reason phrase and body when we want to return failed.
+        /// </summary>
+        /// <param name="exception">The exception that is thrown</param>
+        /// <returns>An authenticationeventresponse task</returns>
+        public override AuthenticationEventResponse Failed(Exception exception)
         {
-            Response.MarkAsFailed(exception, internalError);
-            return Task.FromResult<AuthenticationEventResponse>((TResponse)Response);
+            if (Response == null)
+            {
+                Response = new TResponse();
+            }
+
+            if (exception is AuthenticationEventTriggerValidationException ex)
+            {
+                Response.StatusCode = ex.ExceptionStatusCode;
+                Response.ReasonPhrase = ex.ReasonPhrase;
+            }
+            else
+            {
+                Response.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+                Response.ReasonPhrase = "Internal Server Error";
+            }
+
+            Response.Body = Helpers.GetFailedResponsePayload(exception);
+
+            return Response;
+        }
+
+        /// <summary>
+        /// Sets the response statuscode and reasonphrase to unauthorized.
+        /// </summary>
+        private void SetResponseUnauthorized()
+        {
+            // Set response as unauthorized when token is invalid
+            Response.StatusCode = System.Net.HttpStatusCode.Unauthorized;
+            Response.ReasonPhrase = "Unauthorized";
+            Response.Body = string.Empty;
         }
     }
 }

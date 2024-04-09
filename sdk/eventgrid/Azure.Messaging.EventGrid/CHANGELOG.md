@@ -1,14 +1,91 @@
 # Release History
 
-## 4.16.0-beta.1 (Unreleased)
+## 4.24.0 (2024-04-04)
 
 ### Features Added
 
-### Breaking Changes
+- Added new Communication events.
+
+## 4.23.0 (2024-03-11)
+
+### Features Added
+
+- Added API Center events.
+
+## 4.22.0 (2024-02-12)
+
+### Features Added
+
+- Added new Storage Task Assignment system events.
+- Added new AVS system events.
+- Added `Metadata` property to `AcsChatThreadCreatedEventData` system event.
+
+## 4.21.0 (2023-11-07)
+
+### Features Added
+
+- Added new system events for Resource Notifications
+- Added the `Metadata` property to various Azure Communication Services events.
+
+## 4.20.0 (2023-10-18)
 
 ### Bugs Fixed
 
+- Added several communication models into the correct namespace and hid the old ones.
+
+## 4.19.0 (2023-10-11)
+
+### Features Added
+
+- Added new system events for Resource Notifications and Azure Communication Services.
+
+## 4.18.0 (2023-09-12)
+
+### Features Added
+
+- Added new system events for Event Grid and App Configuration.
+- Added `Recipient` property to `AcsEmailEngagementTrackingReportReceivedEventData` event.
+
+### Breaking Changes
+
+- `EventGridClient` has been removed for the stable release. It will be included in a subsequent release.
+
+## 4.18.0-beta.1 (2023-07-16)
+
 ### Other Changes
+
+- Shipping the `EventGridClient` on top of the latest system events.
+
+## 4.17.0 (2023-06-08)
+
+### Features Added
+
+- Added new system events for Container Service.
+
+### Breaking Changes
+
+- `EventGridClient` has been removed for the stable release. It will be included in a subsequent release.
+
+## 4.17.0-beta.2 (2023-06-06)
+
+### Other Changes
+
+- Docs updated to remove example that was causing the doc build to fail.
+
+## 4.17.0-beta.1 (2023-05-22)
+
+### Features Added
+
+- Added `EventGridClient` for interacting with topic and subscription namespaces.
+
+## 4.16.0 (2023-05-09)
+
+### Features Added
+
+- Added `AcsIncomingCallEventData` event.
+- Added `DeliveryStatusDetails` property to `AcsEmailDeliveryReportReceivedEventData` event.
+- Added `HealthCareDicomImageUpdatedEventData` event.
+- Added `PartionName` property to Dicom events.
 
 ## 4.15.0 (2023-04-13)
 
@@ -126,7 +203,7 @@
 ### New Features
 * Added the following new system events:
   - StorageBlobInventoryPolicyCompletedEventData
-    
+
 * Updated existing system events:
  - AcsRecordingChunkInfoProperties - Added `ContentLocation` and `MetadataLocation` properties.
 
@@ -136,7 +213,7 @@
 ## 4.2.0 (2021-05-10)
 
 ### New Features
-* Added the following new system events: 
+* Added the following new system events:
   - PolicyInsightsPolicyStateChangedEventData
   - PolicyInsightsPolicyStateCreatedEventData
   - PolicyInsightsPolicyStateDeletedEventData

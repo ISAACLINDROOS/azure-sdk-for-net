@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.AI.TextAnalytics;
 using Azure.Core;
 
 namespace Azure.AI.TextAnalytics.Models
@@ -36,11 +35,6 @@ namespace Azure.AI.TextAnalytics.Models
             }
             writer.WritePropertyName("confidenceScore"u8);
             writer.WriteNumberValue(ConfidenceScore);
-            if (Optional.IsDefined(Script))
-            {
-                writer.WritePropertyName("script"u8);
-                writer.WriteStringValue(Script.Value.ToString());
-            }
             writer.WriteEndObject();
         }
 
@@ -49,7 +43,6 @@ namespace Azure.AI.TextAnalytics.Models
             string name = default;
             string iso6391Name = default;
             double confidenceScore = default;
-            Optional<ScriptKind> script = default;
             foreach (var property in element.EnumerateObject())
             {
                 if (property.NameEquals("name"u8))
@@ -77,17 +70,24 @@ namespace Azure.AI.TextAnalytics.Models
                     confidenceScore = property.Value.GetDouble();
                     continue;
                 }
-                if (property.NameEquals("script"u8))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        continue;
-                    }
-                    script = new ScriptKind(property.Value.GetString());
-                    continue;
-                }
             }
-            return new DetectedLanguageInternal(name, iso6391Name, confidenceScore, Optional.ToNullable(script));
+            return new DetectedLanguageInternal(name, iso6391Name, confidenceScore);
+        }
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static DetectedLanguageInternal FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content);
+            return DeserializeDetectedLanguageInternal(document.RootElement);
+        }
+
+        /// <summary> Convert into a Utf8JsonRequestContent. </summary>
+        internal RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue<DetectedLanguageInternal>(this);
+            return content;
         }
     }
 }

@@ -32,6 +32,18 @@ namespace Azure.Search.Documents.Indexes.Models
                     writer.WriteNull("enableReprocessing");
                 }
             }
+            if (Optional.IsDefined(Identity))
+            {
+                if (Identity != null)
+                {
+                    writer.WritePropertyName("identity"u8);
+                    writer.WriteObjectValue<SearchIndexerDataIdentity>(Identity);
+                }
+                else
+                {
+                    writer.WriteNull("identity");
+                }
+            }
             writer.WriteEndObject();
         }
 
@@ -41,8 +53,9 @@ namespace Azure.Search.Documents.Indexes.Models
             {
                 return null;
             }
-            Optional<string> storageConnectionString = default;
-            Optional<bool?> enableReprocessing = default;
+            string storageConnectionString = default;
+            bool? enableReprocessing = default;
+            SearchIndexerDataIdentity identity = default;
             foreach (var property in element.EnumerateObject())
             {
                 if (property.NameEquals("storageConnectionString"u8))
@@ -60,8 +73,34 @@ namespace Azure.Search.Documents.Indexes.Models
                     enableReprocessing = property.Value.GetBoolean();
                     continue;
                 }
+                if (property.NameEquals("identity"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        identity = null;
+                        continue;
+                    }
+                    identity = SearchIndexerDataIdentity.DeserializeSearchIndexerDataIdentity(property.Value);
+                    continue;
+                }
             }
-            return new SearchIndexerCache(storageConnectionString.Value, Optional.ToNullable(enableReprocessing));
+            return new SearchIndexerCache(storageConnectionString, enableReprocessing, identity);
+        }
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static SearchIndexerCache FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content);
+            return DeserializeSearchIndexerCache(document.RootElement);
+        }
+
+        /// <summary> Convert into a Utf8JsonRequestContent. </summary>
+        internal virtual RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue<SearchIndexerCache>(this);
+            return content;
         }
     }
 }

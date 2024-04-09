@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.ApiManagement.Models;
@@ -58,7 +57,7 @@ namespace Azure.ResourceManager.ApiManagement
             return message;
         }
 
-        /// <summary> Lists the developer portal&apos;s content types. Content types describe content items&apos; properties, validation rules, and constraints. </summary>
+        /// <summary> Lists the developer portal's content types. Content types describe content items' properties, validation rules, and constraints. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -87,7 +86,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Lists the developer portal&apos;s content types. Content types describe content items&apos; properties, validation rules, and constraints. </summary>
+        /// <summary> Lists the developer portal's content types. Content types describe content items' properties, validation rules, and constraints. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -138,7 +137,7 @@ namespace Azure.ResourceManager.ApiManagement
             return message;
         }
 
-        /// <summary> Gets the details of the developer portal&apos;s content type. Content types describe content items&apos; properties, validation rules, and constraints. </summary>
+        /// <summary> Gets the details of the developer portal's content type. Content types describe content items' properties, validation rules, and constraints. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -169,7 +168,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Gets the details of the developer portal&apos;s content type. Content types describe content items&apos; properties, validation rules, and constraints. </summary>
+        /// <summary> Gets the details of the developer portal's content type. Content types describe content items' properties, validation rules, and constraints. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -226,7 +225,7 @@ namespace Azure.ResourceManager.ApiManagement
             return message;
         }
 
-        /// <summary> Creates or updates the developer portal&apos;s content type. Content types describe content items&apos; properties, validation rules, and constraints. Custom content types&apos; identifiers need to start with the `c-` prefix. Built-in content types can&apos;t be modified. </summary>
+        /// <summary> Creates or updates the developer portal's content type. Content types describe content items' properties, validation rules, and constraints. Custom content types' identifiers need to start with the `c-` prefix. Built-in content types can't be modified. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -259,7 +258,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Creates or updates the developer portal&apos;s content type. Content types describe content items&apos; properties, validation rules, and constraints. Custom content types&apos; identifiers need to start with the `c-` prefix. Built-in content types can&apos;t be modified. </summary>
+        /// <summary> Creates or updates the developer portal's content type. Content types describe content items' properties, validation rules, and constraints. Custom content types' identifiers need to start with the `c-` prefix. Built-in content types can't be modified. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -315,7 +314,7 @@ namespace Azure.ResourceManager.ApiManagement
             return message;
         }
 
-        /// <summary> Removes the specified developer portal&apos;s content type. Content types describe content items&apos; properties, validation rules, and constraints. Built-in content types (with identifiers starting with the `c-` prefix) can&apos;t be removed. </summary>
+        /// <summary> Removes the specified developer portal's content type. Content types describe content items' properties, validation rules, and constraints. Built-in content types (with identifiers starting with the `c-` prefix) can't be removed. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -343,7 +342,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Removes the specified developer portal&apos;s content type. Content types describe content items&apos; properties, validation rules, and constraints. Built-in content types (with identifiers starting with the `c-` prefix) can&apos;t be removed. </summary>
+        /// <summary> Removes the specified developer portal's content type. Content types describe content items' properties, validation rules, and constraints. Built-in content types (with identifiers starting with the `c-` prefix) can't be removed. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -385,7 +384,7 @@ namespace Azure.ResourceManager.ApiManagement
             return message;
         }
 
-        /// <summary> Lists the developer portal&apos;s content types. Content types describe content items&apos; properties, validation rules, and constraints. </summary>
+        /// <summary> Lists the developer portal's content types. Content types describe content items' properties, validation rules, and constraints. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
@@ -416,7 +415,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Lists the developer portal&apos;s content types. Content types describe content items&apos; properties, validation rules, and constraints. </summary>
+        /// <summary> Lists the developer portal's content types. Content types describe content items' properties, validation rules, and constraints. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>

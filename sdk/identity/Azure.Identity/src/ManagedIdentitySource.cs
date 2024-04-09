@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,23 +38,31 @@ namespace Azure.Identity
                 Pipeline.HttpPipeline.Send(message, cancellationToken);
             }
 
-            return await HandleResponseAsync(async, context, message.Response, cancellationToken).ConfigureAwait(false);
+            return await HandleResponseAsync(async, context, message, cancellationToken).ConfigureAwait(false);
         }
 
         protected virtual async ValueTask<AccessToken> HandleResponseAsync(
             bool async,
             TokenRequestContext context,
-            Response response,
+            HttpMessage message,
             CancellationToken cancellationToken)
         {
             Exception exception = null;
+            Response response = message.Response;
             try
             {
-                using JsonDocument json = async
-                    ? await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false)
-                    : JsonDocument.Parse(response.ContentStream);
                 if (response.Status == 200)
                 {
+                    // This avoids the json parsing if we have already been cancelled.
+                    // Also, this handles the sync case, where we don't have to check for cancellation.
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        throw new TaskCanceledException();
+                    }
+                    using JsonDocument json = async
+                    ? await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false)
+                    : JsonDocument.Parse(response.ContentStream);
+
                     return GetTokenFromResponse(json.RootElement);
                 }
             }
@@ -61,9 +70,25 @@ namespace Azure.Identity
             {
                 throw new CredentialUnavailableException(UnexpectedResponse, jex);
             }
+            catch (Exception e) when (response.Status == 200)
+            {
+                // This is a rare case where the request times out but the response was successful.
+                throw new RequestFailedException("Response from Managed Identity was successful, but the operation timed out prior to completion.", e);
+            }
             catch (Exception e)
             {
                 exception = e;
+            }
+
+            //This is a special case for Docker Desktop which responds with a 403 with a message that contains "A socket operation was attempted to an unreachable network/host"
+            // rather than just timing out, as expected.
+            if (response.Status == 403)
+            {
+                string content = response.Content.ToString();
+                if (content.Contains("unreachable"))
+                {
+                    throw new CredentialUnavailableException(UnexpectedResponse, new Exception(content));
+                }
             }
 
             throw new RequestFailedException(response, exception);
@@ -82,12 +107,19 @@ namespace Azure.Identity
             {
                 return null;
             }
-            response.ContentStream.Position = 0;
-            using JsonDocument json = async
-                ? await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false)
-                : JsonDocument.Parse(response.ContentStream);
+            try
+            {
+                response.ContentStream.Position = 0;
+                using JsonDocument json = async
+                    ? await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false)
+                    : JsonDocument.Parse(response.ContentStream);
 
-            return GetMessageFromResponse(json.RootElement);
+                return GetMessageFromResponse(json.RootElement);
+            }
+            catch // parsing failed
+            {
+                return "Response was not in a valid json format.";
+            }
         }
 
         protected static string GetMessageFromResponse(in JsonElement root)
@@ -151,6 +183,7 @@ namespace Azure.Identity
                 return message.Response.Status switch
                 {
                     404 => true,
+                    410 => true,
                     502 => false,
                     _ => base.IsRetriableResponse(message)
                 };

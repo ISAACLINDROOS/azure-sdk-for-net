@@ -15,17 +15,49 @@ namespace Azure.ResourceManager.EventGrid
 {
     /// <summary>
     /// A class representing the EventGridSubscription data model.
-    /// Event Subscription
+    /// Event Subscription.
     /// </summary>
     public partial class EventGridSubscriptionData : ResourceData
     {
-        /// <summary> Initializes a new instance of EventGridSubscriptionData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="EventGridSubscriptionData"/>. </summary>
         public EventGridSubscriptionData()
         {
             Labels = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of EventGridSubscriptionData. </summary>
+        /// <summary> Initializes a new instance of <see cref="EventGridSubscriptionData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
@@ -34,9 +66,9 @@ namespace Azure.ResourceManager.EventGrid
         /// <param name="provisioningState"> Provisioning state of the event subscription. </param>
         /// <param name="destination">
         /// Information about the destination where events have to be delivered for the event subscription.
-        /// Uses Azure Event Grid&apos;s identity to acquire the authentication tokens being used during delivery / dead-lettering.
+        /// Uses Azure Event Grid's identity to acquire the authentication tokens being used during delivery / dead-lettering.
         /// Please note <see cref="EventSubscriptionDestination"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="AzureFunctionEventSubscriptionDestination"/>, <see cref="EventHubEventSubscriptionDestination"/>, <see cref="HybridConnectionEventSubscriptionDestination"/>, <see cref="ServiceBusQueueEventSubscriptionDestination"/>, <see cref="ServiceBusTopicEventSubscriptionDestination"/>, <see cref="StorageQueueEventSubscriptionDestination"/> and <see cref="WebHookEventSubscriptionDestination"/>.
+        /// The available derived classes include <see cref="AzureFunctionEventSubscriptionDestination"/>, <see cref="EventHubEventSubscriptionDestination"/>, <see cref="HybridConnectionEventSubscriptionDestination"/>, <see cref="MonitorAlertEventSubscriptionDestination"/>, <see cref="NamespaceTopicEventSubscriptionDestination"/>, <see cref="PartnerEventSubscriptionDestination"/>, <see cref="ServiceBusQueueEventSubscriptionDestination"/>, <see cref="ServiceBusTopicEventSubscriptionDestination"/>, <see cref="StorageQueueEventSubscriptionDestination"/> and <see cref="WebHookEventSubscriptionDestination"/>.
         /// </param>
         /// <param name="deliveryWithResourceIdentity">
         /// Information about the destination where events have to be delivered for the event subscription.
@@ -48,16 +80,17 @@ namespace Azure.ResourceManager.EventGrid
         /// <param name="eventDeliverySchema"> The event delivery schema for the event subscription. </param>
         /// <param name="retryPolicy"> The retry policy for events. This can be used to configure maximum number of delivery attempts and time to live for events. </param>
         /// <param name="deadLetterDestination">
-        /// The dead letter destination of the event subscription. Any event that cannot be delivered to its&apos; destination is sent to the dead letter destination.
-        /// Uses Azure Event Grid&apos;s identity to acquire the authentication tokens being used during delivery / dead-lettering.
-        /// Please note <see cref="DeadLetterDestination"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The dead letter destination of the event subscription. Any event that cannot be delivered to its' destination is sent to the dead letter destination.
+        /// Uses Azure Event Grid's identity to acquire the authentication tokens being used during delivery / dead-lettering.
+        /// Please note <see cref="Models.DeadLetterDestination"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
         /// The available derived classes include <see cref="StorageBlobDeadLetterDestination"/>.
         /// </param>
         /// <param name="deadLetterWithResourceIdentity">
-        /// The dead letter destination of the event subscription. Any event that cannot be delivered to its&apos; destination is sent to the dead letter destination.
+        /// The dead letter destination of the event subscription. Any event that cannot be delivered to its' destination is sent to the dead letter destination.
         /// Uses the managed identity setup on the parent resource (namely, topic or domain) to acquire the authentication tokens being used during delivery / dead-lettering.
         /// </param>
-        internal EventGridSubscriptionData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string topic, EventSubscriptionProvisioningState? provisioningState, EventSubscriptionDestination destination, DeliveryWithResourceIdentity deliveryWithResourceIdentity, EventSubscriptionFilter filter, IList<string> labels, DateTimeOffset? expireOn, EventDeliverySchema? eventDeliverySchema, EventSubscriptionRetryPolicy retryPolicy, DeadLetterDestination deadLetterDestination, DeadLetterWithResourceIdentity deadLetterWithResourceIdentity) : base(id, name, resourceType, systemData)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal EventGridSubscriptionData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string topic, EventSubscriptionProvisioningState? provisioningState, EventSubscriptionDestination destination, DeliveryWithResourceIdentity deliveryWithResourceIdentity, EventSubscriptionFilter filter, IList<string> labels, DateTimeOffset? expireOn, EventDeliverySchema? eventDeliverySchema, EventSubscriptionRetryPolicy retryPolicy, DeadLetterDestination deadLetterDestination, DeadLetterWithResourceIdentity deadLetterWithResourceIdentity, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData)
         {
             Topic = topic;
             ProvisioningState = provisioningState;
@@ -70,6 +103,7 @@ namespace Azure.ResourceManager.EventGrid
             RetryPolicy = retryPolicy;
             DeadLetterDestination = deadLetterDestination;
             DeadLetterWithResourceIdentity = deadLetterWithResourceIdentity;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> Name of the topic of the event subscription. </summary>
@@ -78,9 +112,9 @@ namespace Azure.ResourceManager.EventGrid
         public EventSubscriptionProvisioningState? ProvisioningState { get; }
         /// <summary>
         /// Information about the destination where events have to be delivered for the event subscription.
-        /// Uses Azure Event Grid&apos;s identity to acquire the authentication tokens being used during delivery / dead-lettering.
+        /// Uses Azure Event Grid's identity to acquire the authentication tokens being used during delivery / dead-lettering.
         /// Please note <see cref="EventSubscriptionDestination"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="AzureFunctionEventSubscriptionDestination"/>, <see cref="EventHubEventSubscriptionDestination"/>, <see cref="HybridConnectionEventSubscriptionDestination"/>, <see cref="ServiceBusQueueEventSubscriptionDestination"/>, <see cref="ServiceBusTopicEventSubscriptionDestination"/>, <see cref="StorageQueueEventSubscriptionDestination"/> and <see cref="WebHookEventSubscriptionDestination"/>.
+        /// The available derived classes include <see cref="AzureFunctionEventSubscriptionDestination"/>, <see cref="EventHubEventSubscriptionDestination"/>, <see cref="HybridConnectionEventSubscriptionDestination"/>, <see cref="MonitorAlertEventSubscriptionDestination"/>, <see cref="NamespaceTopicEventSubscriptionDestination"/>, <see cref="PartnerEventSubscriptionDestination"/>, <see cref="ServiceBusQueueEventSubscriptionDestination"/>, <see cref="ServiceBusTopicEventSubscriptionDestination"/>, <see cref="StorageQueueEventSubscriptionDestination"/> and <see cref="WebHookEventSubscriptionDestination"/>.
         /// </summary>
         public EventSubscriptionDestination Destination { get; set; }
         /// <summary>
@@ -99,14 +133,14 @@ namespace Azure.ResourceManager.EventGrid
         /// <summary> The retry policy for events. This can be used to configure maximum number of delivery attempts and time to live for events. </summary>
         public EventSubscriptionRetryPolicy RetryPolicy { get; set; }
         /// <summary>
-        /// The dead letter destination of the event subscription. Any event that cannot be delivered to its&apos; destination is sent to the dead letter destination.
-        /// Uses Azure Event Grid&apos;s identity to acquire the authentication tokens being used during delivery / dead-lettering.
-        /// Please note <see cref="DeadLetterDestination"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The dead letter destination of the event subscription. Any event that cannot be delivered to its' destination is sent to the dead letter destination.
+        /// Uses Azure Event Grid's identity to acquire the authentication tokens being used during delivery / dead-lettering.
+        /// Please note <see cref="Models.DeadLetterDestination"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
         /// The available derived classes include <see cref="StorageBlobDeadLetterDestination"/>.
         /// </summary>
         public DeadLetterDestination DeadLetterDestination { get; set; }
         /// <summary>
-        /// The dead letter destination of the event subscription. Any event that cannot be delivered to its&apos; destination is sent to the dead letter destination.
+        /// The dead letter destination of the event subscription. Any event that cannot be delivered to its' destination is sent to the dead letter destination.
         /// Uses the managed identity setup on the parent resource (namely, topic or domain) to acquire the authentication tokens being used during delivery / dead-lettering.
         /// </summary>
         public DeadLetterWithResourceIdentity DeadLetterWithResourceIdentity { get; set; }

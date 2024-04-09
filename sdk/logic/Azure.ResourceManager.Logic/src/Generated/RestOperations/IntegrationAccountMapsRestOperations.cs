@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Logic.Models;
@@ -236,13 +236,13 @@ namespace Azure.ResourceManager.Logic
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<IntegrationAccountMapData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
-        /// <summary> Creates or updates an integration account map. If the map is larger than 4 MB, you need to store the map in an Azure blob and use the blob&apos;s Shared Access Signature (SAS) URL as the &apos;contentLink&apos; property value. </summary>
+        /// <summary> Creates or updates an integration account map. If the map is larger than 4 MB, you need to store the map in an Azure blob and use the blob's Shared Access Signature (SAS) URL as the 'contentLink' property value. </summary>
         /// <param name="subscriptionId"> The subscription id. </param>
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="integrationAccountName"> The integration account name. </param>
@@ -276,7 +276,7 @@ namespace Azure.ResourceManager.Logic
             }
         }
 
-        /// <summary> Creates or updates an integration account map. If the map is larger than 4 MB, you need to store the map in an Azure blob and use the blob&apos;s Shared Access Signature (SAS) URL as the &apos;contentLink&apos; property value. </summary>
+        /// <summary> Creates or updates an integration account map. If the map is larger than 4 MB, you need to store the map in an Azure blob and use the blob's Shared Access Signature (SAS) URL as the 'contentLink' property value. </summary>
         /// <param name="subscriptionId"> The subscription id. </param>
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="integrationAccountName"> The integration account name. </param>
@@ -407,7 +407,7 @@ namespace Azure.ResourceManager.Logic
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(info);
+            content.JsonWriter.WriteObjectValue<ListOperationCallbackUrlParameterInfo>(info, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -418,7 +418,7 @@ namespace Azure.ResourceManager.Logic
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="integrationAccountName"> The integration account name. </param>
         /// <param name="mapName"> The integration account map name. </param>
-        /// <param name="info"> The ListOperationCallbackUrlParameterInfo to use. </param>
+        /// <param name="info"> The <see cref="ListOperationCallbackUrlParameterInfo"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="integrationAccountName"/>, <paramref name="mapName"/> or <paramref name="info"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="integrationAccountName"/> or <paramref name="mapName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -451,7 +451,7 @@ namespace Azure.ResourceManager.Logic
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="integrationAccountName"> The integration account name. </param>
         /// <param name="mapName"> The integration account map name. </param>
-        /// <param name="info"> The ListOperationCallbackUrlParameterInfo to use. </param>
+        /// <param name="info"> The <see cref="ListOperationCallbackUrlParameterInfo"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="integrationAccountName"/>, <paramref name="mapName"/> or <paramref name="info"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="integrationAccountName"/> or <paramref name="mapName"/> is an empty string, and was expected to be non-empty. </exception>

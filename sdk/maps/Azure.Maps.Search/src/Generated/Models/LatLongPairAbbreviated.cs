@@ -7,15 +7,15 @@
 
 namespace Azure.Maps.Search.Models
 {
-    /// <summary> A location represented as a latitude and longitude using short names &apos;lat&apos; &amp; &apos;lon&apos;. </summary>
+    /// <summary> A location represented as a latitude and longitude using short names 'lat' &amp; 'lon'. </summary>
     internal partial class LatLongPairAbbreviated
     {
-        /// <summary> Initializes a new instance of LatLongPairAbbreviated. </summary>
+        /// <summary> Initializes a new instance of <see cref="LatLongPairAbbreviated"/>. </summary>
         internal LatLongPairAbbreviated()
         {
         }
 
-        /// <summary> Initializes a new instance of LatLongPairAbbreviated. </summary>
+        /// <summary> Initializes a new instance of <see cref="LatLongPairAbbreviated"/>. </summary>
         /// <param name="lat"> Latitude property. </param>
         /// <param name="lon"> Longitude property. </param>
         internal LatLongPairAbbreviated(double? lat, double? lon)

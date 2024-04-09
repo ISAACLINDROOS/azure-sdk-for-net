@@ -1,14 +1,48 @@
 # Release History
 
-## 1.0.0-beta.3 (Unreleased)
+## 1.1.0-beta.1 (Unreleased)
 
 ### Features Added
+
+- Enable the new model serialization by using the System.ClientModel, refer this [document](https://aka.ms/azsdk/net/mrw) for more details.
 
 ### Breaking Changes
 
 ### Bugs Fixed
 
 ### Other Changes
+
+## 1.0.1 (2023-11-27)
+
+### Features Added
+
+- Enable mocking for extension methods, refer this [document](https://aka.ms/azsdk/net/mocking) for more details.
+
+### Other Changes
+
+- Upgraded dependent `Azure.ResourceManager` to 1.9.0.
+
+## 1.0.0 (2023-05-24)
+
+This package is the first stable release of the Dev Center Management client library.
+
+### Features Added
+
+- Upgraded API version to 2023-04-01
+
+### Breaking Changes
+
+Polishing since last public beta release:
+- Prepended `DevCenter` prefix to all single / simple model names
+- Corrected the format of all `ResourceIdentifier` type properties / parameters.
+- Corrected the format of all `ResouceType` type properties / parameters.
+- Corrected the format of all `AzureLocation` type properties / parameters.
+- Optimized the name of some models and functions.
+
+### Other Changes
+
+- Upgraded dependent `Azure.Core` to `1.32.0`.
+- Upgraded dependent `Azure.ResourceManager` to `1.6.0`.
 
 ## 1.0.0-beta.2 (2023-02-17)
 

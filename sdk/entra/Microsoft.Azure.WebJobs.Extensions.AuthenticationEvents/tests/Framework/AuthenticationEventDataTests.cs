@@ -1,14 +1,15 @@
-﻿using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.using System;
+
+using System;
+using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework;
 using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.TokenIssuanceStart.Data;
 using Newtonsoft.Json.Linq;
-using System;
-using Xunit;
+using NUnit.Framework;
 
 namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Tests.Framework
 {
-    /// <summary>
-    /// Tests for AuthenticationEventData
-    /// </summary>
+    [TestFixture]
     public class AuthenticationEventDataTests
     {
         public static string TenantId = "00000000-0000-0000-0000-000000000001";
@@ -35,30 +36,30 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Tests.Framewor
 
             if (hasTenantIdKey)
             {
-                dataObj["tenantId"] = hasTenantIdValue ? TenantId : "";
+                dataObj["tenantId"] = hasTenantIdValue ? TenantId : string.Empty;
             }
             if (hasAuthenticationEventListenerIdKey)
             {
-                dataObj["authenticationEventListenerId"] = hasAuthenticationEventListenerIdValue ? AuthenticationEventListenerId : "";
+                dataObj["authenticationEventListenerId"] = hasAuthenticationEventListenerIdValue ? AuthenticationEventListenerId : string.Empty;
             }
             if (hasCustomAuthenticationExtensionIdKey)
             {
-                dataObj["customAuthenticationExtensionId"] = hasCustomAuthenticationExtensionIdValue ? CustomAuthenticationExtensionId : "";
+                dataObj["customAuthenticationExtensionId"] = hasCustomAuthenticationExtensionIdValue ? CustomAuthenticationExtensionId : string.Empty;
             }
 
             return obj.ToString();
         }
 
-        [Fact]
+        [Test]
         public void TestCreate()
         {
             Assert.Throws<ArgumentNullException>(() => AuthenticationEventData.CreateInstance(null, null));
 
             Type type = typeof(TokenIssuanceStartData);
             AuthenticationEventData data = AuthenticationEventData.CreateInstance(type, new AuthenticationEventJsonElement(BuildDataString()));
-            Assert.Equal(TenantId, data.TenantId.ToString());
-            Assert.Equal(AuthenticationEventListenerId, data.AuthenticationEventListenerId.ToString());
-            Assert.Equal(CustomAuthenticationExtensionId, data.CustomAuthenticationExtensionId.ToString());
+            Assert.AreEqual(TenantId, data.TenantId.ToString());
+            Assert.AreEqual(AuthenticationEventListenerId, data.AuthenticationEventListenerId.ToString());
+            Assert.AreEqual(CustomAuthenticationExtensionId, data.CustomAuthenticationExtensionId.ToString());
 
             var ex = Assert.Throws<System.ComponentModel.DataAnnotations.ValidationException>(
                 () => Helpers.ValidateGraph(
@@ -66,7 +67,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Tests.Framewor
                         type: type,
                         json: new AuthenticationEventJsonElement(BuildDataString(hasTenantIdKey: false)))));
 
-            Assert.Contains("tenantid", ex.Message, StringComparison.InvariantCultureIgnoreCase);
+            Assert.IsTrue(ex.Message.Contains("tenantid", StringComparison.InvariantCultureIgnoreCase));
 
             ex = Assert.Throws<System.ComponentModel.DataAnnotations.ValidationException>(
                 () => Helpers.ValidateGraph(
@@ -74,7 +75,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Tests.Framewor
                         type: type,
                         json: new AuthenticationEventJsonElement(BuildDataString(hasAuthenticationEventListenerIdKey: false)))));
 
-            Assert.Contains("authenticationEventListenerId", ex.Message, StringComparison.InvariantCultureIgnoreCase);
+            Assert.IsTrue(ex.Message.Contains("authenticationEventListenerId", StringComparison.InvariantCultureIgnoreCase));
 
             ex = Assert.Throws<System.ComponentModel.DataAnnotations.ValidationException>(
                 () => Helpers.ValidateGraph(
@@ -82,7 +83,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Tests.Framewor
                         type: type,
                         json: new AuthenticationEventJsonElement(BuildDataString(hasCustomAuthenticationExtensionIdKey: false)))));
 
-            Assert.Contains("customAuthenticationExtensionId", ex.Message, StringComparison.InvariantCultureIgnoreCase);
+            Assert.IsTrue(ex.Message.Contains("customAuthenticationExtensionId", StringComparison.InvariantCultureIgnoreCase));
 
 
         }

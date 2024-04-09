@@ -3,34 +3,32 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework.Validators;
 
 namespace Microsoft.Azure.WebJobs.Extensions.AuthenticationEvents.Framework
 {
     /// <summary>And abstract class for responses that implements actions.</summary>
     /// <typeparam name="T">Of type EventAction.</typeparam>
     /// <seealso cref="AuthenticationEventAction" />
-    ///
-
     public abstract class ActionableResponse<T> : AuthenticationEventResponse where T : AuthenticationEventAction
     {
         /// <summary>Gets or sets the actions.</summary>
         /// <value>The actions.</value>
         [JsonPropertyName("actions")]
-        [Required]
+        [OneOrMoreRequired]
+        [EnumerableItemsNotNull]
         public List<T> Actions { get; set; } = new List<T>();
 
-        /// <summary>Invalidates this instance.
-        /// Subsequently invalidates the actions.</summary>
+        /// <summary>Build AuthenticationEventJsonElement and set body to it.</summary>
         /// <seealso cref="AuthenticationEventResponse" />
-        internal override void Invalidate()
+        internal override void BuildJsonElement()
         {
-            InvalidateActions();
+            BuildAndSetActions();
         }
 
-        /// <summary>Invalidates the actions.</summary>
-        internal void InvalidateActions()
+        /// <summary>Build and sets the actions</summary>
+        internal void BuildAndSetActions()
         {
             string actionElement = "actions";
 

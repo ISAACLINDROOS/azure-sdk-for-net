@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.AI.TextAnalytics;
 using Azure.Core;
 
 namespace Azure.AI.TextAnalytics.Models
@@ -16,16 +15,6 @@ namespace Azure.AI.TextAnalytics.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            if (Optional.IsDefined(FhirVersion))
-            {
-                writer.WritePropertyName("fhirVersion"u8);
-                writer.WriteStringValue(FhirVersion.Value.ToString());
-            }
-            if (Optional.IsDefined(DocumentType))
-            {
-                writer.WritePropertyName("documentType"u8);
-                writer.WriteStringValue(DocumentType.Value.ToString());
-            }
             if (Optional.IsDefined(StringIndexType))
             {
                 writer.WritePropertyName("stringIndexType"u8);
@@ -50,31 +39,11 @@ namespace Azure.AI.TextAnalytics.Models
             {
                 return null;
             }
-            Optional<FhirVersion> fhirVersion = default;
-            Optional<HealthcareDocumentType> documentType = default;
-            Optional<StringIndexType> stringIndexType = default;
-            Optional<string> modelVersion = default;
-            Optional<bool> loggingOptOut = default;
+            StringIndexType? stringIndexType = default;
+            string modelVersion = default;
+            bool? loggingOptOut = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("fhirVersion"u8))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        continue;
-                    }
-                    fhirVersion = new FhirVersion(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("documentType"u8))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        continue;
-                    }
-                    documentType = new HealthcareDocumentType(property.Value.GetString());
-                    continue;
-                }
                 if (property.NameEquals("stringIndexType"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
@@ -99,7 +68,23 @@ namespace Azure.AI.TextAnalytics.Models
                     continue;
                 }
             }
-            return new HealthcareTaskParameters(Optional.ToNullable(loggingOptOut), modelVersion.Value, Optional.ToNullable(fhirVersion), Optional.ToNullable(documentType), Optional.ToNullable(stringIndexType));
+            return new HealthcareTaskParameters(loggingOptOut, modelVersion, stringIndexType);
+        }
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static new HealthcareTaskParameters FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content);
+            return DeserializeHealthcareTaskParameters(document.RootElement);
+        }
+
+        /// <summary> Convert into a Utf8JsonRequestContent. </summary>
+        internal override RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue<HealthcareTaskParameters>(this);
+            return content;
         }
     }
 }

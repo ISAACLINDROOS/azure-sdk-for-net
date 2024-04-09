@@ -1,13 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Azure.Communication.JobRouter.Tests.Infrastructure;
-using Azure.Core.TestFramework;
+using Azure.Core;
 using NUnit.Framework;
 
 namespace Azure.Communication.JobRouter.Tests.RouterClients
@@ -23,19 +21,18 @@ namespace Azure.Communication.JobRouter.Tests.RouterClients
         [Test]
         public async Task CreateExceptionPolicyTest_QueueLength_Cancel()
         {
-            RouterAdministrationClient routerClient = CreateRouterAdministrationClientWithConnectionString();
+            JobRouterAdministrationClient routerClient = CreateRouterAdministrationClientWithConnectionString();
 
             var exceptionPolicyId = GenerateUniqueId($"{IdPrefix}{nameof(CreateExceptionPolicyTest_QueueLength_Cancel)}");
 
             // exception rules
             var exceptionRuleId = GenerateUniqueId($"{IdPrefix}-ExceptionRule");
-            var cancelActionId = GenerateUniqueId($"{IdPrefix}-CancellationExceptionAction");
-            var rules = new Dictionary<string, ExceptionRule>()
+            var rules = new List<ExceptionRule>()
             {
-                [exceptionRuleId] = new ExceptionRule(new QueueLengthExceptionTrigger(1),
-                    new Dictionary<string, ExceptionAction?>()
+                new ExceptionRule(id: exceptionRuleId,new QueueLengthExceptionTrigger(1),
+                    new List<ExceptionAction>
                     {
-                        [cancelActionId] = new CancelExceptionAction()
+                        new CancelExceptionAction
                         {
                             DispositionCode = "CancelledDueToMaxQueueLengthReached"
                         }
@@ -56,24 +53,23 @@ namespace Azure.Communication.JobRouter.Tests.RouterClients
             {
                 var exceptionRule = exceptionPolicy.ExceptionRules.First();
 
-                Assert.AreEqual(exceptionRuleId, exceptionRule.Key);
-                Assert.IsTrue(exceptionRule.Value.Trigger.GetType() == typeof(QueueLengthExceptionTrigger));
-                var trigger = exceptionRule.Value.Trigger as QueueLengthExceptionTrigger;
+                Assert.AreEqual(exceptionRuleId, exceptionRule.Id);
+                Assert.IsTrue(exceptionRule.Trigger.GetType() == typeof(QueueLengthExceptionTrigger));
+                var trigger = exceptionRule.Trigger as QueueLengthExceptionTrigger;
                 Assert.NotNull(trigger);
                 Assert.AreEqual(1, trigger!.Threshold);
 
-                var actions = exceptionRule.Value.Actions;
+                var actions = exceptionRule.Actions;
                 Assert.AreEqual(1, actions.Count);
-                var cancelAction = actions.FirstOrDefault().Value as CancelExceptionAction;
+                var cancelAction = actions.FirstOrDefault() as CancelExceptionAction;
                 Assert.NotNull(cancelAction);
-                Assert.AreEqual(cancelActionId, actions.FirstOrDefault().Key);
                 Assert.AreEqual($"CancelledDueToMaxQueueLengthReached", cancelAction!.DispositionCode);
             });
 
             // with name
             var exceptionPolicyName = $"{exceptionPolicyId}-ExceptionPolicyName";
             createExceptionPolicyResponse = await routerClient.UpdateExceptionPolicyAsync(
-                new UpdateExceptionPolicyOptions(exceptionPolicyId)
+                new ExceptionPolicy(exceptionPolicyId)
                 {
                     Name = exceptionPolicyName
                 });
@@ -89,39 +85,41 @@ namespace Azure.Communication.JobRouter.Tests.RouterClients
         [Test]
         public async Task CreateExceptionPolicyTest_WaitTime()
         {
-            RouterAdministrationClient routerClient = CreateRouterAdministrationClientWithConnectionString();
+            JobRouterAdministrationClient routerClient = CreateRouterAdministrationClientWithConnectionString();
 
             var createDistributionPolicyResponse = await CreateDistributionPolicy(nameof(CreateExceptionPolicyTest_WaitTime));
             var queueId = GenerateUniqueId(IdPrefix, nameof(CreateExceptionPolicyTest_WaitTime));
             var createQueueResponse = await routerClient.CreateQueueAsync(new CreateQueueOptions(queueId,
                     createDistributionPolicyResponse.Value.Id));
+            AddForCleanup(new Task(async () => await routerClient.DeleteQueueAsync(queueId)));
 
             var classificationPolicyId = GenerateUniqueId($"{IdPrefix}{nameof(CreateExceptionPolicyTest_WaitTime)}");
             var createClassificationPolicyResponse = await routerClient.CreateClassificationPolicyAsync(
                 new CreateClassificationPolicyOptions(classificationPolicyId)
                 {
-                    PrioritizationRule = new StaticRule(new LabelValue(1))
+                    PrioritizationRule = new StaticRouterRule(new RouterValue(1))
                 });
             var exceptionPolicyId = GenerateUniqueId($"{IdPrefix}{nameof(CreateExceptionPolicyTest_WaitTime)}");
 
-            var labelsToUpsert = new Dictionary<string, LabelValue>() { ["Label_1"] = new LabelValue("Value_1") };
+            var labelsToUpsert = new Dictionary<string, RouterValue>() { ["Label_1"] = new RouterValue("Value_1") };
             // exception rules
             var exceptionRuleId = GenerateUniqueId($"{IdPrefix}-ExceptionRule");
-            var reclassifyActionId = GenerateUniqueId($"{IdPrefix}-ReclassifyExceptionAction");
-            var manualReclassifyActionId = GenerateUniqueId($"{IdPrefix}-ManualReclassifyAction");
-            var rules = new Dictionary<string, ExceptionRule>()
+            var rules = new List<ExceptionRule>()
             {
-                [exceptionRuleId] = new ExceptionRule(new QueueLengthExceptionTrigger(1),
-                    new Dictionary<string, ExceptionAction?>()
+                new(id: exceptionRuleId, new QueueLengthExceptionTrigger(1),
+                    new List<ExceptionAction>
                     {
-                        [reclassifyActionId] = new ReclassifyExceptionAction(classificationPolicyId)
+                        new ReclassifyExceptionAction
                         {
-                            LabelsToUpsert = labelsToUpsert
+                            ClassificationPolicyId = classificationPolicyId,
+                            LabelsToUpsert = { ["Label_1"] = new RouterValue("Value_1") }
                         },
-                        [manualReclassifyActionId] = new ManualReclassifyExceptionAction(createQueueResponse.Value.Id, 1, new List<WorkerSelector>
+                        new ManualReclassifyExceptionAction
                         {
-                            new WorkerSelector("abc", LabelOperator.Equal, new LabelValue(1))
-                        })
+                            QueueId = createQueueResponse.Value.Id,
+                            Priority = 1,
+                            WorkerSelectors = { new RouterWorkerSelector("abc", LabelOperator.Equal, new RouterValue(1)) }
+                        }
                     }
                 )
             };
@@ -134,28 +132,25 @@ namespace Azure.Communication.JobRouter.Tests.RouterClients
             var exceptionPolicy = createExceptionPolicyResponse.Value;
 
             Assert.AreEqual(exceptionPolicyId, exceptionPolicy.Id);
-            Assert.AreEqual(exceptionPolicyId, exceptionPolicy.Id);
             Assert.DoesNotThrow(() =>
             {
                 var exceptionRule = exceptionPolicy.ExceptionRules.First();
 
-                Assert.AreEqual(exceptionRuleId, exceptionRule.Key);
-                Assert.IsTrue(exceptionRule.Value.Trigger.GetType() == typeof(QueueLengthExceptionTrigger));
-                var trigger = exceptionRule.Value.Trigger as QueueLengthExceptionTrigger;
+                Assert.AreEqual(exceptionRuleId, exceptionRule.Id);
+                Assert.IsTrue(exceptionRule.Trigger.GetType() == typeof(QueueLengthExceptionTrigger));
+                var trigger = exceptionRule.Trigger as QueueLengthExceptionTrigger;
                 Assert.NotNull(trigger);
                 Assert.AreEqual(1, trigger!.Threshold);
 
-                var actions = exceptionRule.Value.Actions;
+                var actions = exceptionRule.Actions;
                 Assert.AreEqual(2, actions.Count);
-                var reclassifyExceptionAction = actions.FirstOrDefault().Value as ReclassifyExceptionAction;
+                var reclassifyExceptionAction = actions.FirstOrDefault() as ReclassifyExceptionAction;
                 Assert.NotNull(reclassifyExceptionAction);
-                Assert.AreEqual(reclassifyActionId, actions.FirstOrDefault().Key);
                 Assert.AreEqual(classificationPolicyId, reclassifyExceptionAction?.ClassificationPolicyId);
                 Assert.AreEqual(labelsToUpsert.FirstOrDefault().Key, reclassifyExceptionAction?.LabelsToUpsert.FirstOrDefault().Key);
                 Assert.AreEqual(labelsToUpsert.FirstOrDefault().Value.Value as string, reclassifyExceptionAction?.LabelsToUpsert.FirstOrDefault().Value.Value as string);
-                var manualReclassifyExceptionAction = actions.LastOrDefault().Value as ManualReclassifyExceptionAction;
+                var manualReclassifyExceptionAction = actions.LastOrDefault() as ManualReclassifyExceptionAction;
                 Assert.NotNull(manualReclassifyExceptionAction);
-                Assert.AreEqual(manualReclassifyActionId, actions.LastOrDefault().Key);
                 Assert.AreEqual(queueId, manualReclassifyExceptionAction?.QueueId);
                 Assert.AreEqual(1, manualReclassifyExceptionAction?.Priority);
             });
@@ -163,7 +158,7 @@ namespace Azure.Communication.JobRouter.Tests.RouterClients
             // with name
             var exceptionPolicyName = $"{exceptionPolicyId}-ExceptionPolicyName";
             createExceptionPolicyResponse = await routerClient.UpdateExceptionPolicyAsync(
-                new UpdateExceptionPolicyOptions(exceptionPolicyId)
+                new ExceptionPolicy(exceptionPolicyId)
                 {
                     Name = exceptionPolicyName
                 });

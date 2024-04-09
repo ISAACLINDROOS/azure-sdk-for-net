@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.KeyVault.Models;
@@ -33,7 +33,7 @@ namespace Azure.ResourceManager.KeyVault
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2021-10-01";
+            _apiVersion = apiVersion ?? "2023-02-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -55,7 +55,7 @@ namespace Azure.ResourceManager.KeyVault
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue<KeyVaultCreateOrUpdateContent>(content, new ModelReaderWriterOptions("W"));
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
@@ -133,7 +133,7 @@ namespace Azure.ResourceManager.KeyVault
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(patch);
+            content.JsonWriter.WriteObjectValue<KeyVaultPatch>(patch, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -375,7 +375,7 @@ namespace Azure.ResourceManager.KeyVault
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(keyVaultAccessPolicyParameters);
+            content.JsonWriter.WriteObjectValue<KeyVaultAccessPolicyParameters>(keyVaultAccessPolicyParameters, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -477,7 +477,7 @@ namespace Azure.ResourceManager.KeyVault
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<KeyVaultListResult>> ListByResourceGroupAsync(string subscriptionId, string resourceGroupName, int? top = null, CancellationToken cancellationToken = default)
+        public async Task<Response<VaultListResult>> ListByResourceGroupAsync(string subscriptionId, string resourceGroupName, int? top = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -488,9 +488,9 @@ namespace Azure.ResourceManager.KeyVault
             {
                 case 200:
                     {
-                        KeyVaultListResult value = default;
+                        VaultListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = KeyVaultListResult.DeserializeKeyVaultListResult(document.RootElement);
+                        value = VaultListResult.DeserializeVaultListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -505,7 +505,7 @@ namespace Azure.ResourceManager.KeyVault
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<KeyVaultListResult> ListByResourceGroup(string subscriptionId, string resourceGroupName, int? top = null, CancellationToken cancellationToken = default)
+        public Response<VaultListResult> ListByResourceGroup(string subscriptionId, string resourceGroupName, int? top = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -516,9 +516,9 @@ namespace Azure.ResourceManager.KeyVault
             {
                 case 200:
                     {
-                        KeyVaultListResult value = default;
+                        VaultListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = KeyVaultListResult.DeserializeKeyVaultListResult(document.RootElement);
+                        value = VaultListResult.DeserializeVaultListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -553,7 +553,7 @@ namespace Azure.ResourceManager.KeyVault
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<KeyVaultListResult>> ListBySubscriptionAsync(string subscriptionId, int? top = null, CancellationToken cancellationToken = default)
+        public async Task<Response<VaultListResult>> ListBySubscriptionAsync(string subscriptionId, int? top = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
 
@@ -563,9 +563,9 @@ namespace Azure.ResourceManager.KeyVault
             {
                 case 200:
                     {
-                        KeyVaultListResult value = default;
+                        VaultListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = KeyVaultListResult.DeserializeKeyVaultListResult(document.RootElement);
+                        value = VaultListResult.DeserializeVaultListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -579,7 +579,7 @@ namespace Azure.ResourceManager.KeyVault
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<KeyVaultListResult> ListBySubscription(string subscriptionId, int? top = null, CancellationToken cancellationToken = default)
+        public Response<VaultListResult> ListBySubscription(string subscriptionId, int? top = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
 
@@ -589,9 +589,9 @@ namespace Azure.ResourceManager.KeyVault
             {
                 case 200:
                     {
-                        KeyVaultListResult value = default;
+                        VaultListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = KeyVaultListResult.DeserializeKeyVaultListResult(document.RootElement);
+                        value = VaultListResult.DeserializeVaultListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -621,7 +621,7 @@ namespace Azure.ResourceManager.KeyVault
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<DeletedKeyVaultListResult>> ListDeletedAsync(string subscriptionId, CancellationToken cancellationToken = default)
+        public async Task<Response<DeletedVaultListResult>> ListDeletedAsync(string subscriptionId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
 
@@ -631,9 +631,9 @@ namespace Azure.ResourceManager.KeyVault
             {
                 case 200:
                     {
-                        DeletedKeyVaultListResult value = default;
+                        DeletedVaultListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = DeletedKeyVaultListResult.DeserializeDeletedKeyVaultListResult(document.RootElement);
+                        value = DeletedVaultListResult.DeserializeDeletedVaultListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -646,7 +646,7 @@ namespace Azure.ResourceManager.KeyVault
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<DeletedKeyVaultListResult> ListDeleted(string subscriptionId, CancellationToken cancellationToken = default)
+        public Response<DeletedVaultListResult> ListDeleted(string subscriptionId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
 
@@ -656,9 +656,9 @@ namespace Azure.ResourceManager.KeyVault
             {
                 case 200:
                     {
-                        DeletedKeyVaultListResult value = default;
+                        DeletedVaultListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = DeletedKeyVaultListResult.DeserializeDeletedKeyVaultListResult(document.RootElement);
+                        value = DeletedVaultListResult.DeserializeDeletedVaultListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -830,7 +830,7 @@ namespace Azure.ResourceManager.KeyVault
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue<KeyVaultNameAvailabilityContent>(content, new ModelReaderWriterOptions("W"));
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
@@ -912,7 +912,7 @@ namespace Azure.ResourceManager.KeyVault
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<KeyVaultListResult>> ListByResourceGroupNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, int? top = null, CancellationToken cancellationToken = default)
+        public async Task<Response<VaultListResult>> ListByResourceGroupNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, int? top = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -924,9 +924,9 @@ namespace Azure.ResourceManager.KeyVault
             {
                 case 200:
                     {
-                        KeyVaultListResult value = default;
+                        VaultListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = KeyVaultListResult.DeserializeKeyVaultListResult(document.RootElement);
+                        value = VaultListResult.DeserializeVaultListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -942,7 +942,7 @@ namespace Azure.ResourceManager.KeyVault
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<KeyVaultListResult> ListByResourceGroupNextPage(string nextLink, string subscriptionId, string resourceGroupName, int? top = null, CancellationToken cancellationToken = default)
+        public Response<VaultListResult> ListByResourceGroupNextPage(string nextLink, string subscriptionId, string resourceGroupName, int? top = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -954,9 +954,9 @@ namespace Azure.ResourceManager.KeyVault
             {
                 case 200:
                     {
-                        KeyVaultListResult value = default;
+                        VaultListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = KeyVaultListResult.DeserializeKeyVaultListResult(document.RootElement);
+                        value = VaultListResult.DeserializeVaultListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -985,7 +985,7 @@ namespace Azure.ResourceManager.KeyVault
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<KeyVaultListResult>> ListBySubscriptionNextPageAsync(string nextLink, string subscriptionId, int? top = null, CancellationToken cancellationToken = default)
+        public async Task<Response<VaultListResult>> ListBySubscriptionNextPageAsync(string nextLink, string subscriptionId, int? top = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -996,9 +996,9 @@ namespace Azure.ResourceManager.KeyVault
             {
                 case 200:
                     {
-                        KeyVaultListResult value = default;
+                        VaultListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = KeyVaultListResult.DeserializeKeyVaultListResult(document.RootElement);
+                        value = VaultListResult.DeserializeVaultListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -1013,7 +1013,7 @@ namespace Azure.ResourceManager.KeyVault
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<KeyVaultListResult> ListBySubscriptionNextPage(string nextLink, string subscriptionId, int? top = null, CancellationToken cancellationToken = default)
+        public Response<VaultListResult> ListBySubscriptionNextPage(string nextLink, string subscriptionId, int? top = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -1024,9 +1024,9 @@ namespace Azure.ResourceManager.KeyVault
             {
                 case 200:
                     {
-                        KeyVaultListResult value = default;
+                        VaultListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = KeyVaultListResult.DeserializeKeyVaultListResult(document.RootElement);
+                        value = VaultListResult.DeserializeVaultListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -1054,7 +1054,7 @@ namespace Azure.ResourceManager.KeyVault
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<DeletedKeyVaultListResult>> ListDeletedNextPageAsync(string nextLink, string subscriptionId, CancellationToken cancellationToken = default)
+        public async Task<Response<DeletedVaultListResult>> ListDeletedNextPageAsync(string nextLink, string subscriptionId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -1065,9 +1065,9 @@ namespace Azure.ResourceManager.KeyVault
             {
                 case 200:
                     {
-                        DeletedKeyVaultListResult value = default;
+                        DeletedVaultListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = DeletedKeyVaultListResult.DeserializeDeletedKeyVaultListResult(document.RootElement);
+                        value = DeletedVaultListResult.DeserializeDeletedVaultListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -1081,7 +1081,7 @@ namespace Azure.ResourceManager.KeyVault
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<DeletedKeyVaultListResult> ListDeletedNextPage(string nextLink, string subscriptionId, CancellationToken cancellationToken = default)
+        public Response<DeletedVaultListResult> ListDeletedNextPage(string nextLink, string subscriptionId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -1092,9 +1092,9 @@ namespace Azure.ResourceManager.KeyVault
             {
                 case 200:
                     {
-                        DeletedKeyVaultListResult value = default;
+                        DeletedVaultListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = DeletedKeyVaultListResult.DeserializeDeletedKeyVaultListResult(document.RootElement);
+                        value = DeletedVaultListResult.DeserializeDeletedVaultListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

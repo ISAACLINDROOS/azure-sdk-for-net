@@ -16,7 +16,7 @@ namespace Azure.ResourceManager.SecurityInsights.Models
     /// <summary> Represents a mail message entity. </summary>
     public partial class SecurityInsightsMailMessageEntity : SecurityInsightsEntity
     {
-        /// <summary> Initializes a new instance of SecurityInsightsMailMessageEntity. </summary>
+        /// <summary> Initializes a new instance of <see cref="SecurityInsightsMailMessageEntity"/>. </summary>
         public SecurityInsightsMailMessageEntity()
         {
             AdditionalData = new ChangeTrackingDictionary<string, BinaryData>();
@@ -27,25 +27,26 @@ namespace Azure.ResourceManager.SecurityInsights.Models
             Kind = SecurityInsightsEntityKind.MailMessage;
         }
 
-        /// <summary> Initializes a new instance of SecurityInsightsMailMessageEntity. </summary>
+        /// <summary> Initializes a new instance of <see cref="SecurityInsightsMailMessageEntity"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
         /// <param name="systemData"> The systemData. </param>
         /// <param name="kind"> The kind of the entity. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="additionalData"> A bag of custom fields that should be part of the entity and will be presented to the user. </param>
         /// <param name="friendlyName"> The graph item display name which is a short humanly readable description of the graph item instance. This property is optional and might be system generated. </param>
-        /// <param name="fileEntityIds"> The File entity ids of this mail message&apos;s attachments. </param>
+        /// <param name="fileEntityIds"> The File entity ids of this mail message's attachments. </param>
         /// <param name="recipient"> The recipient of this mail message. Note that in case of multiple recipients the mail message is forked and each copy has one recipient. </param>
         /// <param name="uris"> The Urls contained in this mail message. </param>
         /// <param name="threats"> The threats of this mail message. </param>
-        /// <param name="p1Sender"> The p1 sender&apos;s email address. </param>
-        /// <param name="p1SenderDisplayName"> The p1 sender&apos;s display name. </param>
-        /// <param name="p1SenderDomain"> The p1 sender&apos;s domain. </param>
-        /// <param name="senderIP"> The sender&apos;s IP address. </param>
-        /// <param name="p2Sender"> The p2 sender&apos;s email address. </param>
-        /// <param name="p2SenderDisplayName"> The p2 sender&apos;s display name. </param>
-        /// <param name="p2SenderDomain"> The p2 sender&apos;s domain. </param>
+        /// <param name="p1Sender"> The p1 sender's email address. </param>
+        /// <param name="p1SenderDisplayName"> The p1 sender's display name. </param>
+        /// <param name="p1SenderDomain"> The p1 sender's domain. </param>
+        /// <param name="senderIP"> The sender's IP address. </param>
+        /// <param name="p2Sender"> The p2 sender's email address. </param>
+        /// <param name="p2SenderDisplayName"> The p2 sender's display name. </param>
+        /// <param name="p2SenderDomain"> The p2 sender's domain. </param>
         /// <param name="receiveOn"> The receive date of this message. </param>
         /// <param name="networkMessageId"> The network message id of this mail message. </param>
         /// <param name="internetMessageId"> The internet message id of this mail message. </param>
@@ -60,7 +61,7 @@ namespace Azure.ResourceManager.SecurityInsights.Models
         /// <param name="antispamDirection"> The directionality of this mail message. </param>
         /// <param name="deliveryAction"> The delivery action of this mail message like Delivered, Blocked, Replaced etc. </param>
         /// <param name="deliveryLocation"> The delivery location of this mail message like Inbox, JunkFolder etc. </param>
-        internal SecurityInsightsMailMessageEntity(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, SecurityInsightsEntityKind kind, IReadOnlyDictionary<string, BinaryData> additionalData, string friendlyName, IReadOnlyList<string> fileEntityIds, string recipient, IReadOnlyList<Uri> uris, IReadOnlyList<string> threats, string p1Sender, string p1SenderDisplayName, string p1SenderDomain, IPAddress senderIP, string p2Sender, string p2SenderDisplayName, string p2SenderDomain, DateTimeOffset? receiveOn, Guid? networkMessageId, string internetMessageId, string subject, string language, IReadOnlyList<string> threatDetectionMethods, int? bodyFingerprintBin1, int? bodyFingerprintBin2, int? bodyFingerprintBin3, int? bodyFingerprintBin4, int? bodyFingerprintBin5, AntispamMailDirection? antispamDirection, SecurityInsightsMailMessageDeliveryAction? deliveryAction, SecurityInsightsMailMessageDeliveryLocation? deliveryLocation) : base(id, name, resourceType, systemData, kind)
+        internal SecurityInsightsMailMessageEntity(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, SecurityInsightsEntityKind kind, IDictionary<string, BinaryData> serializedAdditionalRawData, IReadOnlyDictionary<string, BinaryData> additionalData, string friendlyName, IReadOnlyList<string> fileEntityIds, string recipient, IReadOnlyList<Uri> uris, IReadOnlyList<string> threats, string p1Sender, string p1SenderDisplayName, string p1SenderDomain, IPAddress senderIP, string p2Sender, string p2SenderDisplayName, string p2SenderDomain, DateTimeOffset? receiveOn, Guid? networkMessageId, string internetMessageId, string subject, string language, IReadOnlyList<string> threatDetectionMethods, int? bodyFingerprintBin1, int? bodyFingerprintBin2, int? bodyFingerprintBin3, int? bodyFingerprintBin4, int? bodyFingerprintBin5, AntispamMailDirection? antispamDirection, SecurityInsightsMailMessageDeliveryAction? deliveryAction, SecurityInsightsMailMessageDeliveryLocation? deliveryLocation) : base(id, name, resourceType, systemData, kind, serializedAdditionalRawData)
         {
             AdditionalData = additionalData;
             FriendlyName = friendlyName;
@@ -98,7 +99,7 @@ namespace Azure.ResourceManager.SecurityInsights.Models
         /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
         /// </para>
         /// <para>
-        /// To assign an already formated json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
         /// </para>
         /// <para>
         /// Examples:
@@ -125,7 +126,7 @@ namespace Azure.ResourceManager.SecurityInsights.Models
         public IReadOnlyDictionary<string, BinaryData> AdditionalData { get; }
         /// <summary> The graph item display name which is a short humanly readable description of the graph item instance. This property is optional and might be system generated. </summary>
         public string FriendlyName { get; }
-        /// <summary> The File entity ids of this mail message&apos;s attachments. </summary>
+        /// <summary> The File entity ids of this mail message's attachments. </summary>
         public IReadOnlyList<string> FileEntityIds { get; }
         /// <summary> The recipient of this mail message. Note that in case of multiple recipients the mail message is forked and each copy has one recipient. </summary>
         public string Recipient { get; }
@@ -133,19 +134,19 @@ namespace Azure.ResourceManager.SecurityInsights.Models
         public IReadOnlyList<Uri> Uris { get; }
         /// <summary> The threats of this mail message. </summary>
         public IReadOnlyList<string> Threats { get; }
-        /// <summary> The p1 sender&apos;s email address. </summary>
+        /// <summary> The p1 sender's email address. </summary>
         public string P1Sender { get; }
-        /// <summary> The p1 sender&apos;s display name. </summary>
+        /// <summary> The p1 sender's display name. </summary>
         public string P1SenderDisplayName { get; }
-        /// <summary> The p1 sender&apos;s domain. </summary>
+        /// <summary> The p1 sender's domain. </summary>
         public string P1SenderDomain { get; }
-        /// <summary> The sender&apos;s IP address. </summary>
+        /// <summary> The sender's IP address. </summary>
         public IPAddress SenderIP { get; }
-        /// <summary> The p2 sender&apos;s email address. </summary>
+        /// <summary> The p2 sender's email address. </summary>
         public string P2Sender { get; }
-        /// <summary> The p2 sender&apos;s display name. </summary>
+        /// <summary> The p2 sender's display name. </summary>
         public string P2SenderDisplayName { get; }
-        /// <summary> The p2 sender&apos;s domain. </summary>
+        /// <summary> The p2 sender's domain. </summary>
         public string P2SenderDomain { get; }
         /// <summary> The receive date of this message. </summary>
         public DateTimeOffset? ReceiveOn { get; }

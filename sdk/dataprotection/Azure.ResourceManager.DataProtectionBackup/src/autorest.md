@@ -5,16 +5,16 @@ Run `dotnet build /t:GenerateCode` to generate code.
 ``` yaml
 
 azure-arm: true
-generate-model-factory: false
 csharp: true
 library-name: DataProtectionBackup
 namespace: Azure.ResourceManager.DataProtectionBackup
-require: https://github.com/Azure/azure-rest-api-specs/blob/42e62bef21fca828da9a9a81d845d00aae466877/specification/dataprotection/resource-manager/readme.md
+require: https://github.com/Azure/azure-rest-api-specs/blob/1fead771fdafa41ccaa1e43750bab608b951ca80/specification/dataprotection/resource-manager/readme.md
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
 skip-csproj: true
 modelerfour:
   flatten-payloads: false
+use-model-reader-writer: true
 
 format-by-name-rules:
   'tenantId': 'uuid'
@@ -23,7 +23,7 @@ format-by-name-rules:
   '*Uri': 'Uri'
   '*Uris': 'Uri'
 
-rename-rules:
+acronym-mapping:
   CPU: Cpu
   CPUs: Cpus
   Os: OS
@@ -75,6 +75,9 @@ override-operation-name:
   ResourceGuards_GetUpdateProtectionPolicyRequestsObjects: GetUpdateProtectionPolicyObjects
   DataProtection_CheckFeatureSupport: CheckDataProtectionBackupFeatureSupport
   BackupVaults_CheckNameAvailability: CheckDataProtectionBackupVaultNameAvailability
+  FetchCrossRegionRestoreJob_Get: GetCrossRegionRestoreJob
+  FetchCrossRegionRestoreJobs_List: GetCrossRegionRestoreJobs
+  FetchSecondaryRecoveryPoints_List: GetSecondaryRecoveryPoints
 
 rename-mapping:
   AzureBackupJobResource: DataProtectionBackupJob
@@ -99,7 +102,7 @@ rename-mapping:
   TriggerBackupRequest.backupRuleOptions: BackupRules
   OperationExtendedInfo: DataProtectionOperationExtendedInfo
   OperationJobExtendedInfo: DataProtectionOperationJobExtendedInfo
-  OperationJobExtendedInfo.jobId: -|uuid
+  OperationJobExtendedInfo.jobId: JobIdentifier
   AzureBackupFindRestorableTimeRangesRequest: BackupFindRestorableTimeRangeContent
   AzureBackupFindRestorableTimeRangesRequest.startTime: StartOn|date-time
   AzureBackupFindRestorableTimeRangesRequest.endTime: EndOn|date-time
@@ -244,6 +247,23 @@ rename-mapping:
   SecuritySettings: BackupVaultSecuritySettings
   SoftDeleteSettings: BackupVaultSoftDeleteSettings
   SoftDeleteState: BackupVaultSoftDeleteState
+  UnlockDeleteRequest: DataProtectionUnlockDeleteContent
+  UnlockDeleteResponse: DataProtectionUnlockDeleteResult
+  SecureScoreLevel: BackupVaultSecureScoreLevel
+  FeatureSettings: BackupVaultFeatureSettings
+  IdentityDetails: DataProtectionIdentityDetails
+  NamespacedNameResource: NamespacedName
+  CrossRegionRestoreDetails.sourceBackupInstanceId : -|arm-id
+  CrossRegionRestoreDetails.sourceRegion  : -|azure-location
+  CrossRegionRestoreJobRequest.jobId : -|uuid
+  CrossRegionRestoreJobRequest.sourceBackupVaultId : -|arm-id
+  CrossRegionRestoreJobRequest.sourceRegion  : -|azure-location
+  CrossRegionRestoreJobsRequest.sourceBackupVaultId : -|arm-id
+  CrossRegionRestoreJobsRequest.sourceRegion  : -|azure-location
+  FetchSecondaryRPsRequestParameters.sourceBackupInstanceId : -|arm-id
+  FetchSecondaryRPsRequestParameters.sourceRegion  : -|azure-location
+  BackupVault.replicatedRegions : -|azure-location
+  RecoveryPointCompletionState: DataProtectionBackupRecoveryPointCompletionState
 
 directive:
 # Correct the type of properties

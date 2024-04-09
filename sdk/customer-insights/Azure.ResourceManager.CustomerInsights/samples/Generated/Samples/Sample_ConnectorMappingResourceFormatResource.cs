@@ -7,11 +7,8 @@
 
 using System;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Identity;
-using Azure.ResourceManager;
-using Azure.ResourceManager.CustomerInsights;
 using Azure.ResourceManager.CustomerInsights.Models;
 
 namespace Azure.ResourceManager.CustomerInsights.Samples
@@ -53,7 +50,6 @@ namespace Azure.ResourceManager.CustomerInsights.Samples
                     ErrorLimit = 10,
                 }, new ConnectorMappingFormat()
                 {
-                    FormatType = FormatType.TextFormat,
                     ColumnDelimiter = "|",
                 }, new ConnectorMappingAvailability(5)
                 {

@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 
@@ -60,7 +60,7 @@ namespace Azure.ResourceManager.Synapse
             return message;
         }
 
-        /// <summary> Get a SQL pool&apos;s Maintenance Windows. </summary>
+        /// <summary> Get a SQL pool's Maintenance Windows. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -95,7 +95,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> Get a SQL pool&apos;s Maintenance Windows. </summary>
+        /// <summary> Get a SQL pool's Maintenance Windows. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -151,13 +151,13 @@ namespace Azure.ResourceManager.Synapse
             request.Uri = uri;
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<SynapseMaintenanceWindowData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
-        /// <summary> Creates or updates a Sql pool&apos;s maintenance windows settings. </summary>
+        /// <summary> Creates or updates a Sql pool's maintenance windows settings. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -187,7 +187,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> Creates or updates a Sql pool&apos;s maintenance windows settings. </summary>
+        /// <summary> Creates or updates a Sql pool's maintenance windows settings. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>

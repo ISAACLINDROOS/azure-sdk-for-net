@@ -8,14 +8,13 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 
 namespace Azure.AI.OpenAI
 {
     // Data plane generated client.
-    /// <summary> Azure OpenAI APIs for completions and search. </summary>
+    /// <summary> The OpenAI service client. </summary>
     public partial class OpenAIClient
     {
         private const string AuthorizationHeader = "api-key";

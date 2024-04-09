@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 
@@ -60,7 +59,7 @@ namespace Azure.ResourceManager.Synapse
             return message;
         }
 
-        /// <summary> Get list of SQL pool&apos;s available maintenance windows. </summary>
+        /// <summary> Get list of SQL pool's available maintenance windows. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -95,7 +94,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> Get list of SQL pool&apos;s available maintenance windows. </summary>
+        /// <summary> Get list of SQL pool's available maintenance windows. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>

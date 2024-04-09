@@ -3,7 +3,4 @@
 
 using Azure.Core;
 
-[assembly: Azure.Core.AzureResourceProviderNamespace("Microsoft.Insights")]
-[assembly: CodeGenOverrideServiceVersions(
-    "2022-12-01",
-    "2023-03-15-preview")]
+[assembly: Azure.Core.AzureResourceProviderNamespace("Microsoft.CognitiveServices")]

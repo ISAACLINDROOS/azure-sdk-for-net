@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.SecurityCenter.Models;
@@ -202,13 +202,13 @@ namespace Azure.ResourceManager.SecurityCenter
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<SecurityAlertsSuppressionRuleData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
-        /// <summary> Update existing rule or create new rule if it doesn&apos;t exist. </summary>
+        /// <summary> Update existing rule or create new rule if it doesn't exist. </summary>
         /// <param name="subscriptionId"> Azure subscription ID. </param>
         /// <param name="alertsSuppressionRuleName"> The unique name of the suppression alert rule. </param>
         /// <param name="data"> Suppression rule object. </param>
@@ -237,7 +237,7 @@ namespace Azure.ResourceManager.SecurityCenter
             }
         }
 
-        /// <summary> Update existing rule or create new rule if it doesn&apos;t exist. </summary>
+        /// <summary> Update existing rule or create new rule if it doesn't exist. </summary>
         /// <param name="subscriptionId"> Azure subscription ID. </param>
         /// <param name="alertsSuppressionRuleName"> The unique name of the suppression alert rule. </param>
         /// <param name="data"> Suppression rule object. </param>

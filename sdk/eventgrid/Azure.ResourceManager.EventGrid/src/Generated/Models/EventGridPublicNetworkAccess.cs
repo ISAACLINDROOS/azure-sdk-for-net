@@ -12,7 +12,7 @@ namespace Azure.ResourceManager.EventGrid.Models
 {
     /// <summary>
     /// This determines if traffic is allowed over public network. By default it is enabled.
-    /// You can further restrict to specific IPs by configuring &lt;seealso cref=&quot;P:Microsoft.Azure.Events.ResourceProvider.Common.Contracts.DomainProperties.InboundIpRules&quot; /&gt;
+    /// You can further restrict to specific IPs by configuring &lt;seealso cref="P:Microsoft.Azure.Events.ResourceProvider.Common.Contracts.DomainProperties.InboundIpRules" /&gt;
     /// </summary>
     public readonly partial struct EventGridPublicNetworkAccess : IEquatable<EventGridPublicNetworkAccess>
     {
@@ -27,11 +27,14 @@ namespace Azure.ResourceManager.EventGrid.Models
 
         private const string EnabledValue = "Enabled";
         private const string DisabledValue = "Disabled";
+        private const string SecuredByPerimeterValue = "SecuredByPerimeter";
 
         /// <summary> Enabled. </summary>
         public static EventGridPublicNetworkAccess Enabled { get; } = new EventGridPublicNetworkAccess(EnabledValue);
         /// <summary> Disabled. </summary>
         public static EventGridPublicNetworkAccess Disabled { get; } = new EventGridPublicNetworkAccess(DisabledValue);
+        /// <summary> SecuredByPerimeter. </summary>
+        public static EventGridPublicNetworkAccess SecuredByPerimeter { get; } = new EventGridPublicNetworkAccess(SecuredByPerimeterValue);
         /// <summary> Determines if two <see cref="EventGridPublicNetworkAccess"/> values are the same. </summary>
         public static bool operator ==(EventGridPublicNetworkAccess left, EventGridPublicNetworkAccess right) => left.Equals(right);
         /// <summary> Determines if two <see cref="EventGridPublicNetworkAccess"/> values are not the same. </summary>

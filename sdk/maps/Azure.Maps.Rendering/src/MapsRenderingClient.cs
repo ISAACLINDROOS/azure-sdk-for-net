@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.GeoJson;
 using Azure.Core.Pipeline;
+using Azure.Maps.Common;
 
 namespace Azure.Maps.Rendering
 {
@@ -93,6 +94,35 @@ namespace Azure.Maps.Rendering
         }
 
         /// <summary> Initializes a new instance of MapsRenderingClient. </summary>
+        /// <param name="credential"> The Shared Access Signature credential used to connect to Azure. This signature
+        /// can be constructed using the <see cref="AzureSasCredential"/>.</param>
+        public MapsRenderingClient(AzureSasCredential credential)
+        {
+            Argument.AssertNotNull(credential, nameof(credential));
+
+            var endpoint = new Uri("https://atlas.microsoft.com");
+            var options = new MapsRenderingClientOptions();
+            _clientDiagnostics = new ClientDiagnostics(options);
+            _pipeline = HttpPipelineBuilder.Build(options, new MapsSasCredentialPolicy(credential));
+            restClient = new RenderRestClient(_clientDiagnostics, _pipeline, endpoint, null, options.Version);
+        }
+
+        /// <summary> Initializes a new instance of MapsRenderingClient. </summary>
+        /// <param name="credential"> The Shared Access Signature credential used to connect to Azure. This signature
+        /// can be constructed using the <see cref="AzureSasCredential"/>.</param>
+        /// <param name="options"> The options for configuring the client. </param>
+        public MapsRenderingClient(AzureSasCredential credential, MapsRenderingClientOptions options)
+        {
+            Argument.AssertNotNull(credential, nameof(credential));
+
+            var endpoint = options.Endpoint;
+            options ??= new MapsRenderingClientOptions();
+            _clientDiagnostics = new ClientDiagnostics(options);
+            _pipeline = HttpPipelineBuilder.Build(options, new MapsSasCredentialPolicy(credential));
+            restClient = new RenderRestClient(_clientDiagnostics, _pipeline, endpoint, null, options.Version);
+        }
+
+        /// <summary> Initializes a new instance of MapsRenderingClient. </summary>
         /// <param name="clientDiagnostics"> The handler for diagnostic messaging in the client. </param>
         /// <param name="pipeline"> The HTTP pipeline for sending and receiving REST requests and responses. </param>
         /// <param name="endpoint"> server parameter. </param>
@@ -152,7 +182,7 @@ namespace Azure.Maps.Rendering
                 List<string> paths = null;
                 if (options?.ImagePathStyles != null)
                 {
-                    pushpins = new List<string>();
+                    paths = new List<string>();
                     foreach (var path in options?.ImagePathStyles)
                     {
                         paths.Add(path.ToQueryString());
@@ -565,7 +595,7 @@ namespace Azure.Maps.Rendering
             try
             {
                 var boundingBox = new BoundingBox(new List<double>() { geoBoundingBox.South, geoBoundingBox.West }, new List<double>() { geoBoundingBox.North, geoBoundingBox.East });
-                return await restClient.GetCopyrightFromBoundingBoxAsync(boundingBox, ResponseFormat.Json, includeText ? "yes" : "no", cancellationToken).ConfigureAwait(false);
+                return await restClient.GetCopyrightFromBoundingBoxAsync(ResponseFormat.Json, boundingBox, includeText ? "yes" : "no", cancellationToken).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -590,7 +620,7 @@ namespace Azure.Maps.Rendering
             try
             {
                 var boundingBox = new BoundingBox(new List<double>() { geoBoundingBox.South, geoBoundingBox.West }, new List<double>() { geoBoundingBox.North, geoBoundingBox.East });
-                return restClient.GetCopyrightFromBoundingBox(boundingBox, ResponseFormat.Json, includeText ? "yes" : "no", cancellationToken);
+                return restClient.GetCopyrightFromBoundingBox(ResponseFormat.Json, boundingBox, includeText ? "yes" : "no", cancellationToken);
             }
             catch (Exception e)
             {
@@ -617,7 +647,7 @@ namespace Azure.Maps.Rendering
             scope.Start();
             try
             {
-                return await restClient.GetCopyrightForTileAsync(mapTileIndex, ResponseFormat.Json, includeText ? "yes" : "no", cancellationToken).ConfigureAwait(false);
+                return await restClient.GetCopyrightForTileAsync(ResponseFormat.Json, mapTileIndex, includeText ? "yes" : "no", cancellationToken).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -644,7 +674,7 @@ namespace Azure.Maps.Rendering
             scope.Start();
             try
             {
-                return restClient.GetCopyrightForTile(mapTileIndex, ResponseFormat.Json, includeText ? "yes" : "no", cancellationToken);
+                return restClient.GetCopyrightForTile(ResponseFormat.Json, mapTileIndex, includeText ? "yes" : "no", cancellationToken);
             }
             catch (Exception e)
             {

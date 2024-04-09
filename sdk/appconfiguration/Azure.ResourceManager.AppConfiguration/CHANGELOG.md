@@ -1,6 +1,6 @@
 # Release History
 
-## 1.1.0-beta.1 (Unreleased)
+## 1.4.0-beta.1 (Unreleased)
 
 ### Features Added
 
@@ -9,6 +9,43 @@
 ### Bugs Fixed
 
 ### Other Changes
+
+## 1.3.1 (2024-03-23)
+
+### Features Added
+
+- Added experimental Bicep serialization.
+
+## 1.2.0 (2024-01-30)
+
+### Features Added
+
+- Updated AppConfiguration RP API version to `2023-03-01` (ReplicaCollection, ReplicaData and ReplicaResource)
+
+### Other Changes
+
+- Removed AppConfigurationKeyValueCollection.GetAll() and AppConfigurationKeyValueCollection.GetAllAsync() (They never work. You may use data plane sdk: Azure.Data.AppConfiguration.ConfigurationClient.GetConfigurationSettings() or Azure.Data.AppConfiguration.ConfigurationClient.GetConfigurationSettingsAsync() )
+
+## 1.1.0 (2023-11-27)
+
+### Features Added
+
+- Enable mocking for extension methods, refer this [document](https://aka.ms/azsdk/net/mocking) for more details.
+
+### Other Changes
+
+- Upgraded dependent `Azure.ResourceManager` to 1.9.0.
+
+## 1.1.0-beta.1 (2023-05-25)
+
+### Features Added
+
+- Enable the model factory feature for model mocking, more information can be found [here](https://azure.github.io/azure-sdk/dotnet_introduction.html#dotnet-mocking-factory-builder).
+
+### Other Changes
+
+- Upgraded dependent Azure.Core to 1.32.0.
+- Upgraded dependent Azure.ResourceManager to 1.6.0.
 
 ## 1.0.0 (2022-08-29)
 

@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.DataBoxEdge.Models;
@@ -66,7 +66,7 @@ namespace Azure.ResourceManager.DataBoxEdge
         /// <param name="subscriptionId"> The subscription ID. </param>
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="deviceName"> The device name. </param>
-        /// <param name="filter"> Specify $filter=&apos;Type eq &lt;type&gt;&apos; to filter on user type property. </param>
+        /// <param name="filter"> Specify $filter='Type eq &lt;type&gt;' to filter on user type property. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -96,7 +96,7 @@ namespace Azure.ResourceManager.DataBoxEdge
         /// <param name="subscriptionId"> The subscription ID. </param>
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="deviceName"> The device name. </param>
-        /// <param name="filter"> Specify $filter=&apos;Type eq &lt;type&gt;&apos; to filter on user type property. </param>
+        /// <param name="filter"> Specify $filter='Type eq &lt;type&gt;' to filter on user type property. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -230,13 +230,13 @@ namespace Azure.ResourceManager.DataBoxEdge
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<DataBoxEdgeUserData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
-        /// <summary> Creates a new user or updates an existing user&apos;s information on a Data Box Edge/Data Box Gateway device. </summary>
+        /// <summary> Creates a new user or updates an existing user's information on a Data Box Edge/Data Box Gateway device. </summary>
         /// <param name="subscriptionId"> The subscription ID. </param>
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="deviceName"> The device name. </param>
@@ -265,7 +265,7 @@ namespace Azure.ResourceManager.DataBoxEdge
             }
         }
 
-        /// <summary> Creates a new user or updates an existing user&apos;s information on a Data Box Edge/Data Box Gateway device. </summary>
+        /// <summary> Creates a new user or updates an existing user's information on a Data Box Edge/Data Box Gateway device. </summary>
         /// <param name="subscriptionId"> The subscription ID. </param>
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="deviceName"> The device name. </param>
@@ -391,7 +391,7 @@ namespace Azure.ResourceManager.DataBoxEdge
         /// <param name="subscriptionId"> The subscription ID. </param>
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="deviceName"> The device name. </param>
-        /// <param name="filter"> Specify $filter=&apos;Type eq &lt;type&gt;&apos; to filter on user type property. </param>
+        /// <param name="filter"> Specify $filter='Type eq &lt;type&gt;' to filter on user type property. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -423,7 +423,7 @@ namespace Azure.ResourceManager.DataBoxEdge
         /// <param name="subscriptionId"> The subscription ID. </param>
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="deviceName"> The device name. </param>
-        /// <param name="filter"> Specify $filter=&apos;Type eq &lt;type&gt;&apos; to filter on user type property. </param>
+        /// <param name="filter"> Specify $filter='Type eq &lt;type&gt;' to filter on user type property. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is an empty string, and was expected to be non-empty. </exception>

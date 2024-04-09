@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -65,7 +65,7 @@ namespace Azure.Messaging.ServiceBus
         /// <value>The default idle timeout is 60 seconds.  The timeout must be a positive value.</value>
         ///
         /// <remarks>
-        ///   If a connection is closed due to being idle, the Event Hubs clients will automatically
+        ///   If a connection is closed due to being idle, the <see cref="ServiceBusClient" /> will automatically
         ///   reopen the connection when it is needed for a network operation.  An idle connection
         ///   being closed does not cause client errors or interfere with normal operation.
         ///
@@ -86,10 +86,15 @@ namespace Azure.Messaging.ServiceBus
         }
 
         /// <summary>
-        /// The set of options to use for determining whether a failed operation should be retried and,
+        /// The set of options to use for determining whether a failed service operation should be retried and,
         /// if so, the amount of time to wait between retry attempts.  These options also control the
-        /// amount of time allowed for receiving messages and other interactions with the Service Bus service.
+        /// amount of time allowed for the individual network operations used for interactions with the Service Bus service.
         /// </summary>
+        /// <remarks>
+        /// The retry options are only considered for interactions with the Service Bus service. They do not apply to failures in the
+        /// <see cref="ServiceBusProcessor.ProcessMessageAsync" /> handler. Developers are responsible for error handling and retries
+        /// as part of their event handler.
+        ///</remarks>
         public ServiceBusRetryOptions RetryOptions
         {
             get => _retryOptions;

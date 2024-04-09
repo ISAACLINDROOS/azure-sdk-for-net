@@ -7,11 +7,8 @@
 
 using System;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Identity;
-using Azure.ResourceManager;
-using Azure.ResourceManager.SecurityCenter;
 using Azure.ResourceManager.SecurityCenter.Models;
 
 namespace Azure.ResourceManager.SecurityCenter.Samples
@@ -34,7 +31,7 @@ namespace Azure.ResourceManager.SecurityCenter.Samples
             // this example assumes you already have this SecuritySettingResource created on azure
             // for more information of creating SecuritySettingResource, please refer to the document of SecuritySettingResource
             string subscriptionId = "20ff7fc3-e762-44dd-bd96-b71116dcdc23";
-            SecuritySettingName settingName = SecuritySettingName.Mcas;
+            SecuritySettingName settingName = SecuritySettingName.Wdatp;
             ResourceIdentifier securitySettingResourceId = SecuritySettingResource.CreateResourceIdentifier(subscriptionId, settingName);
             SecuritySettingResource securitySetting = client.GetSecuritySettingResource(securitySettingResourceId);
 
@@ -64,7 +61,7 @@ namespace Azure.ResourceManager.SecurityCenter.Samples
             // this example assumes you already have this SecuritySettingResource created on azure
             // for more information of creating SecuritySettingResource, please refer to the document of SecuritySettingResource
             string subscriptionId = "20ff7fc3-e762-44dd-bd96-b71116dcdc23";
-            SecuritySettingName settingName = SecuritySettingName.Mcas;
+            SecuritySettingName settingName = SecuritySettingName.Wdatp;
             ResourceIdentifier securitySettingResourceId = SecuritySettingResource.CreateResourceIdentifier(subscriptionId, settingName);
             SecuritySettingResource securitySetting = client.GetSecuritySettingResource(securitySettingResourceId);
 

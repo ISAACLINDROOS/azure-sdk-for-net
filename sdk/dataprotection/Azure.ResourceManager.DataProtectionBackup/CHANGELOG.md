@@ -1,14 +1,74 @@
 # Release History
 
-## 1.2.0-beta.1 (Unreleased)
+## 1.5.0-beta.1 (Unreleased)
 
 ### Features Added
+
+- Enable the new model serialization by using the System.ClientModel, refer this [document](https://aka.ms/azsdk/net/mrw) for more details.
 
 ### Breaking Changes
 
 ### Bugs Fixed
 
 ### Other Changes
+
+## 1.4.0 (2023-12-27)
+
+### Features Added
+
+- Stable version release for API version 2023-11-01.
+
+## 1.4.0-beta.1 (2023-12-13)
+
+### Features Added
+
+- Update API version to 2023-11-01
+- Add property `string JobIdentifier` to class `DataProtectionOperationJobExtendedInfo`, and now since the "jobId" returned by service is not always a resource identifier, `JobResourceId` will be null when `JobIdentifier` is not parsable to a resource identifier.
+
+## 1.3.0 (2023-11-27)
+
+### Features Added
+
+- Enable mocking for extension methods, refer this [document](https://aka.ms/azsdk/net/mocking) for more details.
+
+### Other Changes
+
+- Upgraded dependent `Azure.ResourceManager` to 1.9.0.
+
+## 1.3.0-beta.1 (2023-09-26)
+
+### Features Added
+
+- Added support for AKS workload.
+- Added support for secure score
+
+### Other Changes
+
+- Add property `identityDetails` to class `DataProtectionBackupInstanceProperties`.
+- Add property `RehydrationPriority ` to class `DataProtectionBackupJobProperties`.
+- Add property `FeatureSettings ` to class `DataProtectionBackupVaultPatchProperties`, replace the `CrossSubscriptionRestoreState`.
+- Add property `IdentityDetails  ` to class `DeletedDataProtectionBackupInstanceProperties`.
+
+## 1.2.0 (2023-07-20)
+
+### Features Added
+
+- Added new resourceGuardProxy Api's.
+
+### Breaking Changes
+
+- Add property `JobResourceId` to class `DataProtectionOperationJobExtendedInfo`, replace the `JobId`.
+
+## 1.2.0-beta.1 (2023-05-29)
+
+### Features Added
+
+- Enable the model factory feature for model mocking, more information can be found [here](https://azure.github.io/azure-sdk/dotnet_introduction.html#dotnet-mocking-factory-builder).
+
+### Other Changes
+
+- Upgraded dependent Azure.Core to 1.32.0.
+- Upgraded dependent Azure.ResourceManager to 1.6.0.
 
 ## 1.1.2 (2023-04-26)
 

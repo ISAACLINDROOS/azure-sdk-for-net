@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
 
@@ -50,21 +50,30 @@ namespace Azure.Verticals.AgriFood.Farming
             _apiVersion = apiVersion;
         }
 
-        /// <summary> [Protocol Method] Creates or updates insight entity. </summary>
+        /// <summary>
+        /// [Protocol Method] Creates or updates insight entity.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="partyId"> Id of the associated party. </param>
         /// <param name="modelId">
         /// Id of the associated model.
-        /// It can be either &apos;BiomassModelId&apos;, &apos;SensorPlacementModelId&apos;, &apos;SoilMoistureModelId&apos; or any solution id.
+        /// It can be either 'BiomassModelId', 'SensorPlacementModelId', 'SoilMoistureModelId' or any solution id.
         /// </param>
         /// <param name="resourceType"> Resource type associated with the record. </param>
         /// <param name="resourceId"> Id of the associated resource. </param>
         /// <param name="insightAttachmentId"> Id of the insight resource. </param>
-        /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
+        /// <param name="content"> The content to send as the body of the request. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="partyId"/>, <paramref name="modelId"/>, <paramref name="resourceType"/>, <paramref name="resourceId"/> or <paramref name="insightAttachmentId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="partyId"/>, <paramref name="modelId"/>, <paramref name="resourceType"/>, <paramref name="resourceId"/> or <paramref name="insightAttachmentId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
+        /// <returns> The response returned from the service. </returns>
         /// <include file="Docs/InsightAttachments.xml" path="doc/members/member[@name='CreateOrUpdateAsync(string,string,string,string,string,RequestContent,RequestContext)']/*" />
         public virtual async Task<Response> CreateOrUpdateAsync(string partyId, string modelId, string resourceType, string resourceId, string insightAttachmentId, RequestContent content, RequestContext context = null)
         {
@@ -88,21 +97,30 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> [Protocol Method] Creates or updates insight entity. </summary>
+        /// <summary>
+        /// [Protocol Method] Creates or updates insight entity.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="partyId"> Id of the associated party. </param>
         /// <param name="modelId">
         /// Id of the associated model.
-        /// It can be either &apos;BiomassModelId&apos;, &apos;SensorPlacementModelId&apos;, &apos;SoilMoistureModelId&apos; or any solution id.
+        /// It can be either 'BiomassModelId', 'SensorPlacementModelId', 'SoilMoistureModelId' or any solution id.
         /// </param>
         /// <param name="resourceType"> Resource type associated with the record. </param>
         /// <param name="resourceId"> Id of the associated resource. </param>
         /// <param name="insightAttachmentId"> Id of the insight resource. </param>
-        /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
+        /// <param name="content"> The content to send as the body of the request. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="partyId"/>, <paramref name="modelId"/>, <paramref name="resourceType"/>, <paramref name="resourceId"/> or <paramref name="insightAttachmentId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="partyId"/>, <paramref name="modelId"/>, <paramref name="resourceType"/>, <paramref name="resourceId"/> or <paramref name="insightAttachmentId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
+        /// <returns> The response returned from the service. </returns>
         /// <include file="Docs/InsightAttachments.xml" path="doc/members/member[@name='CreateOrUpdate(string,string,string,string,string,RequestContent,RequestContext)']/*" />
         public virtual Response CreateOrUpdate(string partyId, string modelId, string resourceType, string resourceId, string insightAttachmentId, RequestContent content, RequestContext context = null)
         {
@@ -126,11 +144,20 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> [Protocol Method] Gets a specified insight resource under a particular party. </summary>
+        /// <summary>
+        /// [Protocol Method] Gets a specified insight resource under a particular party.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="partyId"> Id of the associated party. </param>
         /// <param name="modelId">
         /// Id of the associated model.
-        /// It can be either &apos;BiomassModelId&apos;, &apos;SensorPlacementModelId&apos;, &apos;SoilMoistureModelId&apos; or any solution id.
+        /// It can be either 'BiomassModelId', 'SensorPlacementModelId', 'SoilMoistureModelId' or any solution id.
         /// </param>
         /// <param name="resourceType"> Resource type associated with the record. </param>
         /// <param name="resourceId"> Id of the associated resource. </param>
@@ -139,9 +166,9 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="ArgumentNullException"> <paramref name="partyId"/>, <paramref name="modelId"/>, <paramref name="resourceType"/>, <paramref name="resourceId"/> or <paramref name="insightAttachmentId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="partyId"/>, <paramref name="modelId"/>, <paramref name="resourceType"/>, <paramref name="resourceId"/> or <paramref name="insightAttachmentId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
+        /// <returns> The response returned from the service. </returns>
         /// <include file="Docs/InsightAttachments.xml" path="doc/members/member[@name='GetInsightAttachmentAsync(string,string,string,string,string,RequestContext)']/*" />
-        public virtual async Task<Response> GetInsightAttachmentAsync(string partyId, string modelId, string resourceType, string resourceId, string insightAttachmentId, RequestContext context = null)
+        public virtual async Task<Response> GetInsightAttachmentAsync(string partyId, string modelId, string resourceType, string resourceId, string insightAttachmentId, RequestContext context)
         {
             Argument.AssertNotNullOrEmpty(partyId, nameof(partyId));
             Argument.AssertNotNullOrEmpty(modelId, nameof(modelId));
@@ -163,11 +190,20 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> [Protocol Method] Gets a specified insight resource under a particular party. </summary>
+        /// <summary>
+        /// [Protocol Method] Gets a specified insight resource under a particular party.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="partyId"> Id of the associated party. </param>
         /// <param name="modelId">
         /// Id of the associated model.
-        /// It can be either &apos;BiomassModelId&apos;, &apos;SensorPlacementModelId&apos;, &apos;SoilMoistureModelId&apos; or any solution id.
+        /// It can be either 'BiomassModelId', 'SensorPlacementModelId', 'SoilMoistureModelId' or any solution id.
         /// </param>
         /// <param name="resourceType"> Resource type associated with the record. </param>
         /// <param name="resourceId"> Id of the associated resource. </param>
@@ -176,9 +212,9 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="ArgumentNullException"> <paramref name="partyId"/>, <paramref name="modelId"/>, <paramref name="resourceType"/>, <paramref name="resourceId"/> or <paramref name="insightAttachmentId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="partyId"/>, <paramref name="modelId"/>, <paramref name="resourceType"/>, <paramref name="resourceId"/> or <paramref name="insightAttachmentId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
+        /// <returns> The response returned from the service. </returns>
         /// <include file="Docs/InsightAttachments.xml" path="doc/members/member[@name='GetInsightAttachment(string,string,string,string,string,RequestContext)']/*" />
-        public virtual Response GetInsightAttachment(string partyId, string modelId, string resourceType, string resourceId, string insightAttachmentId, RequestContext context = null)
+        public virtual Response GetInsightAttachment(string partyId, string modelId, string resourceType, string resourceId, string insightAttachmentId, RequestContext context)
         {
             Argument.AssertNotNullOrEmpty(partyId, nameof(partyId));
             Argument.AssertNotNullOrEmpty(modelId, nameof(modelId));
@@ -200,11 +236,20 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> [Protocol Method] Deletes a specified insight resource. </summary>
+        /// <summary>
+        /// [Protocol Method] Deletes a specified insight resource.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="partyId"> Id of the associated party. </param>
         /// <param name="modelId">
         /// Id of the associated model.
-        /// It can be either &apos;BiomassModelId&apos;, &apos;SensorPlacementModelId&apos;, &apos;SoilMoistureModelId&apos; or any solution id.
+        /// It can be either 'BiomassModelId', 'SensorPlacementModelId', 'SoilMoistureModelId' or any solution id.
         /// </param>
         /// <param name="resourceType"> Resource type associated with the record. </param>
         /// <param name="resourceId"> Id of the associated resource. </param>
@@ -237,11 +282,20 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> [Protocol Method] Deletes a specified insight resource. </summary>
+        /// <summary>
+        /// [Protocol Method] Deletes a specified insight resource.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="partyId"> Id of the associated party. </param>
         /// <param name="modelId">
         /// Id of the associated model.
-        /// It can be either &apos;BiomassModelId&apos;, &apos;SensorPlacementModelId&apos;, &apos;SoilMoistureModelId&apos; or any solution id.
+        /// It can be either 'BiomassModelId', 'SensorPlacementModelId', 'SoilMoistureModelId' or any solution id.
         /// </param>
         /// <param name="resourceType"> Resource type associated with the record. </param>
         /// <param name="resourceId"> Id of the associated resource. </param>
@@ -274,11 +328,20 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> [Protocol Method] Downloads and returns insight-attachment as response for the given input filePath. </summary>
+        /// <summary>
+        /// [Protocol Method] Downloads and returns insight-attachment as response for the given input filePath.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="partyId"> Id of the associated party. </param>
         /// <param name="modelId">
         /// Id of the associated model.
-        /// It can be either &apos;BiomassModelId&apos;, &apos;SensorPlacementModelId&apos;, &apos;SoilMoistureModelId&apos; or any solution id.
+        /// It can be either 'BiomassModelId', 'SensorPlacementModelId', 'SoilMoistureModelId' or any solution id.
         /// </param>
         /// <param name="resourceType"> Resource type associated with the record. </param>
         /// <param name="resourceId"> Id of the associated resource. </param>
@@ -289,7 +352,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. </returns>
         /// <include file="Docs/InsightAttachments.xml" path="doc/members/member[@name='DownloadAsync(string,string,string,string,string,RequestContext)']/*" />
-        public virtual async Task<Response> DownloadAsync(string partyId, string modelId, string resourceType, string resourceId, string insightAttachmentId, RequestContext context = null)
+        public virtual async Task<Response> DownloadAsync(string partyId, string modelId, string resourceType, string resourceId, string insightAttachmentId, RequestContext context)
         {
             Argument.AssertNotNullOrEmpty(partyId, nameof(partyId));
             Argument.AssertNotNullOrEmpty(modelId, nameof(modelId));
@@ -311,11 +374,20 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> [Protocol Method] Downloads and returns insight-attachment as response for the given input filePath. </summary>
+        /// <summary>
+        /// [Protocol Method] Downloads and returns insight-attachment as response for the given input filePath.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="partyId"> Id of the associated party. </param>
         /// <param name="modelId">
         /// Id of the associated model.
-        /// It can be either &apos;BiomassModelId&apos;, &apos;SensorPlacementModelId&apos;, &apos;SoilMoistureModelId&apos; or any solution id.
+        /// It can be either 'BiomassModelId', 'SensorPlacementModelId', 'SoilMoistureModelId' or any solution id.
         /// </param>
         /// <param name="resourceType"> Resource type associated with the record. </param>
         /// <param name="resourceId"> Id of the associated resource. </param>
@@ -326,7 +398,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. </returns>
         /// <include file="Docs/InsightAttachments.xml" path="doc/members/member[@name='Download(string,string,string,string,string,RequestContext)']/*" />
-        public virtual Response Download(string partyId, string modelId, string resourceType, string resourceId, string insightAttachmentId, RequestContext context = null)
+        public virtual Response Download(string partyId, string modelId, string resourceType, string resourceId, string insightAttachmentId, RequestContext context)
         {
             Argument.AssertNotNullOrEmpty(partyId, nameof(partyId));
             Argument.AssertNotNullOrEmpty(modelId, nameof(modelId));
@@ -348,7 +420,16 @@ namespace Azure.Verticals.AgriFood.Farming
             }
         }
 
-        /// <summary> [Protocol Method] Returns a paginated list of insight resources. </summary>
+        /// <summary>
+        /// [Protocol Method] Returns a paginated list of insight resources.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="partyId"> Id of the associated party. </param>
         /// <param name="modelId"> Id of the associated model. </param>
         /// <param name="resourceType"> Resource type associated with the record. </param>
@@ -358,7 +439,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <param name="names"> Names of the resource. </param>
         /// <param name="propertyFilters">
         /// Filters on key-value pairs within the Properties object.
-        /// eg. &quot;{testKey} eq {testValue}&quot;.
+        /// eg. "{testKey} eq {testValue}".
         /// </param>
         /// <param name="statuses"> Statuses of the resource. </param>
         /// <param name="minCreatedDateTime"> Minimum creation date of resource (inclusive). </param>
@@ -376,7 +457,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="AsyncPageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
         /// <include file="Docs/InsightAttachments.xml" path="doc/members/member[@name='GetInsightAttachmentsByPartyIdModelIdAndResourceAsync(string,string,string,string,IEnumerable{string},IEnumerable{string},IEnumerable{string},IEnumerable{string},IEnumerable{string},DateTimeOffset?,DateTimeOffset?,DateTimeOffset?,DateTimeOffset?,int?,string,RequestContext)']/*" />
-        public virtual AsyncPageable<BinaryData> GetInsightAttachmentsByPartyIdModelIdAndResourceAsync(string partyId, string modelId, string resourceType, string resourceId, IEnumerable<string> insightIds = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
+        public virtual AsyncPageable<BinaryData> GetInsightAttachmentsByPartyIdModelIdAndResourceAsync(string partyId, string modelId, string resourceType, string resourceId, IEnumerable<string> insightIds, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             Argument.AssertNotNullOrEmpty(partyId, nameof(partyId));
             Argument.AssertNotNullOrEmpty(modelId, nameof(modelId));
@@ -385,10 +466,19 @@ namespace Azure.Verticals.AgriFood.Farming
 
             HttpMessage FirstPageRequest(int? pageSizeHint) => CreateGetInsightAttachmentsByPartyIdModelIdAndResourceRequest(partyId, modelId, resourceType, resourceId, insightIds, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
             HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => CreateGetInsightAttachmentsByPartyIdModelIdAndResourceNextPageRequest(nextLink, partyId, modelId, resourceType, resourceId, insightIds, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
-            return PageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => BinaryData.FromString(e.GetRawText()), ClientDiagnostics, _pipeline, "InsightAttachments.GetInsightAttachmentsByPartyIdModelIdAndResource", "value", "nextLink", context);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => BinaryData.FromString(e.GetRawText()), ClientDiagnostics, _pipeline, "InsightAttachments.GetInsightAttachmentsByPartyIdModelIdAndResource", "value", "nextLink", context);
         }
 
-        /// <summary> [Protocol Method] Returns a paginated list of insight resources. </summary>
+        /// <summary>
+        /// [Protocol Method] Returns a paginated list of insight resources.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="partyId"> Id of the associated party. </param>
         /// <param name="modelId"> Id of the associated model. </param>
         /// <param name="resourceType"> Resource type associated with the record. </param>
@@ -398,7 +488,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <param name="names"> Names of the resource. </param>
         /// <param name="propertyFilters">
         /// Filters on key-value pairs within the Properties object.
-        /// eg. &quot;{testKey} eq {testValue}&quot;.
+        /// eg. "{testKey} eq {testValue}".
         /// </param>
         /// <param name="statuses"> Statuses of the resource. </param>
         /// <param name="minCreatedDateTime"> Minimum creation date of resource (inclusive). </param>
@@ -416,7 +506,7 @@ namespace Azure.Verticals.AgriFood.Farming
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Pageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
         /// <include file="Docs/InsightAttachments.xml" path="doc/members/member[@name='GetInsightAttachmentsByPartyIdModelIdAndResource(string,string,string,string,IEnumerable{string},IEnumerable{string},IEnumerable{string},IEnumerable{string},IEnumerable{string},DateTimeOffset?,DateTimeOffset?,DateTimeOffset?,DateTimeOffset?,int?,string,RequestContext)']/*" />
-        public virtual Pageable<BinaryData> GetInsightAttachmentsByPartyIdModelIdAndResource(string partyId, string modelId, string resourceType, string resourceId, IEnumerable<string> insightIds = null, IEnumerable<string> ids = null, IEnumerable<string> names = null, IEnumerable<string> propertyFilters = null, IEnumerable<string> statuses = null, DateTimeOffset? minCreatedDateTime = null, DateTimeOffset? maxCreatedDateTime = null, DateTimeOffset? minLastModifiedDateTime = null, DateTimeOffset? maxLastModifiedDateTime = null, int? maxPageSize = null, string skipToken = null, RequestContext context = null)
+        public virtual Pageable<BinaryData> GetInsightAttachmentsByPartyIdModelIdAndResource(string partyId, string modelId, string resourceType, string resourceId, IEnumerable<string> insightIds, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
         {
             Argument.AssertNotNullOrEmpty(partyId, nameof(partyId));
             Argument.AssertNotNullOrEmpty(modelId, nameof(modelId));
@@ -425,7 +515,7 @@ namespace Azure.Verticals.AgriFood.Farming
 
             HttpMessage FirstPageRequest(int? pageSizeHint) => CreateGetInsightAttachmentsByPartyIdModelIdAndResourceRequest(partyId, modelId, resourceType, resourceId, insightIds, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
             HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => CreateGetInsightAttachmentsByPartyIdModelIdAndResourceNextPageRequest(nextLink, partyId, modelId, resourceType, resourceId, insightIds, ids, names, propertyFilters, statuses, minCreatedDateTime, maxCreatedDateTime, minLastModifiedDateTime, maxLastModifiedDateTime, maxPageSize, skipToken, context);
-            return PageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => BinaryData.FromString(e.GetRawText()), ClientDiagnostics, _pipeline, "InsightAttachments.GetInsightAttachmentsByPartyIdModelIdAndResource", "value", "nextLink", context);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => BinaryData.FromString(e.GetRawText()), ClientDiagnostics, _pipeline, "InsightAttachments.GetInsightAttachmentsByPartyIdModelIdAndResource", "value", "nextLink", context);
         }
 
         internal HttpMessage CreateGetInsightAttachmentsByPartyIdModelIdAndResourceRequest(string partyId, string modelId, string resourceType, string resourceId, IEnumerable<string> insightIds, IEnumerable<string> ids, IEnumerable<string> names, IEnumerable<string> propertyFilters, IEnumerable<string> statuses, DateTimeOffset? minCreatedDateTime, DateTimeOffset? maxCreatedDateTime, DateTimeOffset? minLastModifiedDateTime, DateTimeOffset? maxLastModifiedDateTime, int? maxPageSize, string skipToken, RequestContext context)
@@ -444,35 +534,35 @@ namespace Azure.Verticals.AgriFood.Farming
             uri.AppendPath("/resources/", false);
             uri.AppendPath(resourceId, true);
             uri.AppendPath("/insight-attachments", false);
-            if (insightIds != null && Optional.IsCollectionDefined(insightIds))
+            if (insightIds != null && !(insightIds is ChangeTrackingList<string> changeTrackingList && changeTrackingList.IsUndefined))
             {
                 foreach (var param in insightIds)
                 {
                     uri.AppendQuery("insightIds", param, true);
                 }
             }
-            if (ids != null && Optional.IsCollectionDefined(ids))
+            if (ids != null && !(ids is ChangeTrackingList<string> changeTrackingList0 && changeTrackingList0.IsUndefined))
             {
                 foreach (var param in ids)
                 {
                     uri.AppendQuery("ids", param, true);
                 }
             }
-            if (names != null && Optional.IsCollectionDefined(names))
+            if (names != null && !(names is ChangeTrackingList<string> changeTrackingList1 && changeTrackingList1.IsUndefined))
             {
                 foreach (var param in names)
                 {
                     uri.AppendQuery("names", param, true);
                 }
             }
-            if (propertyFilters != null && Optional.IsCollectionDefined(propertyFilters))
+            if (propertyFilters != null && !(propertyFilters is ChangeTrackingList<string> changeTrackingList2 && changeTrackingList2.IsUndefined))
             {
                 foreach (var param in propertyFilters)
                 {
                     uri.AppendQuery("propertyFilters", param, true);
                 }
             }
-            if (statuses != null && Optional.IsCollectionDefined(statuses))
+            if (statuses != null && !(statuses is ChangeTrackingList<string> changeTrackingList3 && changeTrackingList3.IsUndefined))
             {
                 foreach (var param in statuses)
                 {

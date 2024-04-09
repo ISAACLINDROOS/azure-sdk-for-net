@@ -2384,6 +2384,38 @@ namespace Azure.Storage.Blobs.Test
         }
 
         [RecordedTest]
+        public async Task UploadAsync_NullOptions()
+        {
+            await using DisposingContainer test = await GetTestContainerAsync();
+
+            // Arrange
+            var blockBlobName = GetNewBlobName();
+            BlockBlobClient blob = InstrumentClient(test.Container.GetBlockBlobClient(blockBlobName));
+            var data = GetRandomBuffer(Size);
+
+            // Act
+            Response<BlobContentInfo> response;
+            using (var stream = new MemoryStream(data))
+            {
+                response = await blob.UploadAsync(
+                    content: stream,
+                    options: null);
+            }
+
+            // Assert
+            // Ensure that we grab the whole ETag value from the service without removing the quotes
+            Assert.AreEqual(response.Value.ETag.ToString(), $"\"{response.GetRawResponse().Headers.ETag}\"");
+            IList<BlobItem> blobs = await test.Container.GetBlobsAsync().ToListAsync();
+            Assert.AreEqual(1, blobs.Count);
+            Assert.AreEqual(blockBlobName, blobs.First().Name);
+
+            Response<BlobDownloadInfo> downloadResponse = await blob.DownloadAsync();
+            var actual = new MemoryStream();
+            await downloadResponse.Value.Content.CopyToAsync(actual);
+            TestHelper.AssertSequenceEqual(data, actual.ToArray());
+        }
+
+        [RecordedTest]
         public async Task UploadAsync_WithUnreliableConnection()
         {
             const int blobSize = 1 * Constants.MB;
@@ -2814,8 +2846,7 @@ namespace Azure.Storage.Blobs.Test
                     ContentLanguage = constants.ContentLanguage,
                     ContentType = constants.ContentType
                 },
-                // TODO service bug.  https://github.com/Azure/azure-sdk-for-net/issues/15969
-                // Metadata = metadata,
+                Metadata = metadata,
                 Tags = tags,
                 AccessTier = AccessTier.Hot
             };
@@ -2839,8 +2870,7 @@ namespace Azure.Storage.Blobs.Test
             Assert.AreEqual(constants.ContentLanguage, response.Value.ContentLanguage);
             Assert.AreEqual(constants.ContentDisposition, response.Value.ContentDisposition);
             Assert.AreEqual(constants.CacheControl, response.Value.CacheControl);
-            // TODO service bug.  https://github.com/Azure/azure-sdk-for-net/issues/15969
-            //AssertDictionaryEquality(metadata, response.Value.Metadata);
+            AssertDictionaryEquality(metadata, response.Value.Metadata);
             Assert.AreEqual(tags.Count, response.Value.TagCount);
             Assert.AreEqual(AccessTier.Hot.ToString(), response.Value.AccessTier);
         }

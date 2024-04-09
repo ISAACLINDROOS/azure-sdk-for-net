@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.ApiManagement.Models;
@@ -70,18 +70,18 @@ namespace Azure.ResourceManager.ApiManagement
             return message;
         }
 
-        /// <summary> Lists developer portal&apos;s revisions. </summary>
+        /// <summary> Lists developer portal's revisions. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
         /// <param name="filter">
         /// | Field       | Supported operators    | Supported functions               |
         /// |-------------|------------------------|-----------------------------------|
-        /// 
+        ///
         /// |name | ge, le, eq, ne, gt, lt | substringof, contains, startswith, endswith|
         /// |description | ge, le, eq, ne, gt, lt | substringof, contains, startswith, endswith|
         /// |isCurrent | eq, ne |    |
-        /// 
+        ///
         /// </param>
         /// <param name="top"> Number of records to return. </param>
         /// <param name="skip"> Number of records to skip. </param>
@@ -110,18 +110,18 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Lists developer portal&apos;s revisions. </summary>
+        /// <summary> Lists developer portal's revisions. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
         /// <param name="filter">
         /// | Field       | Supported operators    | Supported functions               |
         /// |-------------|------------------------|-----------------------------------|
-        /// 
+        ///
         /// |name | ge, le, eq, ne, gt, lt | substringof, contains, startswith, endswith|
         /// |description | ge, le, eq, ne, gt, lt | substringof, contains, startswith, endswith|
         /// |isCurrent | eq, ne |    |
-        /// 
+        ///
         /// </param>
         /// <param name="top"> Number of records to return. </param>
         /// <param name="skip"> Number of records to skip. </param>
@@ -262,7 +262,7 @@ namespace Azure.ResourceManager.ApiManagement
             return message;
         }
 
-        /// <summary> Gets the developer portal&apos;s revision specified by its identifier. </summary>
+        /// <summary> Gets the developer portal's revision specified by its identifier. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -295,7 +295,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Gets the developer portal&apos;s revision specified by its identifier. </summary>
+        /// <summary> Gets the developer portal's revision specified by its identifier. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
@@ -348,18 +348,18 @@ namespace Azure.ResourceManager.ApiManagement
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<ApiManagementPortalRevisionData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
-        /// <summary> Creates a new developer portal&apos;s revision by running the portal&apos;s publishing. The `isCurrent` property indicates if the revision is publicly accessible. </summary>
+        /// <summary> Creates a new developer portal's revision by running the portal's publishing. The `isCurrent` property indicates if the revision is publicly accessible. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
         /// <param name="portalRevisionId"> Portal revision identifier. Must be unique in the current API Management service instance. </param>
-        /// <param name="data"> The ApiManagementPortalRevision to use. </param>
+        /// <param name="data"> The <see cref="ApiManagementPortalRevisionData"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="portalRevisionId"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="portalRevisionId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -383,12 +383,12 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Creates a new developer portal&apos;s revision by running the portal&apos;s publishing. The `isCurrent` property indicates if the revision is publicly accessible. </summary>
+        /// <summary> Creates a new developer portal's revision by running the portal's publishing. The `isCurrent` property indicates if the revision is publicly accessible. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
         /// <param name="portalRevisionId"> Portal revision identifier. Must be unique in the current API Management service instance. </param>
-        /// <param name="data"> The ApiManagementPortalRevision to use. </param>
+        /// <param name="data"> The <see cref="ApiManagementPortalRevisionData"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="portalRevisionId"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="portalRevisionId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -433,7 +433,7 @@ namespace Azure.ResourceManager.ApiManagement
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<ApiManagementPortalRevisionData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -445,7 +445,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="serviceName"> The name of the API Management service. </param>
         /// <param name="portalRevisionId"> Portal revision identifier. Must be unique in the current API Management service instance. </param>
         /// <param name="ifMatch"> ETag of the Entity. ETag should match the current entity state from the header response of the GET request or it should be * for unconditional update. </param>
-        /// <param name="data"> The ApiManagementPortalRevision to use. </param>
+        /// <param name="data"> The <see cref="ApiManagementPortalRevisionData"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="portalRevisionId"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="portalRevisionId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -475,7 +475,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="serviceName"> The name of the API Management service. </param>
         /// <param name="portalRevisionId"> Portal revision identifier. Must be unique in the current API Management service instance. </param>
         /// <param name="ifMatch"> ETag of the Entity. ETag should match the current entity state from the header response of the GET request or it should be * for unconditional update. </param>
-        /// <param name="data"> The ApiManagementPortalRevision to use. </param>
+        /// <param name="data"> The <see cref="ApiManagementPortalRevisionData"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="portalRevisionId"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="portalRevisionId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -513,7 +513,7 @@ namespace Azure.ResourceManager.ApiManagement
             return message;
         }
 
-        /// <summary> Lists developer portal&apos;s revisions. </summary>
+        /// <summary> Lists developer portal's revisions. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
@@ -521,11 +521,11 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="filter">
         /// | Field       | Supported operators    | Supported functions               |
         /// |-------------|------------------------|-----------------------------------|
-        /// 
+        ///
         /// |name | ge, le, eq, ne, gt, lt | substringof, contains, startswith, endswith|
         /// |description | ge, le, eq, ne, gt, lt | substringof, contains, startswith, endswith|
         /// |isCurrent | eq, ne |    |
-        /// 
+        ///
         /// </param>
         /// <param name="top"> Number of records to return. </param>
         /// <param name="skip"> Number of records to skip. </param>
@@ -555,7 +555,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        /// <summary> Lists developer portal&apos;s revisions. </summary>
+        /// <summary> Lists developer portal's revisions. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
@@ -563,11 +563,11 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="filter">
         /// | Field       | Supported operators    | Supported functions               |
         /// |-------------|------------------------|-----------------------------------|
-        /// 
+        ///
         /// |name | ge, le, eq, ne, gt, lt | substringof, contains, startswith, endswith|
         /// |description | ge, le, eq, ne, gt, lt | substringof, contains, startswith, endswith|
         /// |isCurrent | eq, ne |    |
-        /// 
+        ///
         /// </param>
         /// <param name="top"> Number of records to return. </param>
         /// <param name="skip"> Number of records to skip. </param>

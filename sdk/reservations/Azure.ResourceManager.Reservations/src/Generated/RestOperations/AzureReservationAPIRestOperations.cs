@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Reservations.Models;
@@ -93,7 +92,7 @@ namespace Azure.ResourceManager.Reservations
         /// <param name="publisherId"> Publisher id used to get the third party products. </param>
         /// <param name="offerId"> Offer id used to get the third party products. </param>
         /// <param name="planId"> Plan id used to get the third party products. </param>
-        /// <param name="filter"> May be used to filter by Catalog properties. The filter supports &apos;eq&apos;, &apos;or&apos;, and &apos;and&apos;. </param>
+        /// <param name="filter"> May be used to filter by Catalog properties. The filter supports 'eq', 'or', and 'and'. </param>
         /// <param name="skip"> The number of reservations to skip from the list before returning results. </param>
         /// <param name="take"> To number of reservations to return. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -126,7 +125,7 @@ namespace Azure.ResourceManager.Reservations
         /// <param name="publisherId"> Publisher id used to get the third party products. </param>
         /// <param name="offerId"> Offer id used to get the third party products. </param>
         /// <param name="planId"> Plan id used to get the third party products. </param>
-        /// <param name="filter"> May be used to filter by Catalog properties. The filter supports &apos;eq&apos;, &apos;or&apos;, and &apos;and&apos;. </param>
+        /// <param name="filter"> May be used to filter by Catalog properties. The filter supports 'eq', 'or', and 'and'. </param>
         /// <param name="skip"> The number of reservations to skip from the list before returning results. </param>
         /// <param name="take"> To number of reservations to return. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -241,7 +240,7 @@ namespace Azure.ResourceManager.Reservations
         /// <param name="publisherId"> Publisher id used to get the third party products. </param>
         /// <param name="offerId"> Offer id used to get the third party products. </param>
         /// <param name="planId"> Plan id used to get the third party products. </param>
-        /// <param name="filter"> May be used to filter by Catalog properties. The filter supports &apos;eq&apos;, &apos;or&apos;, and &apos;and&apos;. </param>
+        /// <param name="filter"> May be used to filter by Catalog properties. The filter supports 'eq', 'or', and 'and'. </param>
         /// <param name="skip"> The number of reservations to skip from the list before returning results. </param>
         /// <param name="take"> To number of reservations to return. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -276,7 +275,7 @@ namespace Azure.ResourceManager.Reservations
         /// <param name="publisherId"> Publisher id used to get the third party products. </param>
         /// <param name="offerId"> Offer id used to get the third party products. </param>
         /// <param name="planId"> Plan id used to get the third party products. </param>
-        /// <param name="filter"> May be used to filter by Catalog properties. The filter supports &apos;eq&apos;, &apos;or&apos;, and &apos;and&apos;. </param>
+        /// <param name="filter"> May be used to filter by Catalog properties. The filter supports 'eq', 'or', and 'and'. </param>
         /// <param name="skip"> The number of reservations to skip from the list before returning results. </param>
         /// <param name="take"> To number of reservations to return. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>

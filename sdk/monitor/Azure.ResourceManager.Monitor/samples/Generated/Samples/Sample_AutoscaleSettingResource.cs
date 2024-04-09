@@ -8,11 +8,8 @@
 using System;
 using System.Threading.Tasks;
 using System.Xml;
-using Azure;
 using Azure.Core;
 using Azure.Identity;
-using Azure.ResourceManager;
-using Azure.ResourceManager.Monitor;
 using Azure.ResourceManager.Monitor.Models;
 using Azure.ResourceManager.Resources;
 
@@ -162,7 +159,6 @@ new MonitorDayOfWeek("1")
 {
 new AutoscaleNotification()
 {
-Operation = MonitorOperationType.Scale,
 Email = new EmailNotification()
 {
 SendToSubscriptionAdministrator = true,

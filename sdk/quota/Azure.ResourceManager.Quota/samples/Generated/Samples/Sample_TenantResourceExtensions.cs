@@ -9,8 +9,6 @@ using System;
 using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Identity;
-using Azure.ResourceManager;
-using Azure.ResourceManager.Quota;
 using Azure.ResourceManager.Quota.Models;
 
 namespace Azure.ResourceManager.Quota.Samples
@@ -35,7 +33,7 @@ namespace Azure.ResourceManager.Quota.Samples
             var tenantResource = client.GetTenants().GetAllAsync().GetAsyncEnumerator().Current;
 
             // invoke the operation and iterate over the result
-            await foreach (OperationResponse item in tenantResource.GetQuotaOperationsAsync())
+            await foreach (QuotaOperationResult item in tenantResource.GetQuotaOperationsAsync())
             {
                 Console.WriteLine($"Succeeded: {item}");
             }

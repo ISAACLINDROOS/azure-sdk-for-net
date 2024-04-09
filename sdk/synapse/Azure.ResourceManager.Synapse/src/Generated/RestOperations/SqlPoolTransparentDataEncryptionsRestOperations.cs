@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Synapse.Models;
@@ -61,7 +61,7 @@ namespace Azure.ResourceManager.Synapse
             return message;
         }
 
-        /// <summary> Get a SQL pool&apos;s transparent data encryption configuration. </summary>
+        /// <summary> Get a SQL pool's transparent data encryption configuration. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -95,7 +95,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> Get a SQL pool&apos;s transparent data encryption configuration. </summary>
+        /// <summary> Get a SQL pool's transparent data encryption configuration. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -151,13 +151,13 @@ namespace Azure.ResourceManager.Synapse
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<SynapseTransparentDataEncryptionData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
-        /// <summary> Creates or updates a Sql pool&apos;s transparent data encryption configuration. </summary>
+        /// <summary> Creates or updates a Sql pool's transparent data encryption configuration. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -192,7 +192,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> Creates or updates a Sql pool&apos;s transparent data encryption configuration. </summary>
+        /// <summary> Creates or updates a Sql pool's transparent data encryption configuration. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -250,7 +250,7 @@ namespace Azure.ResourceManager.Synapse
             return message;
         }
 
-        /// <summary> Get list of SQL pool&apos;s transparent data encryption configurations. </summary>
+        /// <summary> Get list of SQL pool's transparent data encryption configurations. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -281,7 +281,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> Get list of SQL pool&apos;s transparent data encryption configurations. </summary>
+        /// <summary> Get list of SQL pool's transparent data encryption configurations. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -326,7 +326,7 @@ namespace Azure.ResourceManager.Synapse
             return message;
         }
 
-        /// <summary> Get list of SQL pool&apos;s transparent data encryption configurations. </summary>
+        /// <summary> Get list of SQL pool's transparent data encryption configurations. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
@@ -359,7 +359,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> Get list of SQL pool&apos;s transparent data encryption configurations. </summary>
+        /// <summary> Get list of SQL pool's transparent data encryption configurations. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>

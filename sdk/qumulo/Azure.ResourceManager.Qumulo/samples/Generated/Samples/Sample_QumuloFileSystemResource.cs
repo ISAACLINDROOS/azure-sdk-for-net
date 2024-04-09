@@ -7,12 +7,9 @@
 
 using System;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Identity;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Models;
-using Azure.ResourceManager.Qumulo;
 using Azure.ResourceManager.Qumulo.Models;
 using Azure.ResourceManager.Resources;
 
@@ -25,7 +22,7 @@ namespace Azure.ResourceManager.Qumulo.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task GetQumuloFileSystemResources_FileSystemsListBySubscriptionMaximumSetGen()
         {
-            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/preview/2022-10-12-preview/examples/FileSystems_ListBySubscription_MaximumSet_Gen.json
+            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/stable/2022-10-12/examples/FileSystems_ListBySubscription_MaximumSet_Gen.json
             // this example is just showing the usage of "FileSystems_ListBySubscription" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -57,7 +54,7 @@ namespace Azure.ResourceManager.Qumulo.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task GetQumuloFileSystemResources_FileSystemsListBySubscriptionMinimumSetGen()
         {
-            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/preview/2022-10-12-preview/examples/FileSystems_ListBySubscription_MinimumSet_Gen.json
+            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/stable/2022-10-12/examples/FileSystems_ListBySubscription_MinimumSet_Gen.json
             // this example is just showing the usage of "FileSystems_ListBySubscription" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -89,7 +86,7 @@ namespace Azure.ResourceManager.Qumulo.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Get_FileSystemsGetMaximumSetGen()
         {
-            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/preview/2022-10-12-preview/examples/FileSystems_Get_MaximumSet_Gen.json
+            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/stable/2022-10-12/examples/FileSystems_Get_MaximumSet_Gen.json
             // this example is just showing the usage of "FileSystems_Get" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -120,7 +117,7 @@ namespace Azure.ResourceManager.Qumulo.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Get_FileSystemsGetMinimumSetGen()
         {
-            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/preview/2022-10-12-preview/examples/FileSystems_Get_MinimumSet_Gen.json
+            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/stable/2022-10-12/examples/FileSystems_Get_MinimumSet_Gen.json
             // this example is just showing the usage of "FileSystems_Get" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -151,7 +148,7 @@ namespace Azure.ResourceManager.Qumulo.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Update_FileSystemsUpdateMaximumSetGen()
         {
-            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/preview/2022-10-12-preview/examples/FileSystems_Update_MaximumSet_Gen.json
+            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/stable/2022-10-12/examples/FileSystems_Update_MaximumSet_Gen.json
             // this example is just showing the usage of "FileSystems_Update" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -187,8 +184,8 @@ namespace Azure.ResourceManager.Qumulo.Samples
                     {
                         MarketplaceSubscriptionId = "ujrcqvxfnhxxheoth",
                     },
-                    UserDetailsEmail = "viptslwulnpaupfljvnjeq",
-                    DelegatedSubnetId = "vjfirtaljehawmflyfianw",
+                    UserDetailsEmail = "aa",
+                    DelegatedSubnetId = new ResourceIdentifier("vjfirtaljehawmflyfianw"),
                     ClusterLoginUri = new Uri("adabmuthwrbjshzfbo"),
                     PrivateIPs =
 {
@@ -210,7 +207,7 @@ namespace Azure.ResourceManager.Qumulo.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Update_FileSystemsUpdateMinimumSetGen()
         {
-            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/preview/2022-10-12-preview/examples/FileSystems_Update_MinimumSet_Gen.json
+            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/stable/2022-10-12/examples/FileSystems_Update_MinimumSet_Gen.json
             // this example is just showing the usage of "FileSystems_Update" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -242,7 +239,7 @@ namespace Azure.ResourceManager.Qumulo.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Delete_FileSystemsDeleteMaximumSetGen()
         {
-            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/preview/2022-10-12-preview/examples/FileSystems_Delete_MaximumSet_Gen.json
+            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/stable/2022-10-12/examples/FileSystems_Delete_MaximumSet_Gen.json
             // this example is just showing the usage of "FileSystems_Delete" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -269,7 +266,7 @@ namespace Azure.ResourceManager.Qumulo.Samples
         [NUnit.Framework.Ignore("Only verifying that the sample builds")]
         public async Task Delete_FileSystemsDeleteMinimumSetGen()
         {
-            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/preview/2022-10-12-preview/examples/FileSystems_Delete_MinimumSet_Gen.json
+            // Generated from example definition: specification/liftrqumulo/resource-manager/Qumulo.Storage/stable/2022-10-12/examples/FileSystems_Delete_MinimumSet_Gen.json
             // this example is just showing the usage of "FileSystems_Delete" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line

@@ -15,7 +15,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 {
     public partial class ColumnTransformer : IUtf8JsonSerializable, IJsonModel<ColumnTransformer>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ColumnTransformer>)this).Write(writer, new ModelReaderWriterOptions("W"));
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ColumnTransformer>)this).Write(writer, ModelSerializationExtensions.WireOptions);
 
         void IJsonModel<ColumnTransformer>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
@@ -45,22 +45,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
             }
             if (Optional.IsDefined(Parameters))
             {
-                if (Parameters != null)
-                {
-                    writer.WritePropertyName("parameters"u8);
+                writer.WritePropertyName("parameters"u8);
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(Parameters);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(Parameters))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
-                }
-                else
+                using (JsonDocument document = JsonDocument.Parse(Parameters))
                 {
-                    writer.WriteNull("parameters");
+                    JsonSerializer.Serialize(writer, document.RootElement);
                 }
+#endif
             }
             if (options.Format != "W" && _serializedAdditionalRawData != null)
             {
@@ -94,7 +87,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         internal static ColumnTransformer DeserializeColumnTransformer(JsonElement element, ModelReaderWriterOptions options = null)
         {
-            options ??= new ModelReaderWriterOptions("W");
+            options ??= ModelSerializationExtensions.WireOptions;
 
             if (element.ValueKind == JsonValueKind.Null)
             {
@@ -125,7 +118,6 @@ namespace Azure.ResourceManager.MachineLearning.Models
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        parameters = null;
                         continue;
                     }
                     parameters = BinaryData.FromString(property.Value.GetRawText());

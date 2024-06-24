@@ -48,26 +48,26 @@ namespace Azure.Storage.DataMovement.Tests
 
         private static BlobSourceCheckpointData GetSourceCheckpointData(BlobType blobType)
         {
-            return new BlobSourceCheckpointData(blobType);
+            return new BlobSourceCheckpointData(new(blobType));
         }
 
         private static BlobDestinationCheckpointData GetPopulatedDestinationCheckpointData(
             BlobType blobType,
             AccessTier? accessTier = default)
         => new BlobDestinationCheckpointData(
-                blobType: blobType,
+                blobType: new(blobType),
                 contentType: new(DefaultContentType),
                 contentEncoding: new(DefaultContentEncoding),
                 contentLanguage: new(DefaultContentLanguage),
                 contentDisposition: new(DefaultContentDisposition),
                 cacheControl: new(DefaultCacheControl),
-                accessTier: new(accessTier),
+                accessTier: accessTier,
                 metadata: new(DataProvider.BuildMetadata()),
                 tags: new(DataProvider.BuildTags()));
 
         private static BlobDestinationCheckpointData GetDefaultDestinationCheckpointData(BlobType blobType)
         => new BlobDestinationCheckpointData(
-            blobType,
+            new(blobType),
             default,
             default,
             default,
@@ -163,8 +163,7 @@ namespace Azure.Storage.DataMovement.Tests
                     .FromDestinationInternalHookAsync(transferProperties);
 
             Assert.AreEqual(destinationPath, storageResource.Uri.AbsoluteUri);
-            Assert.AreEqual(checkpointData.AccessTier.Preserve, storageResource._options.AccessTier.Preserve);
-            Assert.AreEqual(checkpointData.AccessTier.Value, storageResource._options.AccessTier.Value);
+            Assert.AreEqual(checkpointData.AccessTierValue.Value, storageResource._options.AccessTier.Value);
             Assert.AreEqual(checkpointData.Metadata.Preserve, storageResource._options.Metadata.Preserve);
             Assert.AreEqual(checkpointData.Metadata.Value, storageResource._options.Metadata.Value);
             Assert.AreEqual(checkpointData.CacheControl.Preserve, storageResource._options.CacheControl.Preserve);

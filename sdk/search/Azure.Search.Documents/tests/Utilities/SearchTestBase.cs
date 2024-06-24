@@ -59,9 +59,11 @@ namespace Azure.Search.Documents.Tests
         {
             ServiceVersion = serviceVersion;
             JsonPathSanitizers.Add("$..applicationSecret");
+            JsonPathSanitizers.Add("$..apiKey");
+            JsonPathSanitizers.Add("$..storageConnectionString");
+            JsonPathSanitizers.Remove("$..token");
             SanitizedHeaders.Add("api-key");
             CompareBodies = false;
-            BodyKeySanitizers.Add(new BodyKeySanitizer("apiKey") { JsonPath = "vectorSearch.vectorizers[0].azureOpenAIParameters.apiKey" });
         }
 
         /// <summary>

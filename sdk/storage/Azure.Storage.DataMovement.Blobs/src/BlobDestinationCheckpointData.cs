@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using System.Text;
-using Azure.Core;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Common;
 using Metadata = System.Collections.Generic.IDictionary<string, string>;
@@ -40,8 +39,7 @@ namespace Azure.Storage.DataMovement.Blobs
         /// <summary>
         /// The access tier of the destination blob.
         /// </summary>
-        public DataTransferProperty<AccessTier?> AccessTier;
-        public bool PreserveAccessTier;
+        public AccessTier? AccessTierValue;
 
         /// <summary>
         /// The metadata for the destination blob.
@@ -60,19 +58,18 @@ namespace Azure.Storage.DataMovement.Blobs
         public override int Length => CalculateLength();
 
         public BlobDestinationCheckpointData(
-            BlobType blobType,
+            DataTransferProperty<BlobType?> blobType,
             DataTransferProperty<string> contentType,
             DataTransferProperty<string> contentEncoding,
             DataTransferProperty<string> contentLanguage,
             DataTransferProperty<string> contentDisposition,
             DataTransferProperty<string> cacheControl,
-            DataTransferProperty<AccessTier?> accessTier,
+            AccessTier? accessTier,
             DataTransferProperty<Metadata> metadata,
             DataTransferProperty<Tags> tags)
             : base(DataMovementBlobConstants.DestinationCheckpointData.SchemaVersion, blobType)
         {
-            PreserveAccessTier = accessTier?.Preserve ?? true;
-            AccessTier = accessTier;
+            AccessTierValue = accessTier;
 
             CacheControl = cacheControl;
             PreserveCacheControl = cacheControl?.Preserve ?? true;
@@ -114,7 +111,15 @@ namespace Azure.Storage.DataMovement.Blobs
             writer.Write(Version);
 
             // BlobType
-            writer.Write((byte)BlobType);
+            writer.Write(PreserveBlobType);
+            if (!PreserveBlobType)
+            {
+                writer.Write((byte)BlobTypeValue);
+            }
+            else
+            {
+                writer.Write((byte)0);
+            }
 
             // Preserve Content Type
             writer.Write(PreserveContentType);
@@ -181,18 +186,8 @@ namespace Azure.Storage.DataMovement.Blobs
                 writer.WriteEmptyLengthOffset();
             }
 
-            // Preserve Access Tier
-            writer.Write(PreserveAccessTier);
-            if (!PreserveAccessTier)
-            {
-                // AccessTier
-                writer.Write((byte)AccessTier.Value.ToJobPlanAccessTier());
-            }
-            else
-            {
-                // Write null byte value
-                writer.Write((byte)0);
-            }
+            // AccessTier
+            writer.Write((byte)AccessTierValue.ToJobPlanAccessTier());
 
             // Preserve Metadata
             writer.Write(PreserveMetadata);
@@ -265,6 +260,7 @@ namespace Azure.Storage.DataMovement.Blobs
 
             // Index Values
             // BlobType
+            bool preserveBlobType = reader.ReadBoolean();
             BlobType blobType = (BlobType)reader.ReadByte();
 
             // Preserve Content Type and offset/length
@@ -292,8 +288,7 @@ namespace Azure.Storage.DataMovement.Blobs
             int cacheControlOffset = reader.ReadInt32();
             int cacheControlLength = reader.ReadInt32();
 
-            // Preserve AccessTier and offset/length
-            bool preserveAccessTier = reader.ReadBoolean();
+            // AccessTier
             AccessTier? accessTier = default;
             JobPlanAccessTier jobPlanAccessTier = (JobPlanAccessTier)reader.ReadByte();
             if (!jobPlanAccessTier.Equals(JobPlanAccessTier.None))
@@ -369,13 +364,13 @@ namespace Azure.Storage.DataMovement.Blobs
             }
 
             return new BlobDestinationCheckpointData(
-                blobType: blobType,
+                blobType: preserveBlobType ? new(preserveBlobType) : new(blobType),
                 contentType: preserveContentType ? new(preserveContentType) : new(contentType),
                 contentEncoding: preserveContentEncoding ? new(preserveContentEncoding): new(contentEncoding),
                 contentLanguage: preserveContentLanguage ? new(preserveContentLanguage) : new(contentLanguage),
                 contentDisposition: preserveContentDisposition ? new(preserveContentDisposition) : new(contentDisposition),
                 cacheControl: preserveCacheControl ? new(preserveCacheControl): new(cacheControl),
-                accessTier: preserveAccessTier ? new(preserveAccessTier) : new(accessTier),
+                accessTier: accessTier,
                 metadata: preserveMetadata ? new(preserveMetadata) : new(metadataString.ToDictionary(nameof(metadataString))),
                 tags: preserveTags ? new(preserveTags) : new(tagsString.ToDictionary(nameof(tagsString))));
         }

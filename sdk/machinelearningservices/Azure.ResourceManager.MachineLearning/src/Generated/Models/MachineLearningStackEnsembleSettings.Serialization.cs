@@ -15,7 +15,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 {
     public partial class MachineLearningStackEnsembleSettings : IUtf8JsonSerializable, IJsonModel<MachineLearningStackEnsembleSettings>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<MachineLearningStackEnsembleSettings>)this).Write(writer, new ModelReaderWriterOptions("W"));
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<MachineLearningStackEnsembleSettings>)this).Write(writer, ModelSerializationExtensions.WireOptions);
 
         void IJsonModel<MachineLearningStackEnsembleSettings>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
@@ -28,22 +28,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(StackMetaLearnerKWargs))
             {
-                if (StackMetaLearnerKWargs != null)
-                {
-                    writer.WritePropertyName("stackMetaLearnerKWargs"u8);
+                writer.WritePropertyName("stackMetaLearnerKWargs"u8);
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(StackMetaLearnerKWargs);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(StackMetaLearnerKWargs))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
-                }
-                else
+                using (JsonDocument document = JsonDocument.Parse(StackMetaLearnerKWargs))
                 {
-                    writer.WriteNull("stackMetaLearnerKWargs");
+                    JsonSerializer.Serialize(writer, document.RootElement);
                 }
+#endif
             }
             if (Optional.IsDefined(StackMetaLearnerTrainPercentage))
             {
@@ -87,7 +80,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         internal static MachineLearningStackEnsembleSettings DeserializeMachineLearningStackEnsembleSettings(JsonElement element, ModelReaderWriterOptions options = null)
         {
-            options ??= new ModelReaderWriterOptions("W");
+            options ??= ModelSerializationExtensions.WireOptions;
 
             if (element.ValueKind == JsonValueKind.Null)
             {
@@ -104,7 +97,6 @@ namespace Azure.ResourceManager.MachineLearning.Models
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        stackMetaLearnerKWargs = null;
                         continue;
                     }
                     stackMetaLearnerKWargs = BinaryData.FromString(property.Value.GetRawText());

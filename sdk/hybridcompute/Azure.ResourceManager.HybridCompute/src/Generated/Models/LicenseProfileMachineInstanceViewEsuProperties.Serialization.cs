@@ -15,7 +15,7 @@ namespace Azure.ResourceManager.HybridCompute.Models
 {
     public partial class LicenseProfileMachineInstanceViewEsuProperties : IUtf8JsonSerializable, IJsonModel<LicenseProfileMachineInstanceViewEsuProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<LicenseProfileMachineInstanceViewEsuProperties>)this).Write(writer, new ModelReaderWriterOptions("W"));
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<LicenseProfileMachineInstanceViewEsuProperties>)this).Write(writer, ModelSerializationExtensions.WireOptions);
 
         void IJsonModel<LicenseProfileMachineInstanceViewEsuProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
@@ -29,7 +29,7 @@ namespace Azure.ResourceManager.HybridCompute.Models
             if (Optional.IsDefined(AssignedLicense))
             {
                 writer.WritePropertyName("assignedLicense"u8);
-                writer.WriteObjectValue<HybridComputeLicense>(AssignedLicense, options);
+                writer.WriteObjectValue(AssignedLicense, options);
             }
             if (Optional.IsDefined(LicenseAssignmentState))
             {
@@ -62,7 +62,7 @@ namespace Azure.ResourceManager.HybridCompute.Models
                 writer.WriteStartArray();
                 foreach (var item in EsuKeys)
                 {
-                    writer.WriteObjectValue<EsuKey>(item, options);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
@@ -98,13 +98,13 @@ namespace Azure.ResourceManager.HybridCompute.Models
 
         internal static LicenseProfileMachineInstanceViewEsuProperties DeserializeLicenseProfileMachineInstanceViewEsuProperties(JsonElement element, ModelReaderWriterOptions options = null)
         {
-            options ??= new ModelReaderWriterOptions("W");
+            options ??= ModelSerializationExtensions.WireOptions;
 
             if (element.ValueKind == JsonValueKind.Null)
             {
                 return null;
             }
-            HybridComputeLicense assignedLicense = default;
+            HybridComputeLicenseData assignedLicense = default;
             LicenseAssignmentState? licenseAssignmentState = default;
             EsuServerType? serverType = default;
             EsuEligibility? esuEligibility = default;
@@ -121,7 +121,7 @@ namespace Azure.ResourceManager.HybridCompute.Models
                     {
                         continue;
                     }
-                    assignedLicense = HybridComputeLicense.DeserializeHybridComputeLicense(property.Value, options);
+                    assignedLicense = HybridComputeLicenseData.DeserializeHybridComputeLicenseData(property.Value, options);
                     continue;
                 }
                 if (property.NameEquals("licenseAssignmentState"u8))

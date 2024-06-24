@@ -80,6 +80,7 @@ namespace Azure.Search.Documents.Indexes.Models
                     case "#Microsoft.Skills.Util.ShaperSkill": return ShaperSkill.DeserializeShaperSkill(element);
                     case "#Microsoft.Skills.Vision.ImageAnalysisSkill": return ImageAnalysisSkill.DeserializeImageAnalysisSkill(element);
                     case "#Microsoft.Skills.Vision.OcrSkill": return OcrSkill.DeserializeOcrSkill(element);
+                    case "#Microsoft.Skills.Vision.VectorizeSkill": return VisionVectorizeSkill.DeserializeVisionVectorizeSkill(element);
                 }
             }
             return UnknownSearchIndexerSkill.DeserializeUnknownSearchIndexerSkill(element);
@@ -93,11 +94,11 @@ namespace Azure.Search.Documents.Indexes.Models
             return DeserializeSearchIndexerSkill(document.RootElement);
         }
 
-        /// <summary> Convert into a Utf8JsonRequestContent. </summary>
+        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
         internal virtual RequestContent ToRequestContent()
         {
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue<SearchIndexerSkill>(this);
+            content.JsonWriter.WriteObjectValue(this);
             return content;
         }
     }

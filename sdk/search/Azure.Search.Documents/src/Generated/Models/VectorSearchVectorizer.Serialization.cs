@@ -33,6 +33,8 @@ namespace Azure.Search.Documents.Indexes.Models
             {
                 switch (discriminator.GetString())
                 {
+                    case "aiServicesVision": return AIServicesVisionVectorizer.DeserializeAIServicesVisionVectorizer(element);
+                    case "aml": return AzureMachineLearningVectorizer.DeserializeAzureMachineLearningVectorizer(element);
                     case "azureOpenAI": return AzureOpenAIVectorizer.DeserializeAzureOpenAIVectorizer(element);
                     case "customWebApi": return CustomVectorizer.DeserializeCustomVectorizer(element);
                 }
@@ -48,11 +50,11 @@ namespace Azure.Search.Documents.Indexes.Models
             return DeserializeVectorSearchVectorizer(document.RootElement);
         }
 
-        /// <summary> Convert into a Utf8JsonRequestContent. </summary>
+        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
         internal virtual RequestContent ToRequestContent()
         {
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue<VectorSearchVectorizer>(this);
+            content.JsonWriter.WriteObjectValue(this);
             return content;
         }
     }

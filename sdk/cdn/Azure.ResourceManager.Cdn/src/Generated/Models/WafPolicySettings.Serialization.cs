@@ -15,7 +15,7 @@ namespace Azure.ResourceManager.Cdn.Models
 {
     public partial class WafPolicySettings : IUtf8JsonSerializable, IJsonModel<WafPolicySettings>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<WafPolicySettings>)this).Write(writer, new ModelReaderWriterOptions("W"));
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<WafPolicySettings>)this).Write(writer, ModelSerializationExtensions.WireOptions);
 
         void IJsonModel<WafPolicySettings>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
@@ -55,22 +55,15 @@ namespace Azure.ResourceManager.Cdn.Models
             }
             if (Optional.IsDefined(DefaultCustomBlockResponseBody))
             {
-                if (DefaultCustomBlockResponseBody != null)
-                {
-                    writer.WritePropertyName("defaultCustomBlockResponseBody"u8);
+                writer.WritePropertyName("defaultCustomBlockResponseBody"u8);
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(DefaultCustomBlockResponseBody);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(DefaultCustomBlockResponseBody))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
-                }
-                else
+                using (JsonDocument document = JsonDocument.Parse(DefaultCustomBlockResponseBody))
                 {
-                    writer.WriteNull("defaultCustomBlockResponseBody");
+                    JsonSerializer.Serialize(writer, document.RootElement);
                 }
+#endif
             }
             if (options.Format != "W" && _serializedAdditionalRawData != null)
             {
@@ -104,7 +97,7 @@ namespace Azure.ResourceManager.Cdn.Models
 
         internal static WafPolicySettings DeserializeWafPolicySettings(JsonElement element, ModelReaderWriterOptions options = null)
         {
-            options ??= new ModelReaderWriterOptions("W");
+            options ??= ModelSerializationExtensions.WireOptions;
 
             if (element.ValueKind == JsonValueKind.Null)
             {
@@ -160,7 +153,6 @@ namespace Azure.ResourceManager.Cdn.Models
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        defaultCustomBlockResponseBody = null;
                         continue;
                     }
                     defaultCustomBlockResponseBody = BinaryData.FromString(property.Value.GetRawText());

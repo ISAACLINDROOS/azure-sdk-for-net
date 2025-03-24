@@ -8,8 +8,8 @@ azure-arm: true
 csharp: true
 library-name: HybridCompute
 namespace: Azure.ResourceManager.HybridCompute
-require: https://github.com/Azure/azure-rest-api-specs/blob/5f0ca7e524c788be5f2b7e7488076dadba7b26ce/specification/hybridcompute/resource-manager/readme.md
-#tag: package-preview-2024-03
+require: https://github.com/Azure/azure-rest-api-specs/blob/0f300277e21972f20b32ffbff96180217875909b/specification/hybridcompute/resource-manager/readme.md
+tag: package-preview-2024-07
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
 sample-gen:
@@ -21,6 +21,7 @@ modelerfour:
   # Mitigate the duplication schema named 'ErrorDetail'
   lenient-model-deduplication: true
 use-model-reader-writer: true
+enable-bicep-serialization: true
 
 #mgmt-debug:
 #  show-serialized-names: true
@@ -29,7 +30,6 @@ prepend-rp-prefix:
   - CloudMetadata
   - ConfigurationExtension
   - ConnectionDetail
-  - ExecutionState
   - ExtensionValue
   - IpAddress
   - License
@@ -63,6 +63,14 @@ prepend-rp-prefix:
   - ProvisioningIssue
   - ProvisioningIssueSeverity
   - ProvisioningIssueType
+  - LicenseProfile
+  - LicenseProfileUpdate
+  - ProductFeatureUpdate
+  - Disk
+  - HardwareProfile
+  - Processor
+  - ExecutionState
+  - FirmwareProfile
 
 list-exception: 
 - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{baseProvider}/{baseResourceType}/{baseResourceName}/providers/Microsoft.HybridCompute/settings/{settingsResourceName}
@@ -95,10 +103,19 @@ rename-mapping:
   PatchServiceUsed.YUM: Yum
   PatchServiceUsed.APT: Apt
   PrivateLinkScopeValidationDetails.id: -|arm-id
-  RunCommandManagedIdentity.clientId: -|uuid
-  RunCommandManagedIdentity.objectId: -|uuid
   StatusLevelTypes: HybridComputeStatusLevelType
   StatusTypes: HybridComputeStatusType
+  OSProfileWindowsConfiguration.patchSettings.enableHotpatching: IsHotpatchingEnabled
+  PatchSettingsStatus: HybridComputePatchSettingsStatus
+  OSProfileLinuxConfiguration.patchSettings.enableHotpatching: IsHotpatchingEnabled
+  GatewayType: ArcGatewayType
+  GatewayUpdate: ArcGatewayUpdate
+  Gateway: ArcGateway
+  Settings: ArcSettings
+  NetworkInterface.id: -|arm-id
+  RunCommandManagedIdentity.clientId: -|uuid
+  RunCommandManagedIdentity.objectId: -|uuid
+  Disk.id: -|arm-id
 
 format-by-name-rules:
   'tenantId': 'uuid'
@@ -174,6 +191,10 @@ directive:
     where: $.definitions.MachineAssessPatchesResult.properties.assessmentActivityId
     transform: $['format'] = 'uuid'
 
+  - from: HybridCompute.json
+    where: $.definitions.GatewayProperties.properties.gatewayId
+    transform: $['format'] = 'arm-id'
+
   # set expand property of list and show to be both strings
   - from: HybridCompute.json
     where: $.paths["/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}"].get.parameters
@@ -207,7 +228,7 @@ directive:
           }
         ]
 
-  # add 200 response to run-command delete
+  # add 200 response to run-command delete - comment out for stable release
   - from: HybridCompute.json
     where: $.paths["/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/runCommands/{runCommandName}"].delete.responses
     transform: >-
@@ -239,53 +260,23 @@ directive:
         "default": {
           "description": "Error response describing why the operation failed.",
           "schema": {
-            "$ref": "https://github.com/Azure/azure-rest-api-specs/blob/f6278b35fb38d62aadb7a4327a876544d5d7e1e4/specification/common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+            "$ref": "../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
           }
         }
       }
 
-  # remove cmdlets
-  - where:
-      subject: NetworkProfile
-    remove: true
-  - where:
-      subject: MachineRunCommand
-      verb: Set
-    remove: true
-
-  # remove operations
-  - remove-operation: Machines_CreateOrUpdate
-  - remove-operation: MachineRunCommands_Update
+  # we don't want user to interact with them / we don't support some operations - comment out for stable release
+  # - remove-operation: MachineRunCommands_Update #PATCH
+  # internal operations
   - remove-operation: AgentVersion_List
   - remove-operation: AgentVersion_Get
+  # we don't use them, pending to remove in the future
   - remove-operation: HybridIdentityMetadata_Get
   - remove-operation: HybridIdentityMetadata_ListByMachines
-
-  # add back when swagger change is checked in
-  - remove-operation: Licenses_ValidateLicense
-  - remove-operation: Licenses_Update #PATCH
-
-  - remove-operation: LicenseProfiles_Get
-  - remove-operation: LicenseProfiles_Delete
-  - remove-operation: LicenseProfiles_Update
-  - remove-operation: LicenseProfiles_List
-  - remove-operation: LicenseProfiles_CreateOrUpdate
-
-  - remove-operation: NetworkConfigurations_Get
-  - remove-operation: NetworkConfigurations_Update
-  - remove-operation: NetworkConfigurations_CreateOrUpdate
-
-  - remove-operation: NetworkSecurityPerimeterConfigurations_ReconcileForPrivateLinkScope
-
-  # we will generate a seperate SDK for them
-  - remove-operation: Gateways_CreateOrUpdate
-  - remove-operation: Gateways_Get
-  - remove-operation: Gateways_ListByResourceGroup
-  - remove-operation: Gateways_ListBySubscription
-  - remove-operation: Gateways_Delete
-  - remove-operation: Gateways_Update
-  - remove-operation: Settings_Update
+  # we don't want user to interact with them
   - remove-operation: Settings_Get
   - remove-operation: Settings_Patch
+  # adding it will remove HybridComputeLicenseData resource and create HybridComputeLicensePatch resouce and cause other ESU commands to fail  
+  - remove-operation: Licenses_Update #PATCH
 
 ```

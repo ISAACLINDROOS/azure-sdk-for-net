@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.Pipeline;
 
+#pragma warning disable AZC0007
+
 namespace Azure.Data.AppConfiguration
 {
     /// <summary>
@@ -73,6 +75,9 @@ namespace Azure.Data.AppConfiguration
         /// <param name="endpoint">The <see cref="Uri"/> referencing the app configuration storage.</param>
         /// <param name="credential">The token credential used to sign requests.</param>
         /// <param name="options">Options that allow configuration of requests sent to the configuration store.</param>
+        /// <remarks> The <paramref name="credential"/>'s Microsoft Entra audience is configurable via the <see cref="ConfigurationClientOptions.Audience"/> property.
+        /// If no token audience is set, Azure Public Cloud is used. If using an Azure sovereign cloud, configure the audience accordingly.
+        /// </remarks>
         public ConfigurationClient(Uri endpoint, TokenCredential credential, ConfigurationClientOptions options)
         {
             Argument.AssertNotNull(endpoint, nameof(endpoint));
@@ -80,7 +85,7 @@ namespace Azure.Data.AppConfiguration
 
             _endpoint = endpoint;
             _syncTokenPolicy = new SyncTokenPolicy();
-            _pipeline = CreatePipeline(options, new BearerTokenAuthenticationPolicy(credential, GetDefaultScope(endpoint)), _syncTokenPolicy);
+            _pipeline = CreatePipeline(options, new BearerTokenAuthenticationPolicy(credential, options.GetDefaultScope(endpoint)), _syncTokenPolicy);
             _apiVersion = options.Version;
 
             ClientDiagnostics = new ClientDiagnostics(options, true);
@@ -141,9 +146,6 @@ namespace Azure.Data.AppConfiguration
                 new HttpPipelinePolicy[] { authenticationPolicy, syncTokenPolicy },
                 new ResponseClassifier());
         }
-
-        private static string GetDefaultScope(Uri uri)
-            => $"{uri.GetComponents(UriComponents.SchemeAndServer, UriFormat.SafeUnescaped)}/.default";
 
         /// <summary>
         /// Creates a <see cref="ConfigurationSetting"/> if the setting, uniquely identified by key and label, does not already exist in the configuration store.
@@ -1363,6 +1365,52 @@ namespace Azure.Data.AppConfiguration
             Argument.AssertNotNull(setting, nameof(setting));
             MatchConditions requestOptions = onlyIfUnchanged ? new MatchConditions { IfMatch = setting.ETag } : default;
             return SetReadOnlyAsync(setting.Key, setting.Label, requestOptions, isReadOnly, false, cancellationToken).EnsureCompleted();
+        }
+
+        /// <summary> Gets a list of labels. </summary>
+        /// <param name="selector">Set of options for selecting <see cref="SettingLabel"/>.</param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        public virtual AsyncPageable<SettingLabel> GetLabelsAsync(SettingLabelSelector selector, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(selector, nameof(selector));
+            var name = selector.NameFilter;
+            var fields = selector.Fields;
+            var dateTime = selector.AcceptDateTime?.UtcDateTime.ToString(AcceptDateTimeFormat, CultureInfo.InvariantCulture);
+
+            RequestContext context = CreateRequestContext(ErrorOptions.Default, cancellationToken);
+
+            var labelFields = new ChangeTrackingList<string>();
+            foreach (SettingLabelFields field in fields)
+            {
+                labelFields.Add(field.ToString());
+            }
+
+            HttpMessage FirstPageRequest(int? pageSizeHint) => CreateGetLabelsRequest(name, null, dateTime, labelFields, context);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => CreateGetLabelsNextPageRequest(nextLink, name, null, dateTime, labelFields, context);
+            return PageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, SettingLabel.DeserializeLabel, ClientDiagnostics, _pipeline, "ConfigurationClient.GetLabels", "items", "@nextLink", cancellationToken);
+        }
+
+        /// <summary> Gets a list of labels. </summary>
+        /// <param name="selector">Set of options for selecting <see cref="SettingLabel"/>.</param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        public virtual Pageable<SettingLabel> GetLabels(SettingLabelSelector selector, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(selector, nameof(selector));
+            var name = selector.NameFilter;
+            var fields = selector.Fields;
+            var dateTime = selector.AcceptDateTime?.UtcDateTime.ToString(AcceptDateTimeFormat, CultureInfo.InvariantCulture);
+
+            RequestContext context = CreateRequestContext(ErrorOptions.Default, cancellationToken);
+
+            var labelFields = new ChangeTrackingList<string>();
+            foreach (SettingLabelFields field in fields)
+            {
+                labelFields.Add(field.ToString());
+            }
+
+            HttpMessage FirstPageRequest(int? pageSizeHint) => CreateGetLabelsRequest(name, null, dateTime, labelFields, context);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => CreateGetLabelsNextPageRequest(nextLink, name, null, dateTime, labelFields, context);
+            return PageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, SettingLabel.DeserializeLabel, ClientDiagnostics, _pipeline, "ConfigurationClient.GetLabels", "items", "@nextLink", cancellationToken);
         }
 
         private async ValueTask<Response<ConfigurationSetting>> SetReadOnlyAsync(string key, string label, MatchConditions requestOptions, bool isReadOnly, bool async, CancellationToken cancellationToken)

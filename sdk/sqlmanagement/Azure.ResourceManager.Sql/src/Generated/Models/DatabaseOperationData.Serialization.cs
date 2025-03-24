@@ -21,33 +21,22 @@ namespace Azure.ResourceManager.Sql.Models
 
         void IJsonModel<DatabaseOperationData>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<DatabaseOperationData>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(DatabaseOperationData)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("id"u8);
-                writer.WriteStringValue(Id);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("name"u8);
-                writer.WriteStringValue(Name);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("type"u8);
-                writer.WriteStringValue(ResourceType);
-            }
-            if (options.Format != "W" && Optional.IsDefined(SystemData))
-            {
-                writer.WritePropertyName("systemData"u8);
-                JsonSerializer.Serialize(writer, SystemData);
-            }
+            base.JsonModelWriteCore(writer, options);
             writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (options.Format != "W" && Optional.IsDefined(DatabaseName))
@@ -120,21 +109,10 @@ namespace Azure.ResourceManager.Sql.Models
                 writer.WritePropertyName("isCancellable"u8);
                 writer.WriteBooleanValue(IsCancellable.Value);
             }
-            writer.WriteEndObject();
-            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            if (options.Format != "W" && Optional.IsDefined(OperationPhaseDetails))
             {
-                foreach (var item in _serializedAdditionalRawData)
-                {
-                    writer.WritePropertyName(item.Key);
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(item.Value);
-#else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
-                }
+                writer.WritePropertyName("operationPhaseDetails"u8);
+                writer.WriteObjectValue(OperationPhaseDetails, options);
             }
             writer.WriteEndObject();
         }
@@ -177,6 +155,7 @@ namespace Azure.ResourceManager.Sql.Models
             DateTimeOffset? estimatedCompletionTime = default;
             string description = default;
             bool? isCancellable = default;
+            DatabaseOperationPhaseDetails operationPhaseDetails = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -316,6 +295,15 @@ namespace Azure.ResourceManager.Sql.Models
                             isCancellable = property0.Value.GetBoolean();
                             continue;
                         }
+                        if (property0.NameEquals("operationPhaseDetails"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            operationPhaseDetails = DatabaseOperationPhaseDetails.DeserializeDatabaseOperationPhaseDetails(property0.Value, options);
+                            continue;
+                        }
                     }
                     continue;
                 }
@@ -344,6 +332,7 @@ namespace Azure.ResourceManager.Sql.Models
                 estimatedCompletionTime,
                 description,
                 isCancellable,
+                operationPhaseDetails,
                 serializedAdditionalRawData);
         }
 
@@ -675,6 +664,21 @@ namespace Azure.ResourceManager.Sql.Models
                 }
             }
 
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(OperationPhaseDetails), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    operationPhaseDetails: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(OperationPhaseDetails))
+                {
+                    builder.Append("    operationPhaseDetails: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, OperationPhaseDetails, options, 4, false, "    operationPhaseDetails: ");
+                }
+            }
+
             builder.AppendLine("  }");
             builder.AppendLine("}");
             return BinaryData.FromString(builder.ToString());
@@ -703,7 +707,7 @@ namespace Azure.ResourceManager.Sql.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeDatabaseOperationData(document.RootElement, options);
                     }
                 default:

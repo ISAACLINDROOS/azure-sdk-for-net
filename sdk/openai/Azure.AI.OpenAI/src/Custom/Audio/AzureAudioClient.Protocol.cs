@@ -3,59 +3,27 @@
 
 using System.ClientModel;
 using System.ClientModel.Primitives;
-using System.ComponentModel;
-using OpenAI.Audio;
 
 namespace Azure.AI.OpenAI.Audio;
 
 internal partial class AzureAudioClient : AudioClient
 {
+#if !AZURE_OPENAI_GA
+#else
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public override ClientResult TranscribeAudio(BinaryContent content, string contentType, RequestOptions options = null)
+    public override ClientResult GenerateSpeech(BinaryContent content, RequestOptions options = null)
     {
-        using PipelineMessage message = CreateTranscribeAudioRequestMessage(content, contentType, options);
-        return ClientResult.FromResponse(Pipeline.ProcessMessage(message, options));
+        throw new InvalidOperationException($"{nameof(GenerateSpeech)} is not supported using this GA library version. To use this functionality, please use a preview version of the library.");
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public override async Task<ClientResult> TranscribeAudioAsync(BinaryContent content, string contentType, RequestOptions options = null)
+    public override Task<ClientResult> GenerateSpeechAsync(BinaryContent content, RequestOptions options = null)
     {
-        using PipelineMessage message = CreateTranscribeAudioRequestMessage(content, contentType, options);
-        PipelineResponse response = await Pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false);
-        return ClientResult.FromResponse(response);
+        throw new InvalidOperationException($"{nameof(GenerateSpeechAsync)} is not supported using this GA library version. To use this functionality, please use a preview version of the library.");
     }
+#endif
 
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public override ClientResult TranslateAudio(BinaryContent content, string contentType, RequestOptions options = null)
-    {
-        using PipelineMessage message = CreateTranslateAudioRequestMessage(content, contentType, options);
-        return ClientResult.FromResponse(Pipeline.ProcessMessage(message, options));
-    }
-
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public override async Task<ClientResult> TranslateAudioAsync(BinaryContent content, string contentType, RequestOptions options = null)
-    {
-        using PipelineMessage message = CreateTranslateAudioRequestMessage(content, contentType, options);
-        PipelineResponse response = await Pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false);
-        return ClientResult.FromResponse(response);
-    }
-
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public override ClientResult GenerateSpeechFromText(BinaryContent content, RequestOptions options = null)
-    {
-        using PipelineMessage message = CreateGenerateSpeechFromTextRequestMessage(content, options);
-        return ClientResult.FromResponse(Pipeline.ProcessMessage(message, options));
-    }
-
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public override async Task<ClientResult> GenerateSpeechFromTextAsync(BinaryContent content, RequestOptions options = null)
-    {
-        using PipelineMessage message = CreateGenerateSpeechFromTextRequestMessage(content, options);
-        PipelineResponse response = await Pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false);
-        return ClientResult.FromResponse(response);
-    }
-
-    private PipelineMessage CreateTranscribeAudioRequestMessage(BinaryContent content, string contentType, RequestOptions options)
+    internal override PipelineMessage CreateCreateTranscriptionRequest(BinaryContent content, string contentType, RequestOptions options)
         => new AzureOpenAIPipelineMessageBuilder(Pipeline, _endpoint, _apiVersion, _deploymentName)
             .WithMethod("POST")
             .WithPath("audio", "transcriptions")
@@ -64,7 +32,7 @@ internal partial class AzureAudioClient : AudioClient
             .WithOptions(options)
             .Build();
 
-    private PipelineMessage CreateTranslateAudioRequestMessage(BinaryContent content, string contentType, RequestOptions options)
+    internal override PipelineMessage CreateCreateTranslationRequest(BinaryContent content, string contentType, RequestOptions options)
         => new AzureOpenAIPipelineMessageBuilder(Pipeline, _endpoint, _apiVersion, _deploymentName)
             .WithMethod("POST")
             .WithPath("audio", "translations")
@@ -73,7 +41,7 @@ internal partial class AzureAudioClient : AudioClient
             .WithOptions(options)
             .Build();
 
-    private PipelineMessage CreateGenerateSpeechFromTextRequestMessage(BinaryContent content, RequestOptions options)
+    internal override PipelineMessage CreateCreateSpeechRequest(BinaryContent content, RequestOptions options)
         => new AzureOpenAIPipelineMessageBuilder(Pipeline, _endpoint, _apiVersion, _deploymentName)
             .WithMethod("POST")
             .WithPath("audio", "speech")

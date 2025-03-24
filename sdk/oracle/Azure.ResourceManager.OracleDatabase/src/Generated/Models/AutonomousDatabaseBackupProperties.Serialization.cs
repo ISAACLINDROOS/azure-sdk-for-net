@@ -19,13 +19,21 @@ namespace Azure.ResourceManager.OracleDatabase.Models
 
         void IJsonModel<AutonomousDatabaseBackupProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<AutonomousDatabaseBackupProperties>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(AutonomousDatabaseBackupProperties)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (options.Format != "W" && Optional.IsDefined(AutonomousDatabaseOcid))
             {
                 writer.WritePropertyName("autonomousDatabaseOcid"u8);
@@ -36,10 +44,10 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                 writer.WritePropertyName("databaseSizeInTbs"u8);
                 writer.WriteNumberValue(DatabaseSizeInTbs.Value);
             }
-            if (options.Format != "W" && Optional.IsDefined(DbVersion))
+            if (options.Format != "W" && Optional.IsDefined(DBVersion))
             {
                 writer.WritePropertyName("dbVersion"u8);
-                writer.WriteStringValue(DbVersion);
+                writer.WriteStringValue(DBVersion);
             }
             if (Optional.IsDefined(DisplayName))
             {
@@ -114,14 +122,13 @@ namespace Azure.ResourceManager.OracleDatabase.Models
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(item.Value);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
                     {
                         JsonSerializer.Serialize(writer, document.RootElement);
                     }
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         AutonomousDatabaseBackupProperties IJsonModel<AutonomousDatabaseBackupProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -144,11 +151,11 @@ namespace Azure.ResourceManager.OracleDatabase.Models
             {
                 return null;
             }
-            string autonomousDatabaseOcid = default;
+            ResourceIdentifier autonomousDatabaseOcid = default;
             double? databaseSizeInTbs = default;
             string dbVersion = default;
             string displayName = default;
-            string ocid = default;
+            ResourceIdentifier ocid = default;
             bool? isAutomatic = default;
             bool? isRestorable = default;
             string lifecycleDetails = default;
@@ -159,14 +166,18 @@ namespace Azure.ResourceManager.OracleDatabase.Models
             string timeStarted = default;
             string timeEnded = default;
             AutonomousDatabaseBackupType? backupType = default;
-            AzureResourceProvisioningState? provisioningState = default;
+            OracleDatabaseProvisioningState? provisioningState = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
                 if (property.NameEquals("autonomousDatabaseOcid"u8))
                 {
-                    autonomousDatabaseOcid = property.Value.GetString();
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    autonomousDatabaseOcid = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("databaseSizeInTbs"u8))
@@ -190,7 +201,11 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                 }
                 if (property.NameEquals("ocid"u8))
                 {
-                    ocid = property.Value.GetString();
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    ocid = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("isAutomatic"u8))
@@ -277,7 +292,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                     {
                         continue;
                     }
-                    provisioningState = new AzureResourceProvisioningState(property.Value.GetString());
+                    provisioningState = new OracleDatabaseProvisioningState(property.Value.GetString());
                     continue;
                 }
                 if (options.Format != "W")
@@ -327,7 +342,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeAutonomousDatabaseBackupProperties(document.RootElement, options);
                     }
                 default:

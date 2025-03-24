@@ -21,37 +21,26 @@ namespace Azure.ResourceManager.AppService.Models
 
         void IJsonModel<KubeEnvironmentPatch>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<KubeEnvironmentPatch>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(KubeEnvironmentPatch)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsDefined(Kind))
             {
                 writer.WritePropertyName("kind"u8);
                 writer.WriteStringValue(Kind);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("id"u8);
-                writer.WriteStringValue(Id);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("name"u8);
-                writer.WriteStringValue(Name);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("type"u8);
-                writer.WriteStringValue(ResourceType);
-            }
-            if (options.Format != "W" && Optional.IsDefined(SystemData))
-            {
-                writer.WritePropertyName("systemData"u8);
-                JsonSerializer.Serialize(writer, SystemData);
             }
             writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
@@ -90,26 +79,15 @@ namespace Azure.ResourceManager.AppService.Models
                 writer.WritePropertyName("appLogsConfiguration"u8);
                 writer.WriteObjectValue(AppLogsConfiguration, options);
             }
+            if (Optional.IsDefined(ContainerAppsConfiguration))
+            {
+                writer.WritePropertyName("containerAppsConfiguration"u8);
+                writer.WriteObjectValue(ContainerAppsConfiguration, options);
+            }
             if (Optional.IsDefined(AksResourceId))
             {
                 writer.WritePropertyName("aksResourceID"u8);
                 writer.WriteStringValue(AksResourceId);
-            }
-            writer.WriteEndObject();
-            if (options.Format != "W" && _serializedAdditionalRawData != null)
-            {
-                foreach (var item in _serializedAdditionalRawData)
-                {
-                    writer.WritePropertyName(item.Key);
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(item.Value);
-#else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
-                }
             }
             writer.WriteEndObject();
         }
@@ -146,6 +124,7 @@ namespace Azure.ResourceManager.AppService.Models
             string staticIP = default;
             ArcConfiguration arcConfiguration = default;
             AppLogsConfiguration appLogsConfiguration = default;
+            ContainerAppsConfiguration containerAppsConfiguration = default;
             ResourceIdentifier aksResourceId = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
@@ -240,6 +219,15 @@ namespace Azure.ResourceManager.AppService.Models
                             appLogsConfiguration = AppLogsConfiguration.DeserializeAppLogsConfiguration(property0.Value, options);
                             continue;
                         }
+                        if (property0.NameEquals("containerAppsConfiguration"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            containerAppsConfiguration = ContainerAppsConfiguration.DeserializeContainerAppsConfiguration(property0.Value, options);
+                            continue;
+                        }
                         if (property0.NameEquals("aksResourceID"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
@@ -270,6 +258,7 @@ namespace Azure.ResourceManager.AppService.Models
                 staticIP,
                 arcConfiguration,
                 appLogsConfiguration,
+                containerAppsConfiguration,
                 aksResourceId,
                 kind,
                 serializedAdditionalRawData);
@@ -494,6 +483,21 @@ namespace Azure.ResourceManager.AppService.Models
                 }
             }
 
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ContainerAppsConfiguration), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    containerAppsConfiguration: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ContainerAppsConfiguration))
+                {
+                    builder.Append("    containerAppsConfiguration: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, ContainerAppsConfiguration, options, 4, false, "    containerAppsConfiguration: ");
+                }
+            }
+
             hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(AksResourceId), out propertyOverride);
             if (hasPropertyOverride)
             {
@@ -537,7 +541,7 @@ namespace Azure.ResourceManager.AppService.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeKubeEnvironmentPatch(document.RootElement, options);
                     }
                 default:

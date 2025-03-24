@@ -32,7 +32,7 @@ namespace Azure.ResourceManager.Compute
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2024-03-01";
+            _apiVersion = apiVersion ?? "2024-07-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -85,7 +85,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = VirtualMachineListResult.DeserializeVirtualMachineListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -111,7 +111,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = VirtualMachineListResult.DeserializeVirtualMachineListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -579,7 +579,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = VirtualMachineData.DeserializeVirtualMachineData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -611,7 +611,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = VirtualMachineData.DeserializeVirtualMachineData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -678,7 +678,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineInstanceView value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = VirtualMachineInstanceView.DeserializeVirtualMachineInstanceView(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -707,7 +707,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineInstanceView value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = VirtualMachineInstanceView.DeserializeVirtualMachineInstanceView(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -850,7 +850,7 @@ namespace Azure.ResourceManager.Compute
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="vmName"> The name of the virtual machine. </param>
-        /// <param name="hibernate"> Optional parameter to hibernate a virtual machine. (Feature in Preview). </param>
+        /// <param name="hibernate"> Optional parameter to hibernate a virtual machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="vmName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="vmName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -876,7 +876,7 @@ namespace Azure.ResourceManager.Compute
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="vmName"> The name of the virtual machine. </param>
-        /// <param name="hibernate"> Optional parameter to hibernate a virtual machine. (Feature in Preview). </param>
+        /// <param name="hibernate"> Optional parameter to hibernate a virtual machine. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="vmName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="vmName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -1050,7 +1050,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = VirtualMachineListResult.DeserializeVirtualMachineListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1079,7 +1079,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = VirtualMachineListResult.DeserializeVirtualMachineListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1159,7 +1159,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = VirtualMachineListResult.DeserializeVirtualMachineListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1187,7 +1187,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = VirtualMachineListResult.DeserializeVirtualMachineListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1252,7 +1252,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineSizeListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = VirtualMachineSizeListResult.DeserializeVirtualMachineSizeListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1281,7 +1281,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineSizeListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = VirtualMachineSizeListResult.DeserializeVirtualMachineSizeListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1334,7 +1334,7 @@ namespace Azure.ResourceManager.Compute
             return message;
         }
 
-        /// <summary> The operation to power off (stop) a virtual machine. The virtual machine can be restarted with the same provisioned resources. You are still charged for this virtual machine. </summary>
+        /// <summary> The operation to power off (stop) a virtual machine. The virtual machine can be restarted with the same provisioned resources. You are still charged for this virtual machine. NOTE: This operation is not allowed on a virtual machine that is being deallocated or has already been deallocated. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="vmName"> The name of the virtual machine. </param>
@@ -1360,7 +1360,7 @@ namespace Azure.ResourceManager.Compute
             }
         }
 
-        /// <summary> The operation to power off (stop) a virtual machine. The virtual machine can be restarted with the same provisioned resources. You are still charged for this virtual machine. </summary>
+        /// <summary> The operation to power off (stop) a virtual machine. The virtual machine can be restarted with the same provisioned resources. You are still charged for this virtual machine. NOTE: This operation is not allowed on a virtual machine that is being deallocated or has already been deallocated. </summary>
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="vmName"> The name of the virtual machine. </param>
@@ -1890,7 +1890,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         RetrieveBootDiagnosticsDataResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = RetrieveBootDiagnosticsDataResult.DeserializeRetrieveBootDiagnosticsDataResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1920,7 +1920,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         RetrieveBootDiagnosticsDataResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = RetrieveBootDiagnosticsDataResult.DeserializeRetrieveBootDiagnosticsDataResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -2508,7 +2508,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = VirtualMachineListResult.DeserializeVirtualMachineListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -2536,7 +2536,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = VirtualMachineListResult.DeserializeVirtualMachineListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -2589,7 +2589,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = VirtualMachineListResult.DeserializeVirtualMachineListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -2620,7 +2620,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = VirtualMachineListResult.DeserializeVirtualMachineListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -2672,7 +2672,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = VirtualMachineListResult.DeserializeVirtualMachineListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -2702,7 +2702,7 @@ namespace Azure.ResourceManager.Compute
                 case 200:
                     {
                         VirtualMachineListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = VirtualMachineListResult.DeserializeVirtualMachineListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

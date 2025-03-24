@@ -32,7 +32,7 @@ namespace Azure.ResourceManager.Network
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2023-11-01";
+            _apiVersion = apiVersion ?? "2024-05-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -176,7 +176,7 @@ namespace Azure.ResourceManager.Network
                 case 200:
                     {
                         AzureFirewallData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AzureFirewallData.DeserializeAzureFirewallData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -207,7 +207,7 @@ namespace Azure.ResourceManager.Network
                 case 200:
                     {
                         AzureFirewallData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AzureFirewallData.DeserializeAzureFirewallData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -452,7 +452,7 @@ namespace Azure.ResourceManager.Network
                 case 200:
                     {
                         AzureFirewallListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AzureFirewallListResult.DeserializeAzureFirewallListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -479,7 +479,7 @@ namespace Azure.ResourceManager.Network
                 case 200:
                     {
                         AzureFirewallListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AzureFirewallListResult.DeserializeAzureFirewallListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -532,7 +532,7 @@ namespace Azure.ResourceManager.Network
                 case 200:
                     {
                         AzureFirewallListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AzureFirewallListResult.DeserializeAzureFirewallListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -557,7 +557,7 @@ namespace Azure.ResourceManager.Network
                 case 200:
                     {
                         AzureFirewallListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AzureFirewallListResult.DeserializeAzureFirewallListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -652,7 +652,7 @@ namespace Azure.ResourceManager.Network
             }
         }
 
-        internal RequestUriBuilder CreatePacketCaptureRequestUri(string subscriptionId, string resourceGroupName, string azureFirewallName, FirewallPacketCaptureContent content)
+        internal RequestUriBuilder CreatePacketCaptureRequestUri(string subscriptionId, string resourceGroupName, string azureFirewallName, FirewallPacketCaptureRequestContent content)
         {
             var uri = new RawRequestUriBuilder();
             uri.Reset(_endpoint);
@@ -667,7 +667,7 @@ namespace Azure.ResourceManager.Network
             return uri;
         }
 
-        internal HttpMessage CreatePacketCaptureRequest(string subscriptionId, string resourceGroupName, string azureFirewallName, FirewallPacketCaptureContent content)
+        internal HttpMessage CreatePacketCaptureRequest(string subscriptionId, string resourceGroupName, string azureFirewallName, FirewallPacketCaptureRequestContent content)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -700,7 +700,7 @@ namespace Azure.ResourceManager.Network
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="azureFirewallName"/> or <paramref name="content"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="azureFirewallName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> PacketCaptureAsync(string subscriptionId, string resourceGroupName, string azureFirewallName, FirewallPacketCaptureContent content, CancellationToken cancellationToken = default)
+        public async Task<Response> PacketCaptureAsync(string subscriptionId, string resourceGroupName, string azureFirewallName, FirewallPacketCaptureRequestContent content, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -726,7 +726,7 @@ namespace Azure.ResourceManager.Network
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="azureFirewallName"/> or <paramref name="content"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="azureFirewallName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response PacketCapture(string subscriptionId, string resourceGroupName, string azureFirewallName, FirewallPacketCaptureContent content, CancellationToken cancellationToken = default)
+        public Response PacketCapture(string subscriptionId, string resourceGroupName, string azureFirewallName, FirewallPacketCaptureRequestContent content, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -786,7 +786,7 @@ namespace Azure.ResourceManager.Network
                 case 200:
                     {
                         AzureFirewallListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AzureFirewallListResult.DeserializeAzureFirewallListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -815,7 +815,7 @@ namespace Azure.ResourceManager.Network
                 case 200:
                     {
                         AzureFirewallListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AzureFirewallListResult.DeserializeAzureFirewallListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -864,7 +864,7 @@ namespace Azure.ResourceManager.Network
                 case 200:
                     {
                         AzureFirewallListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AzureFirewallListResult.DeserializeAzureFirewallListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -891,7 +891,7 @@ namespace Azure.ResourceManager.Network
                 case 200:
                     {
                         AzureFirewallListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AzureFirewallListResult.DeserializeAzureFirewallListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

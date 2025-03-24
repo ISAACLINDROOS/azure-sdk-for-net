@@ -9,10 +9,10 @@ using System.Text.Json;
 
 namespace Azure.AI.OpenAI
 {
-    internal static class BinaryContentHelper
+    internal static partial class BinaryContentHelper
     {
         public static BinaryContent FromEnumerable<T>(IEnumerable<T> enumerable)
-        where T : notnull
+            where T : notnull 
         {
             Utf8JsonBinaryContent content = new Utf8JsonBinaryContent();
             content.JsonWriter.WriteStartArray();
@@ -38,7 +38,7 @@ namespace Azure.AI.OpenAI
                 else
                 {
 #if NET6_0_OR_GREATER
-				content.JsonWriter.WriteRawValue(item);
+                    content.JsonWriter.WriteRawValue(item);
 #else
                     using (JsonDocument document = JsonDocument.Parse(item))
                     {
@@ -52,8 +52,23 @@ namespace Azure.AI.OpenAI
             return content;
         }
 
+        public static BinaryContent FromEnumerable<T>(ReadOnlySpan<T> span)
+            where T : notnull 
+        {
+            Utf8JsonBinaryContent content = new Utf8JsonBinaryContent();
+            content.JsonWriter.WriteStartArray();
+            int i = 0;
+            for (; i < span.Length; i++)
+            {
+                content.JsonWriter.WriteObjectValue(span[i], ModelSerializationExtensions.WireOptions);
+            }
+            content.JsonWriter.WriteEndArray();
+
+            return content;
+        }
+
         public static BinaryContent FromDictionary<TValue>(IDictionary<string, TValue> dictionary)
-        where TValue : notnull
+            where TValue : notnull 
         {
             Utf8JsonBinaryContent content = new Utf8JsonBinaryContent();
             content.JsonWriter.WriteStartObject();
@@ -81,7 +96,7 @@ namespace Azure.AI.OpenAI
                 else
                 {
 #if NET6_0_OR_GREATER
-				content.JsonWriter.WriteRawValue(item.Value);
+                    content.JsonWriter.WriteRawValue(item.Value);
 #else
                     using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
@@ -106,7 +121,7 @@ namespace Azure.AI.OpenAI
         {
             Utf8JsonBinaryContent content = new Utf8JsonBinaryContent();
 #if NET6_0_OR_GREATER
-				content.JsonWriter.WriteRawValue(value);
+            content.JsonWriter.WriteRawValue(value);
 #else
             using (JsonDocument document = JsonDocument.Parse(value))
             {

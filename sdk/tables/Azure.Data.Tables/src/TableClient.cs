@@ -234,7 +234,7 @@ namespace Azure.Data.Tables
             _version = options.VersionString;
             _diagnostics = new ClientDiagnostics(options);
             _tableOperations = new TableRestClient(_diagnostics, _pipeline, _endpoint.AbsoluteUri, _version);
-            _batchOperations = new TableRestClient(_diagnostics, CreateBatchPipeline(), _tableOperations.endpoint, _tableOperations.clientVersion);
+            _batchOperations = new TableRestClient(_diagnostics, _batchPipeline, _tableOperations.endpoint, _tableOperations.clientVersion);
             Name = tableName;
             Uri = new TableUriBuilder(_endpoint) { Query = null, Sas = null, Tablename = Name }.ToUri();
         }
@@ -275,7 +275,7 @@ namespace Azure.Data.Tables
 
             var pipelineOptions = new HttpPipelineOptions(options)
             {
-                PerRetryPolicies = { new TableBearerTokenChallengeAuthorizationPolicy(tokenCredential, TableConstants.StorageScope, options.EnableTenantDiscovery) },
+                PerRetryPolicies = { new TableBearerTokenChallengeAuthorizationPolicy(tokenCredential, _isCosmosEndpoint ? TableConstants.CosmosScope : TableConstants.StorageScope, options.EnableTenantDiscovery) },
                 ResponseClassifier = new ResponseClassifier(),
                 RequestFailedDetailsParser = new TablesRequestFailedDetailsParser()
             };
@@ -286,7 +286,7 @@ namespace Azure.Data.Tables
             _version = options.VersionString;
             _diagnostics = new ClientDiagnostics(options);
             _tableOperations = new TableRestClient(_diagnostics, _pipeline, _endpoint.AbsoluteUri, _version);
-            _batchOperations = new TableRestClient(_diagnostics, CreateBatchPipeline(), _tableOperations.endpoint, _tableOperations.clientVersion);
+            _batchOperations = new TableRestClient(_diagnostics, _batchPipeline, _tableOperations.endpoint, _tableOperations.clientVersion);
             Name = tableName;
             Uri = new TableUriBuilder(_endpoint) { Query = null, Sas = null, Tablename = Name }.ToUri();
         }
@@ -337,7 +337,7 @@ namespace Azure.Data.Tables
             _version = options.VersionString;
             _diagnostics = new ClientDiagnostics(options);
             _tableOperations = new TableRestClient(_diagnostics, _pipeline, _endpoint.AbsoluteUri, _version);
-            _batchOperations = new TableRestClient(_diagnostics, CreateBatchPipeline(), _tableOperations.endpoint, _tableOperations.clientVersion);
+            _batchOperations = new TableRestClient(_diagnostics, _batchPipeline, _tableOperations.endpoint, _tableOperations.clientVersion);
             Name = tableName;
             Uri = new TableUriBuilder(_endpoint) { Query = null, Sas = null, Tablename = Name }.ToUri();
         }
@@ -363,7 +363,7 @@ namespace Azure.Data.Tables
             {
                 _tableOperations = tableOperations;
             }
-            _batchOperations = new TableRestClient(diagnostics, CreateBatchPipeline(), _tableOperations.endpoint, _tableOperations.clientVersion);
+            _batchOperations = new TableRestClient(diagnostics, _batchPipeline, _tableOperations.endpoint, _tableOperations.clientVersion);
             _version = version;
             Name = table;
             Uri = new TableUriBuilder(_endpoint) { Query = null, Sas = null, Tablename = Name }.ToUri();
@@ -1041,6 +1041,15 @@ namespace Azure.Data.Tables
         /// <param name="filter">
         /// Returns only entities that satisfy the specified filter expression.
         /// For example, the following expression would filter entities with a PartitionKey of 'foo': <c>e => e.PartitionKey == "foo"</c>.
+        /// <para>
+        /// The following string comparison methods are supported as part of a filter expression:
+        /// <list type="bullet">
+        /// <item><description><see cref="string.Equals(string)"/></description></item>
+        /// <item><description><see cref="string.Equals(string, string)"/></description></item>
+        /// <item><description><see cref="string.CompareTo(string)"/></description></item>
+        /// <item><description><see cref="string.Compare(string, string)"/></description></item>
+        /// </list>
+        /// </para>
         /// </param>
         /// <param name="maxPerPage">
         /// The maximum number of entities that will be returned per page. If unspecified, the default value is 1000 for storage accounts and is not limited for Cosmos DB table API.
@@ -1079,6 +1088,15 @@ namespace Azure.Data.Tables
         /// <param name="filter">
         /// Returns only entities that satisfy the specified filter expression.
         /// For example, the following expression would filter entities with a PartitionKey of 'foo': <c>e => e.PartitionKey == "foo"</c>.
+        /// <para>
+        /// The following string comparison methods are supported as part of a filter expression:
+        /// <list type="bullet">
+        /// <item><description><see cref="string.Equals(string)"/></description></item>
+        /// <item><description><see cref="string.Equals(string, string)"/></description></item>
+        /// <item><description><see cref="string.CompareTo(string)"/></description></item>
+        /// <item><description><see cref="string.Compare(string, string)"/></description></item>
+        /// </list>
+        /// </para>
         /// </param>
         /// <param name="maxPerPage">
         /// The maximum number of entities that will be returned per page. If unspecified, the default value is 1000 for storage accounts and is not limited for Cosmos DB table API.
@@ -1301,6 +1319,31 @@ namespace Azure.Data.Tables
         /// Deletes the specified table entity.
         /// </summary>
         /// <remarks>Note: This method should not fail because the entity does not exist, however if delete operations are submitted in a <see cref="TableTransactionAction"/>, the transaction will fail if the entity does not exist.</remarks>
+        /// <param name="entity">The table entity to delete.</param>
+        /// <param name="ifMatch">
+        /// The If-Match value to be used for optimistic concurrency.
+        /// If <see cref="ETag.All"/> is specified, the operation will be executed unconditionally.
+        /// If the <see cref="ITableEntity.ETag"/> value is specified, the operation will fail with a status of 412 (Precondition Failed)
+        /// if the <see cref="ETag"/> value of the entity in the table does not match.
+        /// The default is to delete unconditionally.
+        /// </param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
+        /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
+        /// <returns>The <see cref="Response"/> indicating the result of the operation.</returns>
+
+        public virtual async Task<Response> DeleteEntityAsync(
+            ITableEntity entity,
+            ETag ifMatch = default,
+            CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(entity, nameof(entity));
+            return await DeleteEntityInternal(true, entity.PartitionKey, entity.RowKey, ifMatch, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Deletes the specified table entity.
+        /// </summary>
+        /// <remarks>Note: This method should not fail because the entity does not exist, however if delete operations are submitted in a <see cref="TableTransactionAction"/>, the transaction will fail if the entity does not exist.</remarks>
         /// <param name="partitionKey">The partitionKey that identifies the table entity.</param>
         /// <param name="rowKey">The rowKey that identifies the table entity.</param>
         /// <param name="ifMatch">
@@ -1315,6 +1358,27 @@ namespace Azure.Data.Tables
         /// <returns>The <see cref="Response"/> indicating the result of the operation.</returns>
         public virtual Response DeleteEntity(string partitionKey, string rowKey, ETag ifMatch = default, CancellationToken cancellationToken = default)
             => DeleteEntityInternal(false, partitionKey, rowKey, ifMatch, cancellationToken).EnsureCompleted();
+
+        /// <summary>
+        /// Deletes the specified table entity.
+        /// </summary>
+        /// <remarks>Note: This method should not fail because the entity does not exist, however if delete operations are submitted in a <see cref="TableTransactionAction"/>, the transaction will fail if the entity does not exist.</remarks>
+        /// <param name="entity">The table entity to delete.</param>
+        /// <param name="ifMatch">
+        /// The If-Match value to be used for optimistic concurrency.
+        /// If <see cref="ETag.All"/> is specified, the operation will be executed unconditionally.
+        /// If the <see cref="ITableEntity.ETag"/> value is specified, the operation will fail with a status of 412 (Precondition Failed)
+        /// if the <see cref="ETag"/> value of the entity in the table does not match.
+        /// The default is to delete unconditionally.
+        /// </param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
+        /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
+        /// <returns>The <see cref="Response"/> indicating the result of the operation.</returns>
+        public virtual Response DeleteEntity(ITableEntity entity, ETag ifMatch = default, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(entity, nameof(entity));
+            return DeleteEntityInternal(false, entity.PartitionKey, entity.RowKey, ifMatch, cancellationToken).EnsureCompleted();
+        }
 
         internal async Task<Response> DeleteEntityInternal(
             bool async,
@@ -1448,7 +1512,18 @@ namespace Azure.Data.Tables
         /// </summary>
         /// <typeparam name="T">The type of the entity being queried. Typically this will be derived from <see cref="ITableEntity"/>
         /// or <see cref="Dictionary{String, Object}"/>.</typeparam>
-        /// <param name="filter">A filter expression.</param>
+        /// <param name="filter">A filter expression.
+        /// for example: <c>e => e.PartitionKey == "foo"</c>.
+        /// <para>
+        /// The following string comparison methods are supported as part of a filter expression:
+        /// <list type="bullet">
+        /// <item><description><see cref="string.Equals(string)"/></description></item>
+        /// <item><description><see cref="string.Equals(string, string)"/></description></item>
+        /// <item><description><see cref="string.CompareTo(string)"/></description></item>
+        /// <item><description><see cref="string.Compare(string, string)"/></description></item>
+        /// </list>
+        /// </para>
+        /// </param>
         /// <returns>The string representation of the filter expression.</returns>
         public static string CreateQueryFilter<T>(Expression<Func<T, bool>> filter) => Bind(filter);
 
@@ -1468,8 +1543,10 @@ namespace Azure.Data.Tables
         /// <returns><see cref="Response{T}"/> containing a <see cref="IReadOnlyList{T}"/> of <see cref="Response"/>.
         /// Each sub-response in the collection corresponds to the <see cref="TableTransactionAction"/> provided to the <paramref name="transactionActions"/> parameter at the same index position.
         /// Each response can be inspected for details for its corresponding table operation, such as the <see cref="Response.Headers"/> property containing the <see cref="ResponseHeaders.ETag"/></returns>
-        /// <exception cref="RequestFailedException"/> if the batch transaction fails./>
-        /// <exception cref="InvalidOperationException"/> if the batch has been previously submitted.
+        /// <exception cref="RequestFailedException"> Thrown when the batch transaction operation fails.</exception>
+        /// <exception cref="ArgumentNullException"> Thrown when <paramref name="transactionActions"/> is <c>null</c>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if <paramref name="transactionActions"/> contains no items.</exception>
+        /// <exception cref="InvalidOperationException"> Thrown if the batch has been previously submitted.</exception>
         public virtual async Task<Response<IReadOnlyList<Response>>> SubmitTransactionAsync(
             IEnumerable<TableTransactionAction> transactionActions,
             CancellationToken cancellationToken = default) =>
@@ -1485,8 +1562,10 @@ namespace Azure.Data.Tables
         /// <returns><see cref="Response{T}"/> containing a <see cref="IReadOnlyList{T}"/> of <see cref="Response"/>.
         /// Each sub-response in the collection corresponds to the <see cref="TableTransactionAction"/> provided to the <paramref name="transactionActions"/> parameter at the same index position.
         /// Each response can be inspected for details for its corresponding table operation, such as the <see cref="Response.Headers"/> property containing the <see cref="ResponseHeaders.ETag"/></returns>
-        /// <exception cref="RequestFailedException"/> if the batch transaction fails./>
-        /// <exception cref="InvalidOperationException"/> if the batch has been previously submitted.
+        /// <exception cref="RequestFailedException"> Thrown when the batch transaction operation fails.</exception>
+        /// <exception cref="ArgumentNullException"> Thrown when <paramref name="transactionActions"/> is <c>null</c>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when <paramref name="transactionActions"/> contains no items.</exception>
+        /// <exception cref="InvalidOperationException"> Thrown if the batch has been previously submitted.</exception>
         public virtual Response<IReadOnlyList<Response>> SubmitTransaction(
             IEnumerable<TableTransactionAction> transactionActions,
             CancellationToken cancellationToken = default) =>
@@ -1667,6 +1746,8 @@ namespace Azure.Data.Tables
 
             return msg;
         }
+
+        private static readonly HttpPipeline _batchPipeline = CreateBatchPipeline();
 
         /// <summary>
         /// Creates a pipeline to use for processing sub-operations before they are combined into a single multipart request.

@@ -19,24 +19,32 @@ namespace Azure.ResourceManager.OracleDatabase.Models
 
         void IJsonModel<ScheduledOperationsType>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<ScheduledOperationsType>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(ScheduledOperationsType)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             writer.WritePropertyName("dayOfWeek"u8);
             writer.WriteObjectValue(DayOfWeek, options);
-            if (Optional.IsDefined(ScheduledStartTime))
+            if (Optional.IsDefined(AutoStartOn))
             {
                 writer.WritePropertyName("scheduledStartTime"u8);
-                writer.WriteStringValue(ScheduledStartTime);
+                writer.WriteStringValue(AutoStartOn.Value, "O");
             }
-            if (Optional.IsDefined(ScheduledStopTime))
+            if (Optional.IsDefined(AutoStopOn))
             {
                 writer.WritePropertyName("scheduledStopTime"u8);
-                writer.WriteStringValue(ScheduledStopTime);
+                writer.WriteStringValue(AutoStopOn.Value, "O");
             }
             if (options.Format != "W" && _serializedAdditionalRawData != null)
             {
@@ -46,14 +54,13 @@ namespace Azure.ResourceManager.OracleDatabase.Models
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(item.Value);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
                     {
                         JsonSerializer.Serialize(writer, document.RootElement);
                     }
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         ScheduledOperationsType IJsonModel<ScheduledOperationsType>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -76,26 +83,34 @@ namespace Azure.ResourceManager.OracleDatabase.Models
             {
                 return null;
             }
-            DayOfWeek dayOfWeek = default;
-            string scheduledStartTime = default;
-            string scheduledStopTime = default;
+            OracleDatabaseDayOfWeek dayOfWeek = default;
+            DateTimeOffset? scheduledStartTime = default;
+            DateTimeOffset? scheduledStopTime = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
                 if (property.NameEquals("dayOfWeek"u8))
                 {
-                    dayOfWeek = DayOfWeek.DeserializeDayOfWeek(property.Value, options);
+                    dayOfWeek = OracleDatabaseDayOfWeek.DeserializeOracleDatabaseDayOfWeek(property.Value, options);
                     continue;
                 }
                 if (property.NameEquals("scheduledStartTime"u8))
                 {
-                    scheduledStartTime = property.Value.GetString();
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    scheduledStartTime = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
                 if (property.NameEquals("scheduledStopTime"u8))
                 {
-                    scheduledStopTime = property.Value.GetString();
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    scheduledStopTime = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
                 if (options.Format != "W")
@@ -128,7 +143,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeScheduledOperationsType(document.RootElement, options);
                     }
                 default:

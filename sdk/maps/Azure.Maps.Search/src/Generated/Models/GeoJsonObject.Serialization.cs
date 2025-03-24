@@ -6,21 +6,12 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 using Azure.Maps.Common;
 
 namespace Azure.Maps.Search.Models
 {
-    public partial class GeoJsonObject : IUtf8JsonSerializable
+    internal partial class GeoJsonObject
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
-        {
-            writer.WriteStartObject();
-            writer.WritePropertyName("type"u8);
-            writer.WriteStringValue(Type.ToSerialString());
-            writer.WriteEndObject();
-        }
-
         internal static GeoJsonObject DeserializeGeoJsonObject(JsonElement element)
         {
             if (element.ValueKind == JsonValueKind.Null)
@@ -31,6 +22,7 @@ namespace Azure.Maps.Search.Models
             {
                 switch (discriminator.GetString())
                 {
+                    case "Boundary": return BoundaryInternal.DeserializeBoundaryInternal(element);
                     case "Feature": return GeoJsonFeature.DeserializeGeoJsonFeature(element);
                     case "FeatureCollection": return GeoJsonFeatureCollection.DeserializeGeoJsonFeatureCollection(element);
                     case "GeoJsonGeometry": return GeoJsonGeometry.DeserializeGeoJsonGeometry(element);
@@ -50,16 +42,8 @@ namespace Azure.Maps.Search.Models
         /// <param name="response"> The response to deserialize the model from. </param>
         internal static GeoJsonObject FromResponse(Response response)
         {
-            using var document = JsonDocument.Parse(response.Content);
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
             return DeserializeGeoJsonObject(document.RootElement);
-        }
-
-        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
-        internal virtual RequestContent ToRequestContent()
-        {
-            var content = new Common.Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(this);
-            return content;
         }
     }
 }

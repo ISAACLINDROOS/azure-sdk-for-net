@@ -42,7 +42,7 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
         public static bool operator ==(AnalyticsItemTypeContent left, AnalyticsItemTypeContent right) => left.Equals(right);
         /// <summary> Determines if two <see cref="AnalyticsItemTypeContent"/> values are not the same. </summary>
         public static bool operator !=(AnalyticsItemTypeContent left, AnalyticsItemTypeContent right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="AnalyticsItemTypeContent"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="AnalyticsItemTypeContent"/>. </summary>
         public static implicit operator AnalyticsItemTypeContent(string value) => new AnalyticsItemTypeContent(value);
 
         /// <inheritdoc />
@@ -53,7 +53,7 @@ namespace Azure.ResourceManager.ApplicationInsights.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

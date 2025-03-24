@@ -30,7 +30,7 @@ namespace Azure.Messaging.EventGrid.SystemEvents
         public static bool operator ==(AppServicePlanAction left, AppServicePlanAction right) => left.Equals(right);
         /// <summary> Determines if two <see cref="AppServicePlanAction"/> values are not the same. </summary>
         public static bool operator !=(AppServicePlanAction left, AppServicePlanAction right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="AppServicePlanAction"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="AppServicePlanAction"/>. </summary>
         public static implicit operator AppServicePlanAction(string value) => new AppServicePlanAction(value);
 
         /// <inheritdoc />
@@ -41,7 +41,7 @@ namespace Azure.Messaging.EventGrid.SystemEvents
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

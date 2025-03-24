@@ -104,7 +104,7 @@ namespace Azure.Storage.Blobs.Test
 
             // Act
             TestHelper.AssertExpectedException(
-                () => new BlobClient(httpUri, Tenants.GetOAuthCredential()),
+                () => new BlobClient(httpUri, TestEnvironment.Credential),
                  new ArgumentException("Cannot use TokenCredential without HTTPS."));
         }
 
@@ -218,7 +218,7 @@ namespace Azure.Storage.Blobs.Test
 
             BlobClient aadBlob = InstrumentClient(new BlobClient(
                 uriBuilder.ToUri(),
-                Tenants.GetOAuthCredential(),
+                TestEnvironment.Credential,
                 options));
 
             // Assert
@@ -250,7 +250,7 @@ namespace Azure.Storage.Blobs.Test
 
             BlobClient aadBlob = InstrumentClient(new BlobClient(
                 uriBuilder.ToUri(),
-                Tenants.GetOAuthCredential(),
+                TestEnvironment.Credential,
                 options));
 
             // Assert
@@ -282,7 +282,7 @@ namespace Azure.Storage.Blobs.Test
 
             BlobClient aadBlob = InstrumentClient(new BlobClient(
                 uriBuilder.ToUri(),
-                Tenants.GetOAuthCredential(),
+                TestEnvironment.Credential,
                 options));
 
             // Assert
@@ -1020,7 +1020,11 @@ namespace Azure.Storage.Blobs.Test
 
                 var buffer = new byte[count];
                 stream.Seek(i, SeekOrigin.Begin);
+#if NET6_0_OR_GREATER
+                await stream.ReadExactlyAsync(buffer, 0, count);
+#else
                 await stream.ReadAsync(buffer, 0, count);
+#endif
 
                 TestHelper.AssertSequenceEqual(
                     buffer,
@@ -1522,7 +1526,7 @@ namespace Azure.Storage.Blobs.Test
             mock = new Mock<BlobClient>(new Uri("https://test/test"), new BlobClientOptions()).Object;
             mock = new Mock<BlobClient>(new Uri("https://test/test"), Tenants.GetNewSharedKeyCredentials(), new BlobClientOptions()).Object;
             mock = new Mock<BlobClient>(new Uri("https://test/test"), new AzureSasCredential("foo"), new BlobClientOptions()).Object;
-            mock = new Mock<BlobClient>(new Uri("https://test/test"), Tenants.GetOAuthCredential(Tenants.TestConfigHierarchicalNamespace), new BlobClientOptions()).Object;
+            mock = new Mock<BlobClient>(new Uri("https://test/test"), TestEnvironment.Credential, new BlobClientOptions()).Object;
         }
     }
 }

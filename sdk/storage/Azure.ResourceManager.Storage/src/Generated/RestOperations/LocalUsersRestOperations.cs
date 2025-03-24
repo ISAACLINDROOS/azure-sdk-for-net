@@ -32,11 +32,11 @@ namespace Azure.ResourceManager.Storage
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2022-09-01";
+            _apiVersion = apiVersion ?? "2024-01-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
-        internal RequestUriBuilder CreateListRequestUri(string subscriptionId, string resourceGroupName, string accountName)
+        internal RequestUriBuilder CreateListRequestUri(string subscriptionId, string resourceGroupName, string accountName, int? maxpagesize, string filter, ListLocalUserIncludeParam? include)
         {
             var uri = new RawRequestUriBuilder();
             uri.Reset(_endpoint);
@@ -48,10 +48,22 @@ namespace Azure.ResourceManager.Storage
             uri.AppendPath(accountName, true);
             uri.AppendPath("/localUsers", false);
             uri.AppendQuery("api-version", _apiVersion, true);
+            if (maxpagesize != null)
+            {
+                uri.AppendQuery("$maxpagesize", maxpagesize.Value, true);
+            }
+            if (filter != null)
+            {
+                uri.AppendQuery("$filter", filter, true);
+            }
+            if (include != null)
+            {
+                uri.AppendQuery("$include", include.Value.ToString(), true);
+            }
             return uri;
         }
 
-        internal HttpMessage CreateListRequest(string subscriptionId, string resourceGroupName, string accountName)
+        internal HttpMessage CreateListRequest(string subscriptionId, string resourceGroupName, string accountName, int? maxpagesize, string filter, ListLocalUserIncludeParam? include)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -66,6 +78,18 @@ namespace Azure.ResourceManager.Storage
             uri.AppendPath(accountName, true);
             uri.AppendPath("/localUsers", false);
             uri.AppendQuery("api-version", _apiVersion, true);
+            if (maxpagesize != null)
+            {
+                uri.AppendQuery("$maxpagesize", maxpagesize.Value, true);
+            }
+            if (filter != null)
+            {
+                uri.AppendQuery("$filter", filter, true);
+            }
+            if (include != null)
+            {
+                uri.AppendQuery("$include", include.Value.ToString(), true);
+            }
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             _userAgent.Apply(message);
@@ -76,23 +100,26 @@ namespace Azure.ResourceManager.Storage
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group within the user's subscription. The name is case insensitive. </param>
         /// <param name="accountName"> The name of the storage account within the specified resource group. Storage account names must be between 3 and 24 characters in length and use numbers and lower-case letters only. </param>
+        /// <param name="maxpagesize"> Optional, specifies the maximum number of local users that will be included in the list response. </param>
+        /// <param name="filter"> Optional. When specified, only local user names starting with the filter will be listed. </param>
+        /// <param name="include"> Optional, when specified, will list local users enabled for the specific protocol. Lists all users by default. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="accountName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="accountName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<LocalUsers>> ListAsync(string subscriptionId, string resourceGroupName, string accountName, CancellationToken cancellationToken = default)
+        public async Task<Response<LocalUsers>> ListAsync(string subscriptionId, string resourceGroupName, string accountName, int? maxpagesize = null, string filter = null, ListLocalUserIncludeParam? include = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(accountName, nameof(accountName));
 
-            using var message = CreateListRequest(subscriptionId, resourceGroupName, accountName);
+            using var message = CreateListRequest(subscriptionId, resourceGroupName, accountName, maxpagesize, filter, include);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         LocalUsers value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = LocalUsers.DeserializeLocalUsers(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -105,23 +132,26 @@ namespace Azure.ResourceManager.Storage
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group within the user's subscription. The name is case insensitive. </param>
         /// <param name="accountName"> The name of the storage account within the specified resource group. Storage account names must be between 3 and 24 characters in length and use numbers and lower-case letters only. </param>
+        /// <param name="maxpagesize"> Optional, specifies the maximum number of local users that will be included in the list response. </param>
+        /// <param name="filter"> Optional. When specified, only local user names starting with the filter will be listed. </param>
+        /// <param name="include"> Optional, when specified, will list local users enabled for the specific protocol. Lists all users by default. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="accountName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="accountName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<LocalUsers> List(string subscriptionId, string resourceGroupName, string accountName, CancellationToken cancellationToken = default)
+        public Response<LocalUsers> List(string subscriptionId, string resourceGroupName, string accountName, int? maxpagesize = null, string filter = null, ListLocalUserIncludeParam? include = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(accountName, nameof(accountName));
 
-            using var message = CreateListRequest(subscriptionId, resourceGroupName, accountName);
+            using var message = CreateListRequest(subscriptionId, resourceGroupName, accountName, maxpagesize, filter, include);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         LocalUsers value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = LocalUsers.DeserializeLocalUsers(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -190,7 +220,7 @@ namespace Azure.ResourceManager.Storage
                 case 200:
                     {
                         StorageAccountLocalUserData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = StorageAccountLocalUserData.DeserializeStorageAccountLocalUserData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -223,7 +253,7 @@ namespace Azure.ResourceManager.Storage
                 case 200:
                     {
                         StorageAccountLocalUserData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = StorageAccountLocalUserData.DeserializeStorageAccountLocalUserData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -276,7 +306,7 @@ namespace Azure.ResourceManager.Storage
             return message;
         }
 
-        /// <summary> Create or update the properties of a local user associated with the storage account. </summary>
+        /// <summary> Create or update the properties of a local user associated with the storage account. Properties for NFSv3 enablement and extended groups cannot be set with other properties. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group within the user's subscription. The name is case insensitive. </param>
         /// <param name="accountName"> The name of the storage account within the specified resource group. Storage account names must be between 3 and 24 characters in length and use numbers and lower-case letters only. </param>
@@ -300,7 +330,7 @@ namespace Azure.ResourceManager.Storage
                 case 200:
                     {
                         StorageAccountLocalUserData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = StorageAccountLocalUserData.DeserializeStorageAccountLocalUserData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -309,7 +339,7 @@ namespace Azure.ResourceManager.Storage
             }
         }
 
-        /// <summary> Create or update the properties of a local user associated with the storage account. </summary>
+        /// <summary> Create or update the properties of a local user associated with the storage account. Properties for NFSv3 enablement and extended groups cannot be set with other properties. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group within the user's subscription. The name is case insensitive. </param>
         /// <param name="accountName"> The name of the storage account within the specified resource group. Storage account names must be between 3 and 24 characters in length and use numbers and lower-case letters only. </param>
@@ -333,7 +363,7 @@ namespace Azure.ResourceManager.Storage
                 case 200:
                     {
                         StorageAccountLocalUserData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = StorageAccountLocalUserData.DeserializeStorageAccountLocalUserData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -496,7 +526,7 @@ namespace Azure.ResourceManager.Storage
                 case 200:
                     {
                         LocalUserKeys value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = LocalUserKeys.DeserializeLocalUserKeys(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -527,7 +557,7 @@ namespace Azure.ResourceManager.Storage
                 case 200:
                     {
                         LocalUserKeys value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = LocalUserKeys.DeserializeLocalUserKeys(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -598,7 +628,7 @@ namespace Azure.ResourceManager.Storage
                 case 200:
                     {
                         LocalUserRegeneratePasswordResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = LocalUserRegeneratePasswordResult.DeserializeLocalUserRegeneratePasswordResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -629,7 +659,7 @@ namespace Azure.ResourceManager.Storage
                 case 200:
                     {
                         LocalUserRegeneratePasswordResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = LocalUserRegeneratePasswordResult.DeserializeLocalUserRegeneratePasswordResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

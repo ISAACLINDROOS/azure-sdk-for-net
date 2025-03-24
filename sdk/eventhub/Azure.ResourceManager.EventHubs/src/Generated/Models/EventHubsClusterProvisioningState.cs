@@ -51,7 +51,7 @@ namespace Azure.ResourceManager.EventHubs.Models
         public static bool operator ==(EventHubsClusterProvisioningState left, EventHubsClusterProvisioningState right) => left.Equals(right);
         /// <summary> Determines if two <see cref="EventHubsClusterProvisioningState"/> values are not the same. </summary>
         public static bool operator !=(EventHubsClusterProvisioningState left, EventHubsClusterProvisioningState right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="EventHubsClusterProvisioningState"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="EventHubsClusterProvisioningState"/>. </summary>
         public static implicit operator EventHubsClusterProvisioningState(string value) => new EventHubsClusterProvisioningState(value);
 
         /// <inheritdoc />
@@ -62,7 +62,7 @@ namespace Azure.ResourceManager.EventHubs.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

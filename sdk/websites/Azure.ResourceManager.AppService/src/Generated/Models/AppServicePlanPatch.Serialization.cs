@@ -21,37 +21,26 @@ namespace Azure.ResourceManager.AppService.Models
 
         void IJsonModel<AppServicePlanPatch>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<AppServicePlanPatch>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(AppServicePlanPatch)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsDefined(Kind))
             {
                 writer.WritePropertyName("kind"u8);
                 writer.WriteStringValue(Kind);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("id"u8);
-                writer.WriteStringValue(Id);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("name"u8);
-                writer.WriteStringValue(Name);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("type"u8);
-                writer.WriteStringValue(ResourceType);
-            }
-            if (options.Format != "W" && Optional.IsDefined(SystemData))
-            {
-                writer.WritePropertyName("systemData"u8);
-                JsonSerializer.Serialize(writer, SystemData);
             }
             writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
@@ -79,6 +68,11 @@ namespace Azure.ResourceManager.AppService.Models
             {
                 writer.WritePropertyName("maximumNumberOfWorkers"u8);
                 writer.WriteNumberValue(MaximumNumberOfWorkers.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(NumberOfWorkers))
+            {
+                writer.WritePropertyName("numberOfWorkers"u8);
+                writer.WriteNumberValue(NumberOfWorkers.Value);
             }
             if (options.Format != "W" && Optional.IsDefined(GeoRegion))
             {
@@ -166,22 +160,6 @@ namespace Azure.ResourceManager.AppService.Models
                 writer.WriteBooleanValue(IsZoneRedundant.Value);
             }
             writer.WriteEndObject();
-            if (options.Format != "W" && _serializedAdditionalRawData != null)
-            {
-                foreach (var item in _serializedAdditionalRawData)
-                {
-                    writer.WritePropertyName(item.Key);
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(item.Value);
-#else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
-                }
-            }
-            writer.WriteEndObject();
         }
 
         AppServicePlanPatch IJsonModel<AppServicePlanPatch>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -214,6 +192,7 @@ namespace Azure.ResourceManager.AppService.Models
             string subscription = default;
             HostingEnvironmentProfile hostingEnvironmentProfile = default;
             int? maximumNumberOfWorkers = default;
+            int? numberOfWorkers = default;
             string geoRegion = default;
             bool? perSiteScaling = default;
             bool? elasticScaleEnabled = default;
@@ -308,6 +287,15 @@ namespace Azure.ResourceManager.AppService.Models
                                 continue;
                             }
                             maximumNumberOfWorkers = property0.Value.GetInt32();
+                            continue;
+                        }
+                        if (property0.NameEquals("numberOfWorkers"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            numberOfWorkers = property0.Value.GetInt32();
                             continue;
                         }
                         if (property0.NameEquals("geoRegion"u8))
@@ -474,6 +462,7 @@ namespace Azure.ResourceManager.AppService.Models
                 subscription,
                 hostingEnvironmentProfile,
                 maximumNumberOfWorkers,
+                numberOfWorkers,
                 geoRegion,
                 perSiteScaling,
                 elasticScaleEnabled,
@@ -672,6 +661,21 @@ namespace Azure.ResourceManager.AppService.Models
                 {
                     builder.Append("    maximumNumberOfWorkers: ");
                     builder.AppendLine($"{MaximumNumberOfWorkers.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(NumberOfWorkers), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    numberOfWorkers: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(NumberOfWorkers))
+                {
+                    builder.Append("    numberOfWorkers: ");
+                    builder.AppendLine($"{NumberOfWorkers.Value}");
                 }
             }
 
@@ -983,7 +987,7 @@ namespace Azure.ResourceManager.AppService.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeAppServicePlanPatch(document.RootElement, options);
                     }
                 default:

@@ -1,92 +1,37 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+#if !AZURE_OPENAI_GA
+
 using System.ClientModel;
 using System.ClientModel.Primitives;
 using System.Diagnostics.CodeAnalysis;
-using OpenAI.Assistants;
+using Azure.AI.OpenAI.Utility;
 
 namespace Azure.AI.OpenAI.Assistants;
 
 [Experimental("OPENAI001")]
 internal partial class AzureAssistantClient : AssistantClient
 {
-    public override async Task<ClientResult> CreateAssistantAsync(BinaryContent content, RequestOptions options = null)
+    public override AsyncCollectionResult GetAssistantsAsync(int? limit, string order, string after, string before, RequestOptions options)
     {
-        Argument.AssertNotNull(content, nameof(content));
-
-        using PipelineMessage message = CreateCreateAssistantRequest(content, options);
-        return ClientResult.FromResponse(await Pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
+        return new AzureAsyncCollectionResult<Assistant, AssistantCollectionPageToken>(
+            Pipeline,
+            options,
+            continuation => CreateListAssistantsRequest(limit, order, continuation?.After ?? after, continuation?.Before ?? before, options),
+            page => AssistantCollectionPageToken.FromResponse(page, limit, order, before),
+            page => ModelReaderWriter.Read<InternalListAssistantsResponse>(page.GetRawResponse().Content).Data,
+            options?.CancellationToken ?? default);
     }
 
-    public override ClientResult CreateAssistant(BinaryContent content, RequestOptions options = null)
+    public override CollectionResult GetAssistants(int? limit, string order, string after, string before, RequestOptions options)
     {
-        Argument.AssertNotNull(content, nameof(content));
-
-        using PipelineMessage message = CreateCreateAssistantRequest(content, options);
-        return ClientResult.FromResponse(Pipeline.ProcessMessage(message, options));
-    }
-
-    public override async Task<ClientResult> GetAssistantsAsync(int? limit, string order, string after, string before, RequestOptions options)
-    {
-        using PipelineMessage message = CreateGetAssistantsRequest(limit, order, after, before, options);
-        return ClientResult.FromResponse(await Pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
-    }
-
-    public override ClientResult GetAssistants(int? limit, string order, string after, string before, RequestOptions options)
-    {
-        using PipelineMessage message = CreateGetAssistantsRequest(limit, order, after, before, options);
-        return ClientResult.FromResponse(Pipeline.ProcessMessage(message, options));
-    }
-
-    public override async Task<ClientResult> GetAssistantAsync(string assistantId, RequestOptions options)
-    {
-        Argument.AssertNotNullOrEmpty(assistantId, nameof(assistantId));
-
-        using PipelineMessage message = CreateGetAssistantRequest(assistantId, options);
-        return ClientResult.FromResponse(await Pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
-    }
-
-    public override ClientResult GetAssistant(string assistantId, RequestOptions options)
-    {
-        Argument.AssertNotNullOrEmpty(assistantId, nameof(assistantId));
-
-        using PipelineMessage message = CreateGetAssistantRequest(assistantId, options);
-        return ClientResult.FromResponse(Pipeline.ProcessMessage(message, options));
-    }
-
-    public override async Task<ClientResult> ModifyAssistantAsync(string assistantId, BinaryContent content, RequestOptions options = null)
-    {
-        Argument.AssertNotNullOrEmpty(assistantId, nameof(assistantId));
-        Argument.AssertNotNull(content, nameof(content));
-
-        using PipelineMessage message = CreateModifyAssistantRequest(assistantId, content, options);
-        return ClientResult.FromResponse(await Pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
-    }
-
-    public override ClientResult ModifyAssistant(string assistantId, BinaryContent content, RequestOptions options = null)
-    {
-        Argument.AssertNotNullOrEmpty(assistantId, nameof(assistantId));
-        Argument.AssertNotNull(content, nameof(content));
-
-        using PipelineMessage message = CreateModifyAssistantRequest(assistantId, content, options);
-        return ClientResult.FromResponse(Pipeline.ProcessMessage(message, options));
-    }
-
-    public override async Task<ClientResult> DeleteAssistantAsync(string assistantId, RequestOptions options)
-    {
-        Argument.AssertNotNullOrEmpty(assistantId, nameof(assistantId));
-
-        using PipelineMessage message = CreateDeleteAssistantRequest(assistantId, options);
-        return ClientResult.FromResponse(await Pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
-    }
-
-    public override ClientResult DeleteAssistant(string assistantId, RequestOptions options)
-    {
-        Argument.AssertNotNullOrEmpty(assistantId, nameof(assistantId));
-
-        using PipelineMessage message = CreateDeleteAssistantRequest(assistantId, options);
-        return ClientResult.FromResponse(Pipeline.ProcessMessage(message, options));
+        return new AzureCollectionResult<Assistant, AssistantCollectionPageToken>(
+            Pipeline,
+            options,
+            continuation => CreateListAssistantsRequest(limit, order, continuation?.After ?? after, continuation?.Before ?? before, options),
+            page => AssistantCollectionPageToken.FromResponse(page, limit, order, before),
+            page => ModelReaderWriter.Read<InternalListAssistantsResponse>(page.GetRawResponse().Content).Data);
     }
 
     /// <inheritdoc cref="InternalAssistantMessageClient.CreateMessageAsync"/>
@@ -107,22 +52,28 @@ internal partial class AzureAssistantClient : AssistantClient
         return ClientResult.FromResponse(Pipeline.ProcessMessage(message, options));
     }
 
-    /// <inheritdoc cref="InternalAssistantMessageClient.GetMessagesAsync"/>
-    public override async Task<ClientResult> GetMessagesAsync(string threadId, int? limit, string order, string after, string before, RequestOptions options)
+    /// <inheritdoc />
+    public override AsyncCollectionResult GetMessagesAsync(string threadId, int? limit, string order, string after, string before, RequestOptions options)
     {
         Argument.AssertNotNullOrEmpty(threadId, nameof(threadId));
-
-        using PipelineMessage message = CreateGetMessagesRequest(threadId, limit, order, after, before, options);
-        return ClientResult.FromResponse(await Pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
+        return new AzureAsyncCollectionResult<ThreadMessage, MessageCollectionPageToken>(
+            Pipeline,
+            options,
+            continuation => CreateGetMessagesRequest(threadId, limit, order, continuation?.After ?? after, continuation?.Before ?? before, options),
+            page => MessageCollectionPageToken.FromResponse(page, threadId, limit, order, before),
+            page => ModelReaderWriter.Read<InternalListMessagesResponse>(page.GetRawResponse().Content).Data,
+            options?.CancellationToken ?? default);
     }
 
-    /// <inheritdoc cref="InternalAssistantMessageClient.GetMessages"/>
-    public override ClientResult GetMessages(string threadId, int? limit, string order, string after, string before, RequestOptions options)
+    public override CollectionResult GetMessages(string threadId, int? limit, string order, string after, string before, RequestOptions options)
     {
         Argument.AssertNotNullOrEmpty(threadId, nameof(threadId));
-
-        using PipelineMessage message = CreateGetMessagesRequest(threadId, limit, order, after, before, options);
-        return ClientResult.FromResponse(Pipeline.ProcessMessage(message, options));
+        return new AzureCollectionResult<ThreadMessage, MessageCollectionPageToken>(
+           Pipeline,
+           options,
+           continuation => CreateGetMessagesRequest(threadId, limit, order, continuation?.After ?? after, continuation?.Before ?? before, options),
+           page => MessageCollectionPageToken.FromResponse(page, threadId, limit, order, before),
+           page => ModelReaderWriter.Read<InternalListMessagesResponse>(page.GetRawResponse().Content).Data);
     }
 
     /// <inheritdoc cref="InternalAssistantMessageClient.GetMessageAsync"/>
@@ -259,22 +210,27 @@ internal partial class AzureAssistantClient : AssistantClient
         }
     }
 
-    /// <inheritdoc cref="InternalAssistantRunClient.GetRunsAsync"/>
-    public override async Task<ClientResult> GetRunsAsync(string threadId, int? limit, string order, string after, string before, RequestOptions options)
+    public override AsyncCollectionResult GetRunsAsync(string threadId, int? limit, string order, string after, string before, RequestOptions options)
     {
         Argument.AssertNotNullOrEmpty(threadId, nameof(threadId));
-
-        using PipelineMessage message = CreateGetRunsRequest(threadId, limit, order, after, before, options);
-        return ClientResult.FromResponse(await Pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
+        return new AzureAsyncCollectionResult<ThreadRun, RunCollectionPageToken>(
+            Pipeline,
+            options,
+            continuation => CreateGetRunsRequest(threadId, limit, order, continuation?.After ?? after, continuation?.Before ?? before, options),
+            page => RunCollectionPageToken.FromResponse(page, threadId, limit, order, before),
+            page => ModelReaderWriter.Read<InternalListRunsResponse>(page.GetRawResponse().Content).Data,
+            options?.CancellationToken ?? default);
     }
 
-    /// <inheritdoc cref="InternalAssistantRunClient.GetRuns"/>
-    public override ClientResult GetRuns(string threadId, int? limit, string order, string after, string before, RequestOptions options)
+    public override CollectionResult GetRuns(string threadId, int? limit, string order, string after, string before, RequestOptions options)
     {
         Argument.AssertNotNullOrEmpty(threadId, nameof(threadId));
-
-        using PipelineMessage message = CreateGetRunsRequest(threadId, limit, order, after, before, options);
-        return ClientResult.FromResponse(Pipeline.ProcessMessage(message, options));
+        return new AzureCollectionResult<ThreadRun, RunCollectionPageToken>(
+            Pipeline,
+            options,
+            continuation => CreateGetRunsRequest(threadId, limit, order, continuation?.After ?? after, continuation?.Before ?? before, options),
+            page => RunCollectionPageToken.FromResponse(page, threadId, limit, order, before),
+            page => ModelReaderWriter.Read<InternalListRunsResponse>(page.GetRawResponse().Content).Data);
     }
 
     /// <inheritdoc cref="InternalAssistantRunClient.GetRunAsync"/>
@@ -379,24 +335,31 @@ internal partial class AzureAssistantClient : AssistantClient
         }
     }
 
-    /// <inheritdoc cref="InternalAssistantRunClient.GetRunStepsAsync"/>
-    public override async Task<ClientResult> GetRunStepsAsync(string threadId, string runId, int? limit, string order, string after, string before, RequestOptions options)
+    public override AsyncCollectionResult GetRunStepsAsync(string threadId, string runId, int? limit, string order, string after, string before, RequestOptions options)
     {
         Argument.AssertNotNullOrEmpty(threadId, nameof(threadId));
         Argument.AssertNotNullOrEmpty(runId, nameof(runId));
 
-        using PipelineMessage message = CreateGetRunStepsRequest(threadId, runId, limit, order, after, before, options);
-        return ClientResult.FromResponse(await Pipeline.ProcessMessageAsync(message, options).ConfigureAwait(false));
+        return new AzureAsyncCollectionResult<RunStep, RunStepCollectionPageToken>(
+            Pipeline,
+            options,
+            continuation => CreateGetRunStepsRequest(threadId, runId, limit, order, continuation?.After ?? after, continuation?.Before ?? before, options),
+            page => RunStepCollectionPageToken.FromResponse(page, threadId, runId, limit, order, before),
+            page => ModelReaderWriter.Read<InternalListRunStepsResponse>(page.GetRawResponse().Content).Data,
+            options?.CancellationToken ?? default);
     }
 
-    /// <inheritdoc cref="InternalAssistantRunClient.GetRunSteps"/>
-    public override ClientResult GetRunSteps(string threadId, string runId, int? limit, string order, string after, string before, RequestOptions options)
+    public override CollectionResult GetRunSteps(string threadId, string runId, int? limit, string order, string after, string before, RequestOptions options)
     {
         Argument.AssertNotNullOrEmpty(threadId, nameof(threadId));
         Argument.AssertNotNullOrEmpty(runId, nameof(runId));
 
-        using PipelineMessage message = CreateGetRunStepsRequest(threadId, runId, limit, order, after, before, options);
-        return ClientResult.FromResponse(Pipeline.ProcessMessage(message, options));
+        return new AzureCollectionResult<RunStep, RunStepCollectionPageToken>(
+            Pipeline,
+            options,
+            continuation => CreateGetRunStepsRequest(threadId, runId, limit, order, continuation?.After ?? after, continuation?.Before ?? before, options),
+            page => RunStepCollectionPageToken.FromResponse(page, threadId, runId, limit, order, before),
+            page => ModelReaderWriter.Read<InternalListRunStepsResponse>(page.GetRawResponse().Content).Data);
     }
 
     /// <inheritdoc cref="InternalAssistantRunClient.GetRunStepAsync"/>
@@ -489,19 +452,19 @@ internal partial class AzureAssistantClient : AssistantClient
         return ClientResult.FromResponse(Pipeline.ProcessMessage(message, options));
     }
 
-    private new PipelineMessage CreateCreateAssistantRequest(BinaryContent content, RequestOptions options = null)
+    internal override PipelineMessage CreateCreateAssistantRequest(BinaryContent content, RequestOptions options = null)
         => NewJsonPostBuilder(content, options).WithPath("assistants").Build();
 
-    private new PipelineMessage CreateGetAssistantsRequest(int? limit, string order, string after, string before, RequestOptions options)
+    internal override PipelineMessage CreateListAssistantsRequest(int? limit, string order, string after, string before, RequestOptions options)
         => NewGetListBuilder(limit, order, after, before, options).WithPath("assistants").Build();
 
-    private new PipelineMessage CreateGetAssistantRequest(string assistantId, RequestOptions options)
+    internal override PipelineMessage CreateGetAssistantRequest(string assistantId, RequestOptions options)
         => NewJsonGetBuilder(options).WithPath("assistants", assistantId).Build();
 
-    private new PipelineMessage CreateModifyAssistantRequest(string assistantId, BinaryContent content, RequestOptions options)
+    internal override PipelineMessage CreateModifyAssistantRequest(string assistantId, BinaryContent content, RequestOptions options)
         => NewJsonPostBuilder(content, options).WithPath("assistants", assistantId).Build();
 
-    private new PipelineMessage CreateDeleteAssistantRequest(string assistantId, RequestOptions options)
+    internal override PipelineMessage CreateDeleteAssistantRequest(string assistantId, RequestOptions options)
         => NewJsonDeleteBuilder(options).WithPath("assistants", assistantId).Build();
 
     private PipelineMessage CreateCreateThreadRequest(BinaryContent content, RequestOptions options)
@@ -563,8 +526,9 @@ internal partial class AzureAssistantClient : AssistantClient
 
     private AzureOpenAIPipelineMessageBuilder NewBuilder(RequestOptions options)
         => new AzureOpenAIPipelineMessageBuilder(Pipeline, _endpoint, _apiVersion)
-            .WithHeader(s_OpenAIBetaFeatureHeader, s_OpenAIBetaAssistantsV2HeaderValue)
+            .WithAssistantsHeader()
             .WithOptions(options);
+
     private AzureOpenAIPipelineMessageBuilder NewJsonPostBuilder(BinaryContent content, RequestOptions options)
         => NewBuilder(options)
         .WithMethod("POST")
@@ -583,11 +547,7 @@ internal partial class AzureAssistantClient : AssistantClient
 
     private AzureOpenAIPipelineMessageBuilder NewGetListBuilder(int? limit, string order, string after, string before, RequestOptions options)
         => NewJsonGetBuilder(options)
-        .WithOptionalQueryParameter("limit", limit)
-        .WithOptionalQueryParameter("order", order)
-        .WithOptionalQueryParameter("after", after)
-        .WithOptionalQueryParameter("before", before);
-
-    private static readonly string s_OpenAIBetaFeatureHeader = "OpenAI-Beta";
-    private static readonly string s_OpenAIBetaAssistantsV2HeaderValue = "assistants=v2";
+        .WithCommonListParameters(limit, order, after, before);
 }
+
+#endif

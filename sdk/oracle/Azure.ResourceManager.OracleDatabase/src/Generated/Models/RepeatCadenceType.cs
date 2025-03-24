@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.OracleDatabase.Models
 {
-    /// <summary>
-    /// Repeat cadence type enum
-    /// Serialized Name: RepeatCadenceType
-    /// </summary>
+    /// <summary> Repeat cadence type enum. </summary>
     public readonly partial struct RepeatCadenceType : IEquatable<RepeatCadenceType>
     {
         private readonly string _value;
@@ -30,31 +27,19 @@ namespace Azure.ResourceManager.OracleDatabase.Models
         private const string MonthlyValue = "Monthly";
         private const string YearlyValue = "Yearly";
 
-        /// <summary>
-        /// Repeat one time
-        /// Serialized Name: RepeatCadenceType.OneTime
-        /// </summary>
+        /// <summary> Repeat one time. </summary>
         public static RepeatCadenceType OneTime { get; } = new RepeatCadenceType(OneTimeValue);
-        /// <summary>
-        /// Repeat weekly
-        /// Serialized Name: RepeatCadenceType.Weekly
-        /// </summary>
+        /// <summary> Repeat weekly. </summary>
         public static RepeatCadenceType Weekly { get; } = new RepeatCadenceType(WeeklyValue);
-        /// <summary>
-        /// Repeat monthly
-        /// Serialized Name: RepeatCadenceType.Monthly
-        /// </summary>
+        /// <summary> Repeat monthly. </summary>
         public static RepeatCadenceType Monthly { get; } = new RepeatCadenceType(MonthlyValue);
-        /// <summary>
-        /// Repeat yearly
-        /// Serialized Name: RepeatCadenceType.Yearly
-        /// </summary>
+        /// <summary> Repeat yearly. </summary>
         public static RepeatCadenceType Yearly { get; } = new RepeatCadenceType(YearlyValue);
         /// <summary> Determines if two <see cref="RepeatCadenceType"/> values are the same. </summary>
         public static bool operator ==(RepeatCadenceType left, RepeatCadenceType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="RepeatCadenceType"/> values are not the same. </summary>
         public static bool operator !=(RepeatCadenceType left, RepeatCadenceType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="RepeatCadenceType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="RepeatCadenceType"/>. </summary>
         public static implicit operator RepeatCadenceType(string value) => new RepeatCadenceType(value);
 
         /// <inheritdoc />
@@ -65,7 +50,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

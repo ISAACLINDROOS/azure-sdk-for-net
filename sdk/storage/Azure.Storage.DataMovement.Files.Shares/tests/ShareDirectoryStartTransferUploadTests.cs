@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+extern alias BaseShares;
+extern alias DMShare;
 
 using System;
 using System.Collections.Generic;
@@ -7,14 +9,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Storage.DataMovement.Tests;
-using Azure.Storage.Files.Shares;
-using Azure.Storage.Files.Shares.Tests;
+using BaseShares::Azure.Storage.Files.Shares;
 using Azure.Storage.Test.Shared;
+using DMShare::Azure.Storage.DataMovement.Files.Shares;
 
 namespace Azure.Storage.DataMovement.Files.Shares.Tests
 {
-    [ShareClientTestFixture(true)]
-    [ShareClientTestFixture(false)]
+    [DataMovementShareClientTestFixture(true)]
+    [DataMovementShareClientTestFixture(false)]
     internal class ShareDirectoryStartTransferUploadTests : StartTransferUploadDirectoryTestBase<
         ShareServiceClient,
         ShareDirectoryClient,
@@ -23,7 +25,7 @@ namespace Azure.Storage.DataMovement.Files.Shares.Tests
         StorageTestEnvironment>
     {
         /// <summary>
-        /// A <see cref="DisposingShare"/> but exposes a directory client within that share.
+        /// A <see cref="Storage.Files.Shares.Tests.DisposingShare"/> but exposes a directory client within that share.
         /// Still cleans up the whole share. Helpful for parameterizing tests to use a root
         /// directory vs a subdir.
         /// </summary>
@@ -80,7 +82,7 @@ namespace Azure.Storage.DataMovement.Files.Shares.Tests
             if (Mode == Core.TestFramework.RecordedTestMode.Record ||
                 Mode == Core.TestFramework.RecordedTestMode.Playback)
             {
-                options.FileLastWrittenOn = new(_defaultFileLastWrittenOn);
+                options.FileLastWrittenOn = _defaultFileLastWrittenOn;
             }
             return new ShareDirectoryStorageResourceContainer(containerClient, options);
         }

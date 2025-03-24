@@ -110,6 +110,55 @@ namespace Azure.Identity.Tests
         }
 
         [Test]
+        [TestCase(EventLevel.Informational)]
+        [TestCase(EventLevel.Verbose)]
+        public async Task ListenerEventLevelControlsMsalLogLevel(EventLevel eventLevel)
+        {
+            using var _listener = new TestEventListener();
+            _listener.EnableEvents(AzureIdentityEventSource.Singleton, eventLevel);
+
+            var token = Guid.NewGuid().ToString();
+            TransportConfig transportConfig = new()
+            {
+                TokenFactory = req => token
+            };
+            var factory = MockTokenTransportFactory(transportConfig);
+            var mockTransport = new MockTransport(factory);
+
+            var config = new CommonCredentialTestConfig()
+            {
+                TransportConfig = transportConfig,
+                Transport = mockTransport,
+                TenantId = TenantId,
+                IsUnsafeSupportLoggingEnabled = true
+            };
+            var credential = GetTokenCredential(config);
+            if (!CredentialTestHelpers.IsMsalCredential(credential))
+            {
+                Assert.Ignore($"{credential.GetType().Name} is not an MSAL credential.");
+            }
+            transportConfig.IsPubClient = CredentialTestHelpers.IsCredentialTypePubClient(credential);
+            AccessToken actualToken = await credential.GetTokenAsync(new TokenRequestContext(MockScopes.Default, null), default);
+
+            Assert.AreEqual(token, actualToken.Token);
+
+            Assert.True(_listener.EventData.Any(d => d.Level == EventLevel.Informational && d.EventName == "LogMsalInformational"));
+
+            switch (eventLevel)
+            {
+                case EventLevel.Informational:
+                    Assert.False(_listener.EventData.Any(d => d.Level == EventLevel.Verbose && d.EventName == "LogMsalVerbose"));
+                    break;
+                case EventLevel.Verbose:
+                    Assert.True(_listener.EventData.Any(d => d.Level == EventLevel.Verbose && d.EventName == "LogMsalVerbose"));
+                    break;
+                default:
+                    Assert.Fail("Unexpected event level");
+                    break;
+            }
+        }
+
+        [Test]
         [NonParallelizable]
         public async Task DisableInstanceMetadataDiscovery([Values(true, false)] bool disable)
         {
@@ -420,6 +469,47 @@ namespace Azure.Identity.Tests
             AccessToken actualToken2 = await credential2.GetTokenAsync(new TokenRequestContext(MockScopes.Default, null), default);
 
             Assert.AreEqual(actualToken1.Token, actualToken2.Token);
+        }
+
+        [Test]
+        public async Task AuthorityHostConfigSupportsdStS()
+        {
+            // Configure the transport
+            var token = Guid.NewGuid().ToString();
+            TransportConfig transportConfig = new()
+            {
+                TokenFactory = req => token,
+                RequestValidator = req =>
+                {
+                    if (req.Uri.Path.EndsWith("/token"))
+                    {
+                        Assert.AreEqual("usnorth-passive-dsts.dsts.core.windows.net", req.Uri.Host);
+                        Assert.AreEqual($"/dstsv2/{TenantId}/oauth2/v2.0/token", req.Uri.Path);
+                    }
+                }
+            };
+            var factory = MockTokenTransportFactory(transportConfig);
+            var mockTransport = new MockTransport(factory);
+
+            var config = new CommonCredentialTestConfig()
+            {
+                TransportConfig = transportConfig,
+                Transport = mockTransport,
+                TenantId = TenantId,
+                AuthorityHost = new("https://usnorth-passive-dsts.dsts.core.windows.net/dstsv2"),
+                RedirectUri = new Uri("http://localhost:8400/")
+            };
+            var credential = GetTokenCredential(config);
+            if (!CredentialTestHelpers.IsMsalCredential(credential))
+            {
+                Assert.Ignore("AuthorityHostConfigSupportsdStS tests do not apply to the non-MSAL credentials.");
+            }
+            transportConfig.IsPubClient = CredentialTestHelpers.IsCredentialTypePubClient(credential);
+
+            // First call to populate the account record for confidential client creds
+            await credential.GetTokenAsync(new TokenRequestContext(MockScopes.Default), default);
+            var actualToken = await credential.GetTokenAsync(new TokenRequestContext(MockScopes.Alternate), default);
+            Assert.AreEqual(token, actualToken.Token);
         }
 
         public class MemoryTokenCache : UnsafeTokenCacheOptions
@@ -765,6 +855,11 @@ namespace Azure.Identity.Tests
             {
                 return await streamReader.ReadToEndAsync().ConfigureAwait(false);
             }
+        }
+
+        public static Action<object> GetExceptionAction(Exception exceptionToThrow)
+        {
+            return (p) => throw exceptionToThrow;
         }
 
         public class CommonCredentialTestConfig : TokenCredentialOptions, ISupportsAdditionallyAllowedTenants, ISupportsDisableInstanceDiscovery

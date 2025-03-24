@@ -36,7 +36,7 @@ namespace Azure.Search.Documents.Indexes.Models
             {
                 return null;
             }
-            VectorSearchCompressionTargetDataType? quantizedDataType = default;
+            VectorSearchCompressionTarget? quantizedDataType = default;
             foreach (var property in element.EnumerateObject())
             {
                 if (property.NameEquals("quantizedDataType"u8))
@@ -46,7 +46,7 @@ namespace Azure.Search.Documents.Indexes.Models
                         quantizedDataType = null;
                         continue;
                     }
-                    quantizedDataType = new VectorSearchCompressionTargetDataType(property.Value.GetString());
+                    quantizedDataType = new VectorSearchCompressionTarget(property.Value.GetString());
                     continue;
                 }
             }
@@ -57,7 +57,7 @@ namespace Azure.Search.Documents.Indexes.Models
         /// <param name="response"> The response to deserialize the model from. </param>
         internal static ScalarQuantizationParameters FromResponse(Response response)
         {
-            using var document = JsonDocument.Parse(response.Content);
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
             return DeserializeScalarQuantizationParameters(document.RootElement);
         }
 

@@ -72,7 +72,7 @@ namespace Azure.Communication.CallAutomation
         public static bool operator ==(MediaStreamingStatusDetails left, MediaStreamingStatusDetails right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MediaStreamingStatusDetails"/> values are not the same. </summary>
         public static bool operator !=(MediaStreamingStatusDetails left, MediaStreamingStatusDetails right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MediaStreamingStatusDetails"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MediaStreamingStatusDetails"/>. </summary>
         public static implicit operator MediaStreamingStatusDetails(string value) => new MediaStreamingStatusDetails(value);
 
         /// <inheritdoc />
@@ -83,7 +83,7 @@ namespace Azure.Communication.CallAutomation
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

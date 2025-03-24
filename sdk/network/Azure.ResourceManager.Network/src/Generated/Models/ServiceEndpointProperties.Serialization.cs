@@ -10,6 +10,7 @@ using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
+using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Network.Models
 {
@@ -19,17 +20,30 @@ namespace Azure.ResourceManager.Network.Models
 
         void IJsonModel<ServiceEndpointProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<ServiceEndpointProperties>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(ServiceEndpointProperties)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsDefined(Service))
             {
                 writer.WritePropertyName("service"u8);
                 writer.WriteStringValue(Service);
+            }
+            if (Optional.IsDefined(NetworkIdentifier))
+            {
+                writer.WritePropertyName("networkIdentifier"u8);
+                JsonSerializer.Serialize(writer, NetworkIdentifier);
             }
             if (Optional.IsCollectionDefined(Locations))
             {
@@ -54,14 +68,13 @@ namespace Azure.ResourceManager.Network.Models
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(item.Value);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
                     {
                         JsonSerializer.Serialize(writer, document.RootElement);
                     }
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         ServiceEndpointProperties IJsonModel<ServiceEndpointProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -85,6 +98,7 @@ namespace Azure.ResourceManager.Network.Models
                 return null;
             }
             string service = default;
+            WritableSubResource networkIdentifier = default;
             IList<AzureLocation> locations = default;
             NetworkProvisioningState? provisioningState = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
@@ -94,6 +108,15 @@ namespace Azure.ResourceManager.Network.Models
                 if (property.NameEquals("service"u8))
                 {
                     service = property.Value.GetString();
+                    continue;
+                }
+                if (property.NameEquals("networkIdentifier"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    networkIdentifier = JsonSerializer.Deserialize<WritableSubResource>(property.Value.GetRawText());
                     continue;
                 }
                 if (property.NameEquals("locations"u8))
@@ -125,7 +148,7 @@ namespace Azure.ResourceManager.Network.Models
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new ServiceEndpointProperties(service, locations ?? new ChangeTrackingList<AzureLocation>(), provisioningState, serializedAdditionalRawData);
+            return new ServiceEndpointProperties(service, networkIdentifier, locations ?? new ChangeTrackingList<AzureLocation>(), provisioningState, serializedAdditionalRawData);
         }
 
         BinaryData IPersistableModel<ServiceEndpointProperties>.Write(ModelReaderWriterOptions options)
@@ -149,7 +172,7 @@ namespace Azure.ResourceManager.Network.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeServiceEndpointProperties(document.RootElement, options);
                     }
                 default:

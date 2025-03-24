@@ -32,7 +32,7 @@ namespace Azure.ResourceManager.StorageMover
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2023-10-01";
+            _apiVersion = apiVersion ?? "2024-07-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -98,7 +98,7 @@ namespace Azure.ResourceManager.StorageMover
                 case 200:
                     {
                         JobDefinitionList value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = JobDefinitionList.DeserializeJobDefinitionList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -129,7 +129,7 @@ namespace Azure.ResourceManager.StorageMover
                 case 200:
                     {
                         JobDefinitionList value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = JobDefinitionList.DeserializeJobDefinitionList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -204,7 +204,7 @@ namespace Azure.ResourceManager.StorageMover
                 case 200:
                     {
                         JobDefinitionData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = JobDefinitionData.DeserializeJobDefinitionData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -239,7 +239,7 @@ namespace Azure.ResourceManager.StorageMover
                 case 200:
                     {
                         JobDefinitionData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = JobDefinitionData.DeserializeJobDefinitionData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -322,7 +322,7 @@ namespace Azure.ResourceManager.StorageMover
                 case 200:
                     {
                         JobDefinitionData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = JobDefinitionData.DeserializeJobDefinitionData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -357,7 +357,7 @@ namespace Azure.ResourceManager.StorageMover
                 case 200:
                     {
                         JobDefinitionData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = JobDefinitionData.DeserializeJobDefinitionData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -438,7 +438,7 @@ namespace Azure.ResourceManager.StorageMover
                 case 200:
                     {
                         JobDefinitionData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = JobDefinitionData.DeserializeJobDefinitionData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -473,7 +473,7 @@ namespace Azure.ResourceManager.StorageMover
                 case 200:
                     {
                         JobDefinitionData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = JobDefinitionData.DeserializeJobDefinitionData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -628,7 +628,7 @@ namespace Azure.ResourceManager.StorageMover
             return message;
         }
 
-        /// <summary> Requests an Agent to start a new instance of this Job Definition, generating a new Job Run resource. </summary>
+        /// <summary> Creates a new Job Run resource for the specified Job Definition and passes it to the Agent for execution. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="storageMoverName"> The name of the Storage Mover resource. </param>
@@ -652,7 +652,7 @@ namespace Azure.ResourceManager.StorageMover
                 case 200:
                     {
                         JobRunResourceId value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = JobRunResourceId.DeserializeJobRunResourceId(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -661,7 +661,7 @@ namespace Azure.ResourceManager.StorageMover
             }
         }
 
-        /// <summary> Requests an Agent to start a new instance of this Job Definition, generating a new Job Run resource. </summary>
+        /// <summary> Creates a new Job Run resource for the specified Job Definition and passes it to the Agent for execution. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="storageMoverName"> The name of the Storage Mover resource. </param>
@@ -685,7 +685,7 @@ namespace Azure.ResourceManager.StorageMover
                 case 200:
                     {
                         JobRunResourceId value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = JobRunResourceId.DeserializeJobRunResourceId(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -762,7 +762,7 @@ namespace Azure.ResourceManager.StorageMover
                 case 200:
                     {
                         JobRunResourceId value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = JobRunResourceId.DeserializeJobRunResourceId(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -795,7 +795,7 @@ namespace Azure.ResourceManager.StorageMover
                 case 200:
                     {
                         JobRunResourceId value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = JobRunResourceId.DeserializeJobRunResourceId(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -850,7 +850,7 @@ namespace Azure.ResourceManager.StorageMover
                 case 200:
                     {
                         JobDefinitionList value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = JobDefinitionList.DeserializeJobDefinitionList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -883,7 +883,7 @@ namespace Azure.ResourceManager.StorageMover
                 case 200:
                     {
                         JobDefinitionList value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = JobDefinitionList.DeserializeJobDefinitionList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

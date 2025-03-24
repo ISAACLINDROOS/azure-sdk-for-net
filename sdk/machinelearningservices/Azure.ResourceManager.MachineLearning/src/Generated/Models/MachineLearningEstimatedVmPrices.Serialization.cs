@@ -8,6 +8,8 @@
 using System;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
@@ -19,13 +21,21 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         void IJsonModel<MachineLearningEstimatedVmPrices>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<MachineLearningEstimatedVmPrices>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(MachineLearningEstimatedVmPrices)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             writer.WritePropertyName("billingCurrency"u8);
             writer.WriteStringValue(BillingCurrency.ToString());
             writer.WritePropertyName("unitOfMeasure"u8);
@@ -45,14 +55,13 @@ namespace Azure.ResourceManager.MachineLearning.Models
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(item.Value);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
                     {
                         JsonSerializer.Serialize(writer, document.RootElement);
                     }
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         MachineLearningEstimatedVmPrices IJsonModel<MachineLearningEstimatedVmPrices>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -111,6 +120,68 @@ namespace Azure.ResourceManager.MachineLearning.Models
             return new MachineLearningEstimatedVmPrices(billingCurrency, unitOfMeasure, values, serializedAdditionalRawData);
         }
 
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(BillingCurrency), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  billingCurrency: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  billingCurrency: ");
+                builder.AppendLine($"'{BillingCurrency.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(UnitOfMeasure), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  unitOfMeasure: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  unitOfMeasure: ");
+                builder.AppendLine($"'{UnitOfMeasure.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Values), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  values: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(Values))
+                {
+                    if (Values.Any())
+                    {
+                        builder.Append("  values: ");
+                        builder.AppendLine("[");
+                        foreach (var item in Values)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  values: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
         BinaryData IPersistableModel<MachineLearningEstimatedVmPrices>.Write(ModelReaderWriterOptions options)
         {
             var format = options.Format == "W" ? ((IPersistableModel<MachineLearningEstimatedVmPrices>)this).GetFormatFromOptions(options) : options.Format;
@@ -119,6 +190,8 @@ namespace Azure.ResourceManager.MachineLearning.Models
             {
                 case "J":
                     return ModelReaderWriter.Write(this, options);
+                case "bicep":
+                    return SerializeBicep(options);
                 default:
                     throw new FormatException($"The model {nameof(MachineLearningEstimatedVmPrices)} does not support writing '{options.Format}' format.");
             }
@@ -132,7 +205,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeMachineLearningEstimatedVmPrices(document.RootElement, options);
                     }
                 default:

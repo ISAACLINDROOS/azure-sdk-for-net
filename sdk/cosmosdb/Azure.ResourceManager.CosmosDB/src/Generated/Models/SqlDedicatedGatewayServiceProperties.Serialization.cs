@@ -21,17 +21,31 @@ namespace Azure.ResourceManager.CosmosDB.Models
 
         void IJsonModel<SqlDedicatedGatewayServiceProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<SqlDedicatedGatewayServiceProperties>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(SqlDedicatedGatewayServiceProperties)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsDefined(SqlDedicatedGatewayEndpoint))
             {
                 writer.WritePropertyName("sqlDedicatedGatewayEndpoint"u8);
                 writer.WriteStringValue(SqlDedicatedGatewayEndpoint);
+            }
+            if (Optional.IsDefined(DedicatedGatewayType))
+            {
+                writer.WritePropertyName("dedicatedGatewayType"u8);
+                writer.WriteStringValue(DedicatedGatewayType.Value.ToString());
             }
             if (options.Format != "W" && Optional.IsCollectionDefined(Locations))
             {
@@ -43,41 +57,18 @@ namespace Azure.ResourceManager.CosmosDB.Models
                 }
                 writer.WriteEndArray();
             }
-            if (options.Format != "W" && Optional.IsDefined(CreatedOn))
-            {
-                writer.WritePropertyName("creationTime"u8);
-                writer.WriteStringValue(CreatedOn.Value, "O");
-            }
-            if (Optional.IsDefined(InstanceSize))
-            {
-                writer.WritePropertyName("instanceSize"u8);
-                writer.WriteStringValue(InstanceSize.Value.ToString());
-            }
-            if (Optional.IsDefined(InstanceCount))
-            {
-                writer.WritePropertyName("instanceCount"u8);
-                writer.WriteNumberValue(InstanceCount.Value);
-            }
-            writer.WritePropertyName("serviceType"u8);
-            writer.WriteStringValue(ServiceType.ToString());
-            if (options.Format != "W" && Optional.IsDefined(Status))
-            {
-                writer.WritePropertyName("status"u8);
-                writer.WriteStringValue(Status.Value.ToString());
-            }
             foreach (var item in AdditionalProperties)
             {
                 writer.WritePropertyName(item.Key);
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(item.Value);
 #else
-                using (JsonDocument document = JsonDocument.Parse(item.Value))
+                using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
                 {
                     JsonSerializer.Serialize(writer, document.RootElement);
                 }
 #endif
             }
-            writer.WriteEndObject();
         }
 
         SqlDedicatedGatewayServiceProperties IJsonModel<SqlDedicatedGatewayServiceProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -101,6 +92,7 @@ namespace Azure.ResourceManager.CosmosDB.Models
                 return null;
             }
             string sqlDedicatedGatewayEndpoint = default;
+            DedicatedGatewayType? dedicatedGatewayType = default;
             IReadOnlyList<SqlDedicatedGatewayRegionalService> locations = default;
             DateTimeOffset? creationTime = default;
             CosmosDBServiceSize? instanceSize = default;
@@ -114,6 +106,15 @@ namespace Azure.ResourceManager.CosmosDB.Models
                 if (property.NameEquals("sqlDedicatedGatewayEndpoint"u8))
                 {
                     sqlDedicatedGatewayEndpoint = property.Value.GetString();
+                    continue;
+                }
+                if (property.NameEquals("dedicatedGatewayType"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    dedicatedGatewayType = new DedicatedGatewayType(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("locations"u8))
@@ -182,6 +183,7 @@ namespace Azure.ResourceManager.CosmosDB.Models
                 status,
                 additionalProperties,
                 sqlDedicatedGatewayEndpoint,
+                dedicatedGatewayType,
                 locations ?? new ChangeTrackingList<SqlDedicatedGatewayRegionalService>());
         }
 
@@ -216,6 +218,21 @@ namespace Azure.ResourceManager.CosmosDB.Models
                     {
                         builder.AppendLine($"'{SqlDedicatedGatewayEndpoint}'");
                     }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DedicatedGatewayType), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  dedicatedGatewayType: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DedicatedGatewayType))
+                {
+                    builder.Append("  dedicatedGatewayType: ");
+                    builder.AppendLine($"'{DedicatedGatewayType.Value.ToString()}'");
                 }
             }
 
@@ -342,7 +359,7 @@ namespace Azure.ResourceManager.CosmosDB.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeSqlDedicatedGatewayServiceProperties(document.RootElement, options);
                     }
                 default:

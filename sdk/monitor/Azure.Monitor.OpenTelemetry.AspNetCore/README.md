@@ -7,8 +7,8 @@ The Azure Monitor Distro is a client library that sends telemetry data to Azure 
 ### Prerequisites
 
 - **Azure Subscription:**  To use Azure services, including Azure Monitor Distro, you'll need a subscription.  If you do not have an existing Azure account, you may sign up for a [free trial](https://azure.microsoft.com/free/dotnet/) or use your [Visual Studio Subscription](https://visualstudio.microsoft.com/subscriptions/) benefits when you [create an account](https://azure.microsoft.com/account).
-- **Azure Application Insights Connection String:** To send telemetry data to the monitoring service you'll need connection string from Azure Application Insights. If you are not familiar with creating Azure resources, you may wish to follow the step-by-step guide for [Create an Application Insights resource](https://docs.microsoft.com/azure/azure-monitor/app/create-new-resource) and [copy the connection string](https://docs.microsoft.com/azure/azure-monitor/app/sdk-connection-string?tabs=net#find-your-connection-string).
-- **ASP.NET Core App:** An ASP.NET Core application is required to instrument it with Azure Monitor Distro. You can either bring your own app or follow the [Get started with ASP.NET Core MVC](https://docs.microsoft.com/aspnet/core/tutorials/first-mvc-app/start-mvc) to create a new one.
+- **Azure Application Insights Connection String:** To send telemetry data to the monitoring service you'll need connection string from Azure Application Insights. If you are not familiar with creating Azure resources, you may wish to follow the step-by-step guide for [Create an Application Insights resource](https://learn.microsoft.com/azure/azure-monitor/app/create-new-resource) and [copy the connection string](https://learn.microsoft.com/azure/azure-monitor/app/sdk-connection-string?tabs=net#find-your-connection-string).
+- **ASP.NET Core App:** An ASP.NET Core application is required to instrument it with Azure Monitor Distro. You can either bring your own app or follow the [Get started with ASP.NET Core MVC](https://learn.microsoft.com/aspnet/core/tutorials/first-mvc-app/start-mvc) to create a new one.
 
 ### What is Included in the Distro
 
@@ -16,7 +16,7 @@ The Azure Monitor Distro is a distribution of the .NET OpenTelemetry SDK with in
 
 * Traces
   * **ASP.NET Core Instrumentation**: Provides automatic tracing for incoming HTTP requests to ASP.NET Core applications.
-  * **HTTP Client Instrumentation**: Provides automatic tracing for outgoing HTTP requests made using [System.Net.Http.HttpClient](https://docs.microsoft.com/dotnet/api/system.net.http.httpclient).
+  * **HTTP Client Instrumentation**: Provides automatic tracing for outgoing HTTP requests made using [System.Net.Http.HttpClient](https://learn.microsoft.com/dotnet/api/system.net.http.httpclient).
   * **SQL Client Instrumentation** Provides automatic tracing for SQL queries executed using the [Microsoft.Data.SqlClient](https://www.nuget.org/packages/Microsoft.Data.SqlClient) and [System.Data.SqlClient](https://www.nuget.org/packages/System.Data.SqlClient) packages. (While the OpenTelemetry SqlClient instrumentation remains in its beta phase, we have taken the step to vendor it and include it in our Distro)
 
 * Metrics
@@ -44,6 +44,14 @@ The Azure Monitor Distro is a distribution of the .NET OpenTelemetry SDK with in
   * Integrated support for live metrics enabling real-time monitoring of application performance.
 
 * [Azure Monitor Exporter](https://www.nuget.org/packages/Azure.Monitor.OpenTelemetry.Exporter/) allows sending traces, metrics, and logs data to Azure Monitor.
+
+### Migrating from Application Insights SDK?
+
+If you are currently using the Application Insights SDK and want to migrate to OpenTelemetry, please follow our [migration guide](https://learn.microsoft.com/azure/azure-monitor/app/opentelemetry-dotnet-migrate?tabs=aspnetcore).
+
+### Already using OpenTelemetry?
+
+If you are currently using OpenTelemetry and want to send telemetry data to Azure Monitor, please follow our [getting started guide](https://learn.microsoft.com/azure/azure-monitor/app/opentelemetry-enable?tabs=aspnetcore).
 
 ### Install the package
 
@@ -109,10 +117,10 @@ Azure Active Directory (AAD) authentication is an optional feature that can be u
 
 ```C#
 // Call UseAzureMonitor and set Credential to authenticate through Active Directory.
-builder.Services.AddOpenTelemetry().UseAzureMonitor(o =>
+builder.Services.AddOpenTelemetry().UseAzureMonitor(options =>
 {
-    o.ConnectionString = "InstrumentationKey=00000000-0000-0000-0000-000000000000";
-    o.Credential = new DefaultAzureCredential();
+    options.ConnectionString = "InstrumentationKey=00000000-0000-0000-0000-000000000000";
+    options.Credential = new DefaultAzureCredential();
 });
 ```
 
@@ -127,9 +135,9 @@ Note that the `Credential` property is optional. If it is not set, Azure Monitor
 When using the Azure Monitor Distro, the sampling percentage for telemetry data is set to 100% (1.0F) by default. For example, let's say you want to set the sampling percentage to 50%. You can achieve this by modifying the code as follows:
 
 ``` C#
-builder.Services.AddOpenTelemetry().UseAzureMonitor(o =>
+builder.Services.AddOpenTelemetry().UseAzureMonitor(options =>
 {
-    o.SamplingRatio = 0.5F;
+    options.SamplingRatio = 0.5F;
 });
 ```
 
@@ -248,9 +256,9 @@ dotnet add package --prerelease OpenTelemetry.Instrumentation.SqlClient
 ```
 
 ```C#
-builder.Services.AddOpenTelemetry().UseAzureMonitor().WithTracing(builder =>
+builder.Services.AddOpenTelemetry().UseAzureMonitor().WithTracing(tracing =>
 {
-    builder.AddSqlClientInstrumentation(options =>
+    tracing.AddSqlClientInstrumentation(options =>
     {
         options.SetDbStatementForStoredProcedure = false;
     });
@@ -265,10 +273,10 @@ To disable Live Metrics, you can set the `EnableLiveMetrics` property to `false`
 
 ```C#
 // Disable Live Metrics by setting EnableLiveMetrics to false in the UseAzureMonitor configuration.
-builder.Services.AddOpenTelemetry().UseAzureMonitor(o =>
+builder.Services.AddOpenTelemetry().UseAzureMonitor(options =>
 {
-    o.ConnectionString = "InstrumentationKey=00000000-0000-0000-0000-000000000000";
-    o.EnableLiveMetrics = false;
+    options.ConnectionString = "InstrumentationKey=00000000-0000-0000-0000-000000000000";
+    options.EnableLiveMetrics = false;
 });
 ```
 
@@ -292,6 +300,39 @@ The Azure Monitor Distro is a distribution package that facilitates users in sen
 ## Examples
 
 Refer to [`Program.cs`](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.AspNetCore/tests/Azure.Monitor.OpenTelemetry.AspNetCore.Demo/Program.cs) for a complete demo.
+
+### Log Scopes
+
+Log [scopes](https://learn.microsoft.com/dotnet/core/extensions/logging#log-scopes) allow you to add additional properties to the logs generated by your application.
+Although the Azure Monitor Distro does support scopes, this feature is off by default in OpenTelemetry.
+To leverage log scopes, you must explicitly enable them.
+
+To include the scope with your logs, set `OpenTelemetryLoggerOptions.IncludeScopes` to `true` in your application's configuration:
+```csharp
+builder.Services.Configure<OpenTelemetryLoggerOptions>((loggingOptions) =>
+{
+    loggingOptions.IncludeScopes = true;
+});
+```
+
+When using `ILogger` scopes, use a `List<KeyValuePair<string, object?>>` or `IReadOnlyList<KeyValue<string, object?>>` as the state for best performance.
+All logs written within the context of the scope will include the specified information.
+Azure Monitor will add these scope values to the Log's CustomProperties.
+```csharp
+List<KeyValuePair<string, object?>> scope =
+[
+    new("scopeKey", "scopeValue")
+];
+
+using (logger.BeginScope(scope))
+{
+    logger.LogInformation("Example message.");
+}
+```
+
+In scenarios involving multiple scopes or a single scope with multiple key-value pairs, if duplicate keys are present,
+only the first occurrence of the key-value pair from the outermost scope will be recorded.
+However, when the same key is utilized both within a logging scope and directly in the log statement, the value specified in the log message template will take precedence.
 
 ## Troubleshooting
 

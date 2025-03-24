@@ -4,25 +4,14 @@
 #nullable disable
 
 using System;
-using System.ClientModel;
-using System.ClientModel.Primitives;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Azure.AI.OpenAI.Chat;
-using Azure.Core.TestFramework;
 using Azure.Identity;
-using OpenAI.Audio;
 using OpenAI.Chat;
 
 namespace Azure.AI.OpenAI.Samples;
 
 public partial class AzureOpenAISamples
 {
-    [Test]
-    [Ignore("Only for sample compilation validation")]
     public void OnYourDataSearch()
     {
         AzureOpenAIClient azureClient = new(
@@ -47,15 +36,16 @@ public partial class AzureOpenAISamples
         ChatCompletion completion = chatClient.CompleteChat(
             [
                 new UserChatMessage("What are the best-selling Contoso products this month?"),
-            ]);
+            ],
+            options);
 
-        AzureChatMessageContext onYourDataContext = completion.GetAzureMessageContext();
+        ChatMessageContext onYourDataContext = completion.GetMessageContext();
 
         if (onYourDataContext?.Intent is not null)
         {
             Console.WriteLine($"Intent: {onYourDataContext.Intent}");
         }
-        foreach (AzureChatCitation citation in onYourDataContext?.Citations ?? [])
+        foreach (ChatCitation citation in onYourDataContext?.Citations ?? [])
         {
             Console.WriteLine($"Citation: {citation.Content}");
         }

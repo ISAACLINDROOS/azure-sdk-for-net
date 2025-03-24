@@ -19,13 +19,21 @@ namespace Azure.ResourceManager.Cdn.Models
 
         void IJsonModel<WafPolicySettings>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<WafPolicySettings>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(WafPolicySettings)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsDefined(EnabledState))
             {
                 writer.WritePropertyName("enabledState"u8);
@@ -55,15 +63,22 @@ namespace Azure.ResourceManager.Cdn.Models
             }
             if (Optional.IsDefined(DefaultCustomBlockResponseBody))
             {
-                writer.WritePropertyName("defaultCustomBlockResponseBody"u8);
+                if (DefaultCustomBlockResponseBody != null)
+                {
+                    writer.WritePropertyName("defaultCustomBlockResponseBody"u8);
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(DefaultCustomBlockResponseBody);
 #else
-                using (JsonDocument document = JsonDocument.Parse(DefaultCustomBlockResponseBody))
-                {
-                    JsonSerializer.Serialize(writer, document.RootElement);
-                }
+                    using (JsonDocument document = JsonDocument.Parse(DefaultCustomBlockResponseBody, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
 #endif
+                }
+                else
+                {
+                    writer.WriteNull("defaultCustomBlockResponseBody");
+                }
             }
             if (options.Format != "W" && _serializedAdditionalRawData != null)
             {
@@ -73,14 +88,13 @@ namespace Azure.ResourceManager.Cdn.Models
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(item.Value);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
                     {
                         JsonSerializer.Serialize(writer, document.RootElement);
                     }
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         WafPolicySettings IJsonModel<WafPolicySettings>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -153,6 +167,7 @@ namespace Azure.ResourceManager.Cdn.Models
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
+                        defaultCustomBlockResponseBody = null;
                         continue;
                     }
                     defaultCustomBlockResponseBody = BinaryData.FromString(property.Value.GetRawText());
@@ -194,7 +209,7 @@ namespace Azure.ResourceManager.Cdn.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeWafPolicySettings(document.RootElement, options);
                     }
                 default:

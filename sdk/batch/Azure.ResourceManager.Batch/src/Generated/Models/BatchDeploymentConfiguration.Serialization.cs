@@ -19,18 +19,21 @@ namespace Azure.ResourceManager.Batch.Models
 
         void IJsonModel<BatchDeploymentConfiguration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<BatchDeploymentConfiguration>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(BatchDeploymentConfiguration)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
-            if (Optional.IsDefined(CloudServiceConfiguration))
-            {
-                writer.WritePropertyName("cloudServiceConfiguration"u8);
-                writer.WriteObjectValue(CloudServiceConfiguration, options);
-            }
             if (Optional.IsDefined(VmConfiguration))
             {
                 writer.WritePropertyName("virtualMachineConfiguration"u8);
@@ -44,14 +47,13 @@ namespace Azure.ResourceManager.Batch.Models
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(item.Value);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
                     {
                         JsonSerializer.Serialize(writer, document.RootElement);
                     }
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         BatchDeploymentConfiguration IJsonModel<BatchDeploymentConfiguration>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -74,21 +76,11 @@ namespace Azure.ResourceManager.Batch.Models
             {
                 return null;
             }
-            BatchCloudServiceConfiguration cloudServiceConfiguration = default;
             BatchVmConfiguration virtualMachineConfiguration = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("cloudServiceConfiguration"u8))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        continue;
-                    }
-                    cloudServiceConfiguration = BatchCloudServiceConfiguration.DeserializeBatchCloudServiceConfiguration(property.Value, options);
-                    continue;
-                }
                 if (property.NameEquals("virtualMachineConfiguration"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
@@ -104,7 +96,7 @@ namespace Azure.ResourceManager.Batch.Models
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new BatchDeploymentConfiguration(cloudServiceConfiguration, virtualMachineConfiguration, serializedAdditionalRawData);
+            return new BatchDeploymentConfiguration(virtualMachineConfiguration, serializedAdditionalRawData);
         }
 
         BinaryData IPersistableModel<BatchDeploymentConfiguration>.Write(ModelReaderWriterOptions options)
@@ -128,7 +120,7 @@ namespace Azure.ResourceManager.Batch.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeBatchDeploymentConfiguration(document.RootElement, options);
                     }
                 default:

@@ -1,6 +1,6 @@
 # Release History
 
-## 6.4.0-beta.1 (Unreleased)
+## 6.4.0-beta.2 (Unreleased)
 
 ### Features Added
 
@@ -10,11 +10,33 @@
 
 ### Other Changes
 
+## 6.4.0-beta.1 (2025-03-14)
+
+### Bugs Fixed
+
+- Fixed a misspelling of "PartitionId" in the trigger input data passed to the function executor.  This caused function logs and metrics reported by AppInsights and the portal to reflect the wrong label.  To ensure that applications that rely on the misspelling are not impacted, a new member with the correct spelling was added.
+
+### Other Changes
+
+- Updating .NET runtime dependencies to the 6.x line, the Azure extensions to 1.8.0, and the latest dependencies for the Functions host.
+
+## 6.3.5 (2024-08-01)
+
+### Other Changes
+
+- Bump dependency on `Azure.Messaging.EventHubs` to 5.11.5.
+
+## 6.3.4 (2024-07-25)
+
+### Other Changes
+
+- When the trigger's connection property is set to a valid connection string instead of an informational name, the mistake will be detected and sensitive information will be redacted from the error message to avoid accidental capture in logs and similar mechanisms.
+
 ## 6.3.3 (2024-06-13)
 
 ### Other Changes
 
-- To mitigate a vulnerability, updating the transitive dependency for `Azure.Identity` to v1.11.4 via version bump to `Microsoft.Extensions.Azure`. 
+- To mitigate a vulnerability, updating the transitive dependency for `Azure.Identity` to v1.11.4 via version bump to `Microsoft.Extensions.Azure`.
 
 ## 6.3.2 (2024-04-29)
 
@@ -26,7 +48,7 @@
 
 ### Other Changes
 
-- To mitigate a [disclosure vulnerability](https://github.com/advisories/GHSA-wvxc-855f-jvrv), updating the transitive dependency for `Azure.Identity` to v1.11.1 via version bump to `Microsoft.Extensions.Azure`. 
+- To mitigate a [disclosure vulnerability](https://github.com/advisories/GHSA-wvxc-855f-jvrv), updating the transitive dependency for `Azure.Identity` to v1.11.1 via version bump to `Microsoft.Extensions.Azure`.
 
 ## 6.3.0 (2024-04-10)
 

@@ -29,7 +29,9 @@ namespace Azure.Monitor.Query
         protected LogsQueryClient() { }
         public LogsQueryClient(Azure.Core.TokenCredential credential) { }
         public LogsQueryClient(Azure.Core.TokenCredential credential, Azure.Monitor.Query.LogsQueryClientOptions options) { }
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
         public LogsQueryClient(System.Uri endpoint, Azure.Core.TokenCredential credential) { }
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
         public LogsQueryClient(System.Uri endpoint, Azure.Core.TokenCredential credential, Azure.Monitor.Query.LogsQueryClientOptions options) { }
         public System.Uri Endpoint { get { throw null; } }
         public static string CreateQuery(System.FormattableString query) { throw null; }
@@ -155,11 +157,14 @@ namespace Azure.Monitor.Query
     {
         public MetricsQueryResourcesOptions() { }
         public System.Collections.Generic.IList<string> Aggregations { get { throw null; } }
+        public System.DateTimeOffset? EndTime { get { throw null; } set { } }
         public string Filter { get { throw null; } set { } }
         public System.TimeSpan? Granularity { get { throw null; } set { } }
         public string OrderBy { get { throw null; } set { } }
         public System.Collections.Generic.IList<string> RollUpBy { get { throw null; } }
         public int? Size { get { throw null; } set { } }
+        public System.DateTimeOffset? StartTime { get { throw null; } set { } }
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
         public Azure.Monitor.Query.QueryTimeRange? TimeRange { get { throw null; } set { } }
     }
     [System.Runtime.InteropServices.StructLayoutAttribute(System.Runtime.InteropServices.LayoutKind.Sequential)]

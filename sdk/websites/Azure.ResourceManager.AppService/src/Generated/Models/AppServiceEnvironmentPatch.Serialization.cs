@@ -22,37 +22,26 @@ namespace Azure.ResourceManager.AppService.Models
 
         void IJsonModel<AppServiceEnvironmentPatch>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<AppServiceEnvironmentPatch>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(AppServiceEnvironmentPatch)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsDefined(Kind))
             {
                 writer.WritePropertyName("kind"u8);
                 writer.WriteStringValue(Kind);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("id"u8);
-                writer.WriteStringValue(Id);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("name"u8);
-                writer.WriteStringValue(Name);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("type"u8);
-                writer.WriteStringValue(ResourceType);
-            }
-            if (options.Format != "W" && Optional.IsDefined(SystemData))
-            {
-                writer.WritePropertyName("systemData"u8);
-                JsonSerializer.Serialize(writer, SystemData);
             }
             writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
@@ -136,6 +125,11 @@ namespace Azure.ResourceManager.AppService.Models
                 writer.WritePropertyName("hasLinuxWorkers"u8);
                 writer.WriteBooleanValue(HasLinuxWorkers.Value);
             }
+            if (Optional.IsDefined(UpgradePreference))
+            {
+                writer.WritePropertyName("upgradePreference"u8);
+                writer.WriteStringValue(UpgradePreference.Value.ToString());
+            }
             if (Optional.IsDefined(DedicatedHostCount))
             {
                 writer.WritePropertyName("dedicatedHostCount"u8);
@@ -146,21 +140,20 @@ namespace Azure.ResourceManager.AppService.Models
                 writer.WritePropertyName("zoneRedundant"u8);
                 writer.WriteBooleanValue(IsZoneRedundant.Value);
             }
-            writer.WriteEndObject();
-            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            if (Optional.IsDefined(CustomDnsSuffixConfiguration))
             {
-                foreach (var item in _serializedAdditionalRawData)
-                {
-                    writer.WritePropertyName(item.Key);
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(item.Value);
-#else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
-                }
+                writer.WritePropertyName("customDnsSuffixConfiguration"u8);
+                writer.WriteObjectValue(CustomDnsSuffixConfiguration, options);
+            }
+            if (Optional.IsDefined(NetworkingConfiguration))
+            {
+                writer.WritePropertyName("networkingConfiguration"u8);
+                writer.WriteObjectValue(NetworkingConfiguration, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(UpgradeAvailability))
+            {
+                writer.WritePropertyName("upgradeAvailability"u8);
+                writer.WriteStringValue(UpgradeAvailability.Value.ToString());
             }
             writer.WriteEndObject();
         }
@@ -204,8 +197,12 @@ namespace Azure.ResourceManager.AppService.Models
             IList<AppServiceNameValuePair> clusterSettings = default;
             IList<string> userWhitelistedIPRanges = default;
             bool? hasLinuxWorkers = default;
+            AppServiceEnvironmentUpgradePreference? upgradePreference = default;
             int? dedicatedHostCount = default;
             bool? zoneRedundant = default;
+            CustomDnsSuffixConfigurationData customDnsSuffixConfiguration = default;
+            AseV3NetworkingConfigurationData networkingConfiguration = default;
+            AppServiceEnvironmentUpgradeAvailability? upgradeAvailability = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -376,6 +373,15 @@ namespace Azure.ResourceManager.AppService.Models
                             hasLinuxWorkers = property0.Value.GetBoolean();
                             continue;
                         }
+                        if (property0.NameEquals("upgradePreference"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            upgradePreference = new AppServiceEnvironmentUpgradePreference(property0.Value.GetString());
+                            continue;
+                        }
                         if (property0.NameEquals("dedicatedHostCount"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
@@ -392,6 +398,33 @@ namespace Azure.ResourceManager.AppService.Models
                                 continue;
                             }
                             zoneRedundant = property0.Value.GetBoolean();
+                            continue;
+                        }
+                        if (property0.NameEquals("customDnsSuffixConfiguration"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            customDnsSuffixConfiguration = CustomDnsSuffixConfigurationData.DeserializeCustomDnsSuffixConfigurationData(property0.Value, options);
+                            continue;
+                        }
+                        if (property0.NameEquals("networkingConfiguration"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            networkingConfiguration = AseV3NetworkingConfigurationData.DeserializeAseV3NetworkingConfigurationData(property0.Value, options);
+                            continue;
+                        }
+                        if (property0.NameEquals("upgradeAvailability"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            upgradeAvailability = new AppServiceEnvironmentUpgradeAvailability(property0.Value.GetString());
                             continue;
                         }
                     }
@@ -422,8 +455,12 @@ namespace Azure.ResourceManager.AppService.Models
                 clusterSettings ?? new ChangeTrackingList<AppServiceNameValuePair>(),
                 userWhitelistedIPRanges ?? new ChangeTrackingList<string>(),
                 hasLinuxWorkers,
+                upgradePreference,
                 dedicatedHostCount,
                 zoneRedundant,
+                customDnsSuffixConfiguration,
+                networkingConfiguration,
+                upgradeAvailability,
                 kind,
                 serializedAdditionalRawData);
         }
@@ -774,6 +811,21 @@ namespace Azure.ResourceManager.AppService.Models
                 }
             }
 
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(UpgradePreference), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    upgradePreference: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(UpgradePreference))
+                {
+                    builder.Append("    upgradePreference: ");
+                    builder.AppendLine($"'{UpgradePreference.Value.ToString()}'");
+                }
+            }
+
             hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DedicatedHostCount), out propertyOverride);
             if (hasPropertyOverride)
             {
@@ -805,6 +857,51 @@ namespace Azure.ResourceManager.AppService.Models
                 }
             }
 
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(CustomDnsSuffixConfiguration), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    customDnsSuffixConfiguration: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(CustomDnsSuffixConfiguration))
+                {
+                    builder.Append("    customDnsSuffixConfiguration: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, CustomDnsSuffixConfiguration, options, 4, false, "    customDnsSuffixConfiguration: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(NetworkingConfiguration), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    networkingConfiguration: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(NetworkingConfiguration))
+                {
+                    builder.Append("    networkingConfiguration: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, NetworkingConfiguration, options, 4, false, "    networkingConfiguration: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(UpgradeAvailability), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    upgradeAvailability: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(UpgradeAvailability))
+                {
+                    builder.Append("    upgradeAvailability: ");
+                    builder.AppendLine($"'{UpgradeAvailability.Value.ToString()}'");
+                }
+            }
+
             builder.AppendLine("  }");
             builder.AppendLine("}");
             return BinaryData.FromString(builder.ToString());
@@ -833,7 +930,7 @@ namespace Azure.ResourceManager.AppService.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeAppServiceEnvironmentPatch(document.RootElement, options);
                     }
                 default:

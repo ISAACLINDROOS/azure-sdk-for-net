@@ -2,12 +2,14 @@
 // Licensed under the MIT License.
 
 using System.ClientModel.Primitives;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
 
 namespace Azure.AI.OpenAI;
 
-[CodeGenModel("AzureOpenAIDalleError")]
+[Experimental("AOAI001")]
+[CodeGenType("AzureOpenAIDalleError")]
 internal partial class AzureOpenAIDalleError
 {
     internal static AzureOpenAIDalleError TryCreateFromResponse(PipelineResponse response)
@@ -16,7 +18,7 @@ internal partial class AzureOpenAIDalleError
         {
             using JsonDocument errorDocument = JsonDocument.Parse(response.Content);
             AzureOpenAIDalleErrorResponse errorResponse
-                = AzureOpenAIDalleErrorResponse.DeserializeAzureOpenAIDalleErrorResponse(errorDocument.RootElement);
+                = AzureOpenAIDalleErrorResponse.DeserializeAzureOpenAIDalleErrorResponse(errorDocument.RootElement, ModelSerializationExtensions.WireOptions);
             return errorResponse.Error;
         }
         catch (InvalidOperationException)

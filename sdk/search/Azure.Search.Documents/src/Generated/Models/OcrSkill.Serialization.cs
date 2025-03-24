@@ -87,7 +87,7 @@ namespace Azure.Search.Documents.Indexes.Models
             }
             OcrSkillLanguage? defaultLanguageCode = default;
             bool? detectOrientation = default;
-            LineEnding? lineEnding = default;
+            OcrLineEnding? lineEnding = default;
             string odataType = default;
             string name = default;
             string description = default;
@@ -122,7 +122,7 @@ namespace Azure.Search.Documents.Indexes.Models
                     {
                         continue;
                     }
-                    lineEnding = new LineEnding(property.Value.GetString());
+                    lineEnding = new OcrLineEnding(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("@odata.type"u8))
@@ -182,7 +182,7 @@ namespace Azure.Search.Documents.Indexes.Models
         /// <param name="response"> The response to deserialize the model from. </param>
         internal static new OcrSkill FromResponse(Response response)
         {
-            using var document = JsonDocument.Parse(response.Content);
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
             return DeserializeOcrSkill(document.RootElement);
         }
 

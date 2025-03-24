@@ -32,7 +32,7 @@ namespace Azure.ResourceManager.MachineLearning
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2023-06-01-preview";
+            _apiVersion = apiVersion ?? "2024-04-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -170,7 +170,7 @@ namespace Azure.ResourceManager.MachineLearning
                 case 200:
                     {
                         ModelVersionResourceArmPaginatedResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ModelVersionResourceArmPaginatedResult.DeserializeModelVersionResourceArmPaginatedResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -209,7 +209,7 @@ namespace Azure.ResourceManager.MachineLearning
                 case 200:
                     {
                         ModelVersionResourceArmPaginatedResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ModelVersionResourceArmPaginatedResult.DeserializeModelVersionResourceArmPaginatedResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -386,7 +386,7 @@ namespace Azure.ResourceManager.MachineLearning
                 case 200:
                     {
                         MachineLearningModelVersionData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = MachineLearningModelVersionData.DeserializeMachineLearningModelVersionData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -421,7 +421,7 @@ namespace Azure.ResourceManager.MachineLearning
                 case 200:
                     {
                         MachineLearningModelVersionData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = MachineLearningModelVersionData.DeserializeMachineLearningModelVersionData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -540,116 +540,6 @@ namespace Azure.ResourceManager.MachineLearning
             }
         }
 
-        internal RequestUriBuilder CreatePackageRequestUri(string subscriptionId, string resourceGroupName, string registryName, string modelName, string version, ModelPackageContent content)
-        {
-            var uri = new RawRequestUriBuilder();
-            uri.Reset(_endpoint);
-            uri.AppendPath("/subscriptions/", false);
-            uri.AppendPath(subscriptionId, true);
-            uri.AppendPath("/resourceGroups/", false);
-            uri.AppendPath(resourceGroupName, true);
-            uri.AppendPath("/providers/Microsoft.MachineLearningServices/registries/", false);
-            uri.AppendPath(registryName, true);
-            uri.AppendPath("/models/", false);
-            uri.AppendPath(modelName, true);
-            uri.AppendPath("/versions/", false);
-            uri.AppendPath(version, true);
-            uri.AppendPath("/package", false);
-            uri.AppendQuery("api-version", _apiVersion, true);
-            return uri;
-        }
-
-        internal HttpMessage CreatePackageRequest(string subscriptionId, string resourceGroupName, string registryName, string modelName, string version, ModelPackageContent content)
-        {
-            var message = _pipeline.CreateMessage();
-            var request = message.Request;
-            request.Method = RequestMethod.Post;
-            var uri = new RawRequestUriBuilder();
-            uri.Reset(_endpoint);
-            uri.AppendPath("/subscriptions/", false);
-            uri.AppendPath(subscriptionId, true);
-            uri.AppendPath("/resourceGroups/", false);
-            uri.AppendPath(resourceGroupName, true);
-            uri.AppendPath("/providers/Microsoft.MachineLearningServices/registries/", false);
-            uri.AppendPath(registryName, true);
-            uri.AppendPath("/models/", false);
-            uri.AppendPath(modelName, true);
-            uri.AppendPath("/versions/", false);
-            uri.AppendPath(version, true);
-            uri.AppendPath("/package", false);
-            uri.AppendQuery("api-version", _apiVersion, true);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("Content-Type", "application/json");
-            var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content, ModelSerializationExtensions.WireOptions);
-            request.Content = content0;
-            _userAgent.Apply(message);
-            return message;
-        }
-
-        /// <summary> Model Version Package operation. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <param name="registryName"> Name of Azure Machine Learning registry. This is case-insensitive. </param>
-        /// <param name="modelName"> Container name. This is case-sensitive. </param>
-        /// <param name="version"> Version identifier. This is case-sensitive. </param>
-        /// <param name="content"> Package operation request body. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/>, <paramref name="modelName"/>, <paramref name="version"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/>, <paramref name="modelName"/> or <paramref name="version"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> PackageAsync(string subscriptionId, string resourceGroupName, string registryName, string modelName, string version, ModelPackageContent content, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Argument.AssertNotNullOrEmpty(modelName, nameof(modelName));
-            Argument.AssertNotNullOrEmpty(version, nameof(version));
-            Argument.AssertNotNull(content, nameof(content));
-
-            using var message = CreatePackageRequest(subscriptionId, resourceGroupName, registryName, modelName, version, content);
-            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
-            switch (message.Response.Status)
-            {
-                case 200:
-                case 202:
-                    return message.Response;
-                default:
-                    throw new RequestFailedException(message.Response);
-            }
-        }
-
-        /// <summary> Model Version Package operation. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
-        /// <param name="registryName"> Name of Azure Machine Learning registry. This is case-insensitive. </param>
-        /// <param name="modelName"> Container name. This is case-sensitive. </param>
-        /// <param name="version"> Version identifier. This is case-sensitive. </param>
-        /// <param name="content"> Package operation request body. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/>, <paramref name="modelName"/>, <paramref name="version"/> or <paramref name="content"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/>, <paramref name="modelName"/> or <paramref name="version"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Package(string subscriptionId, string resourceGroupName, string registryName, string modelName, string version, ModelPackageContent content, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Argument.AssertNotNullOrEmpty(modelName, nameof(modelName));
-            Argument.AssertNotNullOrEmpty(version, nameof(version));
-            Argument.AssertNotNull(content, nameof(content));
-
-            using var message = CreatePackageRequest(subscriptionId, resourceGroupName, registryName, modelName, version, content);
-            _pipeline.Send(message, cancellationToken);
-            switch (message.Response.Status)
-            {
-                case 200:
-                case 202:
-                    return message.Response;
-                default:
-                    throw new RequestFailedException(message.Response);
-            }
-        }
-
         internal RequestUriBuilder CreateCreateOrGetStartPendingUploadRequestUri(string subscriptionId, string resourceGroupName, string registryName, string modelName, string version, PendingUploadRequestDto body)
         {
             var uri = new RawRequestUriBuilder();
@@ -724,7 +614,7 @@ namespace Azure.ResourceManager.MachineLearning
                 case 200:
                     {
                         PendingUploadResponseDto value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = PendingUploadResponseDto.DeserializePendingUploadResponseDto(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -759,7 +649,7 @@ namespace Azure.ResourceManager.MachineLearning
                 case 200:
                     {
                         PendingUploadResponseDto value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = PendingUploadResponseDto.DeserializePendingUploadResponseDto(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -822,7 +712,7 @@ namespace Azure.ResourceManager.MachineLearning
                 case 200:
                     {
                         ModelVersionResourceArmPaginatedResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ModelVersionResourceArmPaginatedResult.DeserializeModelVersionResourceArmPaginatedResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -863,7 +753,7 @@ namespace Azure.ResourceManager.MachineLearning
                 case 200:
                     {
                         ModelVersionResourceArmPaginatedResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ModelVersionResourceArmPaginatedResult.DeserializeModelVersionResourceArmPaginatedResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

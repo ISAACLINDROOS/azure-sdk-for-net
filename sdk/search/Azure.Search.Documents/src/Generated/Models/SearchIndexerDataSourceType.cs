@@ -48,7 +48,7 @@ namespace Azure.Search.Documents.Indexes.Models
         public static bool operator ==(SearchIndexerDataSourceType left, SearchIndexerDataSourceType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="SearchIndexerDataSourceType"/> values are not the same. </summary>
         public static bool operator !=(SearchIndexerDataSourceType left, SearchIndexerDataSourceType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="SearchIndexerDataSourceType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="SearchIndexerDataSourceType"/>. </summary>
         public static implicit operator SearchIndexerDataSourceType(string value) => new SearchIndexerDataSourceType(value);
 
         /// <inheritdoc />
@@ -59,7 +59,7 @@ namespace Azure.Search.Documents.Indexes.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

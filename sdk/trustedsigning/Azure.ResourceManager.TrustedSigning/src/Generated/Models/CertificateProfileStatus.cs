@@ -36,7 +36,7 @@ namespace Azure.ResourceManager.TrustedSigning.Models
         public static bool operator ==(CertificateProfileStatus left, CertificateProfileStatus right) => left.Equals(right);
         /// <summary> Determines if two <see cref="CertificateProfileStatus"/> values are not the same. </summary>
         public static bool operator !=(CertificateProfileStatus left, CertificateProfileStatus right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="CertificateProfileStatus"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="CertificateProfileStatus"/>. </summary>
         public static implicit operator CertificateProfileStatus(string value) => new CertificateProfileStatus(value);
 
         /// <inheritdoc />
@@ -47,7 +47,7 @@ namespace Azure.ResourceManager.TrustedSigning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

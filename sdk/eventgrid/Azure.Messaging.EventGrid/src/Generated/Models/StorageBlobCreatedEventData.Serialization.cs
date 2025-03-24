@@ -28,6 +28,7 @@ namespace Azure.Messaging.EventGrid.SystemEvents
             long? contentLength = default;
             long? contentOffset = default;
             string blobType = default;
+            StorageBlobAccessTier accessTier = default;
             string url = default;
             string sequencer = default;
             string identity = default;
@@ -82,6 +83,11 @@ namespace Azure.Messaging.EventGrid.SystemEvents
                     blobType = property.Value.GetString();
                     continue;
                 }
+                if (property.NameEquals("accessTier"u8))
+                {
+                    accessTier = new StorageBlobAccessTier(property.Value.GetString());
+                    continue;
+                }
                 if (property.NameEquals("url"u8))
                 {
                     url = property.Value.GetString();
@@ -116,6 +122,7 @@ namespace Azure.Messaging.EventGrid.SystemEvents
                 contentLength,
                 contentOffset,
                 blobType,
+                accessTier,
                 url,
                 sequencer,
                 identity,
@@ -126,7 +133,7 @@ namespace Azure.Messaging.EventGrid.SystemEvents
         /// <param name="response"> The response to deserialize the model from. </param>
         internal static StorageBlobCreatedEventData FromResponse(Response response)
         {
-            using var document = JsonDocument.Parse(response.Content);
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
             return DeserializeStorageBlobCreatedEventData(document.RootElement);
         }
 

@@ -8,7 +8,7 @@ azure-arm: true
 csharp: true
 library-name: DataFactory
 namespace: Azure.ResourceManager.DataFactory
-require: https://github.com/Azure/azure-rest-api-specs/blob/bc06df2282fe4d29f42dce56a930fac14ea0f6c4/specification/datafactory/resource-manager/readme.md
+require: https://github.com/Azure/azure-rest-api-specs/blob/87643ba491d34656ed9d08ddce7544d033c349eb/specification/datafactory/resource-manager/readme.md
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
 sample-gen:
@@ -59,6 +59,7 @@ acronym-mapping:
   URI: Uri
   MWS: Mws
   Etag: ETag|etag
+  ETag: ETag|eTag
   Db: DB|db
   CMK: Cmk
   ASC: Asc
@@ -124,6 +125,7 @@ rename-mapping:
   DatasetSchemaDataElement.name: SchemaColumnName
   DatasetSchemaDataElement.type: SchemaColumnType
   DatasetCompression.type: DatasetCompressionType
+  ValueType: DatasetSourceValueType
   DayOfWeek: DataFactoryDayOfWeek
   DaysOfWeek: DataFactoryDayOfWeek
   DelimitedTextDataset.typeProperties.location: DataLocation
@@ -148,6 +150,7 @@ rename-mapping:
   GlobalParameterSpecification.type: GlobalParameterType
   HDInsightActivityDebugInfoOption: HDInsightActivityDebugInfoOptionSetting
   HDInsightOnDemandLinkedService.typeProperties.timeToLive: TimeToLiveExpression
+  HDInsightOnDemandLinkedService.typeProperties.version: Version
   HttpSource: DataFactoryHttpFileSource
   IntegrationRuntime: DataFactoryIntegrationRuntimeProperties
   IntegrationRuntimeAutoUpdate: IntegrationRuntimeAutoUpdateState
@@ -250,6 +253,9 @@ rename-mapping:
   AzureFunctionActivity.typeProperties.headers: RequestHeaders
   WebActivity.typeProperties.headers: RequestHeaders
   WebHookActivity.typeProperties.headers: RequestHeaders
+  LinkedService.version: LinkedServiceVersion
+  SapOdpLinkedService.typeProperties.sncMode: SncFlag
+  SapTableLinkedService.typeProperties.sncMode: SncFlag
 
 prepend-rp-prefix:
   - BlobEventsTrigger

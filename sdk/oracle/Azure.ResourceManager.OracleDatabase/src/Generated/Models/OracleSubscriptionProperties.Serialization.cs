@@ -19,13 +19,21 @@ namespace Azure.ResourceManager.OracleDatabase.Models
 
         void IJsonModel<OracleSubscriptionProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<OracleSubscriptionProperties>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(OracleSubscriptionProperties)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (options.Format != "W" && Optional.IsDefined(ProvisioningState))
             {
                 writer.WritePropertyName("provisioningState"u8);
@@ -69,14 +77,13 @@ namespace Azure.ResourceManager.OracleDatabase.Models
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(item.Value);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
                     {
                         JsonSerializer.Serialize(writer, document.RootElement);
                     }
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         OracleSubscriptionProperties IJsonModel<OracleSubscriptionProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -101,11 +108,11 @@ namespace Azure.ResourceManager.OracleDatabase.Models
             }
             OracleSubscriptionProvisioningState? provisioningState = default;
             string saasSubscriptionId = default;
-            string cloudAccountId = default;
+            ResourceIdentifier cloudAccountId = default;
             CloudAccountProvisioningState? cloudAccountState = default;
             string termUnit = default;
             string productCode = default;
-            Intent? intent = default;
+            OracleSubscriptionUpdateIntent? intent = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -126,7 +133,11 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                 }
                 if (property.NameEquals("cloudAccountId"u8))
                 {
-                    cloudAccountId = property.Value.GetString();
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    cloudAccountId = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("cloudAccountState"u8))
@@ -154,7 +165,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                     {
                         continue;
                     }
-                    intent = new Intent(property.Value.GetString());
+                    intent = new OracleSubscriptionUpdateIntent(property.Value.GetString());
                     continue;
                 }
                 if (options.Format != "W")
@@ -195,7 +206,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeOracleSubscriptionProperties(document.RootElement, options);
                     }
                 default:

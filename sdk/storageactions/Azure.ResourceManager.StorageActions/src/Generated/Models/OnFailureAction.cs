@@ -30,7 +30,7 @@ namespace Azure.ResourceManager.StorageActions.Models
         public static bool operator ==(OnFailureAction left, OnFailureAction right) => left.Equals(right);
         /// <summary> Determines if two <see cref="OnFailureAction"/> values are not the same. </summary>
         public static bool operator !=(OnFailureAction left, OnFailureAction right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="OnFailureAction"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="OnFailureAction"/>. </summary>
         public static implicit operator OnFailureAction(string value) => new OnFailureAction(value);
 
         /// <inheritdoc />
@@ -41,7 +41,7 @@ namespace Azure.ResourceManager.StorageActions.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

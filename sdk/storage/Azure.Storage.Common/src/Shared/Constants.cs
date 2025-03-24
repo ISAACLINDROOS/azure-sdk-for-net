@@ -25,7 +25,7 @@ namespace Azure.Storage
         /// Gets the default service version to use when building shared access
         /// signatures.
         /// </summary>
-        public const string DefaultSasVersion = "2024-08-04";
+        public const string DefaultSasVersion = "2025-07-05";
 
         /// <summary>
         /// Max download range size while requesting a transactional hash.
@@ -105,7 +105,9 @@ namespace Azure.Storage
         public const string TrueName = "true";
 
         public const string ErrorCode = "Code";
+        public const string ErrorCodeLower = "code";
         public const string ErrorMessage = "Message";
+        public const string ErrorMessageLower = "message";
 
         public const string CommaString = ",";
         public const char CommaChar = ',';
@@ -127,7 +129,6 @@ namespace Azure.Storage
         public const string DisableExpectContinueHeaderEnvVar = "AZURE_STORAGE_DISABLE_EXPECT_CONTINUE_HEADER";
 
         public const string DefaultScope = "/.default";
-        public const string EnUsCulture = "en-US";
 
         /// <summary>
         /// Storage Connection String constant values.

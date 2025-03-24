@@ -32,7 +32,7 @@ namespace Azure.ResourceManager.AppService
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2021-02-01";
+            _apiVersion = apiVersion ?? "2024-04-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -71,7 +71,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         PublishingUserData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = PublishingUserData.DeserializePublishingUserData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -93,7 +93,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         PublishingUserData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = PublishingUserData.DeserializePublishingUserData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -147,7 +147,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         PublishingUserData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = PublishingUserData.DeserializePublishingUserData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -171,7 +171,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         PublishingUserData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = PublishingUserData.DeserializePublishingUserData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -215,7 +215,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceSourceControlListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AppServiceSourceControlListResult.DeserializeAppServiceSourceControlListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -235,7 +235,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceSourceControlListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AppServiceSourceControlListResult.DeserializeAppServiceSourceControlListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -286,7 +286,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceSourceControlData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AppServiceSourceControlData.DeserializeAppServiceSourceControlData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -313,7 +313,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceSourceControlData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AppServiceSourceControlData.DeserializeAppServiceSourceControlData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -372,7 +372,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceSourceControlData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AppServiceSourceControlData.DeserializeAppServiceSourceControlData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -399,7 +399,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceSourceControlData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AppServiceSourceControlData.DeserializeAppServiceSourceControlData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -470,7 +470,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceBillingMeterListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AppServiceBillingMeterListResult.DeserializeAppServiceBillingMeterListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -497,7 +497,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceBillingMeterListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AppServiceBillingMeterListResult.DeserializeAppServiceBillingMeterListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -556,7 +556,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         ResourceNameAvailability value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ResourceNameAvailability.DeserializeResourceNameAvailability(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -583,8 +583,96 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         ResourceNameAvailability value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ResourceNameAvailability.DeserializeResourceNameAvailability(document.RootElement);
+                        return Response.FromValue(value, message.Response);
+                    }
+                default:
+                    throw new RequestFailedException(message.Response);
+            }
+        }
+
+        internal RequestUriBuilder CreateListCustomHostNameSitesRequestUri(string subscriptionId, string hostname)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.Web/customhostnameSites", false);
+            if (hostname != null)
+            {
+                uri.AppendQuery("hostname", hostname, true);
+            }
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
+        internal HttpMessage CreateListCustomHostNameSitesRequest(string subscriptionId, string hostname)
+        {
+            var message = _pipeline.CreateMessage();
+            var request = message.Request;
+            request.Method = RequestMethod.Get;
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.Web/customhostnameSites", false);
+            if (hostname != null)
+            {
+                uri.AppendQuery("hostname", hostname, true);
+            }
+            uri.AppendQuery("api-version", _apiVersion, true);
+            request.Uri = uri;
+            request.Headers.Add("Accept", "application/json");
+            _userAgent.Apply(message);
+            return message;
+        }
+
+        /// <summary> Get custom hostnames under this subscription. </summary>
+        /// <param name="subscriptionId"> Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
+        /// <param name="hostname"> Specific hostname. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response<CustomHostnameSitesCollection>> ListCustomHostNameSitesAsync(string subscriptionId, string hostname = null, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+
+            using var message = CreateListCustomHostNameSitesRequest(subscriptionId, hostname);
+            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
+            switch (message.Response.Status)
+            {
+                case 200:
+                    {
+                        CustomHostnameSitesCollection value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = CustomHostnameSitesCollection.DeserializeCustomHostnameSitesCollection(document.RootElement);
+                        return Response.FromValue(value, message.Response);
+                    }
+                default:
+                    throw new RequestFailedException(message.Response);
+            }
+        }
+
+        /// <summary> Get custom hostnames under this subscription. </summary>
+        /// <param name="subscriptionId"> Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
+        /// <param name="hostname"> Specific hostname. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response<CustomHostnameSitesCollection> ListCustomHostNameSites(string subscriptionId, string hostname = null, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+
+            using var message = CreateListCustomHostNameSitesRequest(subscriptionId, hostname);
+            _pipeline.Send(message, cancellationToken);
+            switch (message.Response.Status)
+            {
+                case 200:
+                    {
+                        CustomHostnameSitesCollection value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = CustomHostnameSitesCollection.DeserializeCustomHostnameSitesCollection(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -636,7 +724,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceDeploymentLocations value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AppServiceDeploymentLocations.DeserializeAppServiceDeploymentLocations(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -661,8 +749,86 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceDeploymentLocations value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AppServiceDeploymentLocations.DeserializeAppServiceDeploymentLocations(document.RootElement);
+                        return Response.FromValue(value, message.Response);
+                    }
+                default:
+                    throw new RequestFailedException(message.Response);
+            }
+        }
+
+        internal RequestUriBuilder CreateListAseRegionsRequestUri(string subscriptionId)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.Web/aseRegions", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
+        internal HttpMessage CreateListAseRegionsRequest(string subscriptionId)
+        {
+            var message = _pipeline.CreateMessage();
+            var request = message.Request;
+            request.Method = RequestMethod.Get;
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.Web/aseRegions", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            request.Uri = uri;
+            request.Headers.Add("Accept", "application/json");
+            _userAgent.Apply(message);
+            return message;
+        }
+
+        /// <summary> Description for get a list of available ASE regions and its supported Skus. </summary>
+        /// <param name="subscriptionId"> Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response<AseRegionCollection>> ListAseRegionsAsync(string subscriptionId, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+
+            using var message = CreateListAseRegionsRequest(subscriptionId);
+            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
+            switch (message.Response.Status)
+            {
+                case 200:
+                    {
+                        AseRegionCollection value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = AseRegionCollection.DeserializeAseRegionCollection(document.RootElement);
+                        return Response.FromValue(value, message.Response);
+                    }
+                default:
+                    throw new RequestFailedException(message.Response);
+            }
+        }
+
+        /// <summary> Description for get a list of available ASE regions and its supported Skus. </summary>
+        /// <param name="subscriptionId"> Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response<AseRegionCollection> ListAseRegions(string subscriptionId, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+
+            using var message = CreateListAseRegionsRequest(subscriptionId);
+            _pipeline.Send(message, cancellationToken);
+            switch (message.Response.Status)
+            {
+                case 200:
+                    {
+                        AseRegionCollection value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = AseRegionCollection.DeserializeAseRegionCollection(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -750,7 +916,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceGeoRegionListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AppServiceGeoRegionListResult.DeserializeAppServiceGeoRegionListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -779,7 +945,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceGeoRegionListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AppServiceGeoRegionListResult.DeserializeAppServiceGeoRegionListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -838,7 +1004,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceIdentifierListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AppServiceIdentifierListResult.DeserializeAppServiceIdentifierListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -865,7 +1031,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceIdentifierListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AppServiceIdentifierListResult.DeserializeAppServiceIdentifierListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -918,7 +1084,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         PremierAddOnOfferListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = PremierAddOnOfferListResult.DeserializePremierAddOnOfferListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -943,7 +1109,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         PremierAddOnOfferListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = PremierAddOnOfferListResult.DeserializePremierAddOnOfferListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -996,7 +1162,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceSkuResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AppServiceSkuResult.DeserializeAppServiceSkuResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1021,7 +1187,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceSkuResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AppServiceSkuResult.DeserializeAppServiceSkuResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1080,7 +1246,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         VirtualNetworkValidationFailureDetails value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = VirtualNetworkValidationFailureDetails.DeserializeVirtualNetworkValidationFailureDetails(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1107,7 +1273,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         VirtualNetworkValidationFailureDetails value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = VirtualNetworkValidationFailureDetails.DeserializeVirtualNetworkValidationFailureDetails(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1172,7 +1338,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceValidateResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AppServiceValidateResult.DeserializeAppServiceValidateResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1201,7 +1367,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceValidateResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AppServiceValidateResult.DeserializeAppServiceValidateResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1247,7 +1413,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceSourceControlListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AppServiceSourceControlListResult.DeserializeAppServiceSourceControlListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1271,7 +1437,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceSourceControlListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AppServiceSourceControlListResult.DeserializeAppServiceSourceControlListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1322,7 +1488,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceBillingMeterListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AppServiceBillingMeterListResult.DeserializeAppServiceBillingMeterListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1351,8 +1517,162 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceBillingMeterListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AppServiceBillingMeterListResult.DeserializeAppServiceBillingMeterListResult(document.RootElement);
+                        return Response.FromValue(value, message.Response);
+                    }
+                default:
+                    throw new RequestFailedException(message.Response);
+            }
+        }
+
+        internal RequestUriBuilder CreateListCustomHostNameSitesNextPageRequestUri(string nextLink, string subscriptionId, string hostname)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
+        }
+
+        internal HttpMessage CreateListCustomHostNameSitesNextPageRequest(string nextLink, string subscriptionId, string hostname)
+        {
+            var message = _pipeline.CreateMessage();
+            var request = message.Request;
+            request.Method = RequestMethod.Get;
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            request.Uri = uri;
+            request.Headers.Add("Accept", "application/json");
+            _userAgent.Apply(message);
+            return message;
+        }
+
+        /// <summary> Get custom hostnames under this subscription. </summary>
+        /// <param name="nextLink"> The URL to the next page of results. </param>
+        /// <param name="subscriptionId"> Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
+        /// <param name="hostname"> Specific hostname. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response<CustomHostnameSitesCollection>> ListCustomHostNameSitesNextPageAsync(string nextLink, string subscriptionId, string hostname = null, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+
+            using var message = CreateListCustomHostNameSitesNextPageRequest(nextLink, subscriptionId, hostname);
+            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
+            switch (message.Response.Status)
+            {
+                case 200:
+                    {
+                        CustomHostnameSitesCollection value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = CustomHostnameSitesCollection.DeserializeCustomHostnameSitesCollection(document.RootElement);
+                        return Response.FromValue(value, message.Response);
+                    }
+                default:
+                    throw new RequestFailedException(message.Response);
+            }
+        }
+
+        /// <summary> Get custom hostnames under this subscription. </summary>
+        /// <param name="nextLink"> The URL to the next page of results. </param>
+        /// <param name="subscriptionId"> Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
+        /// <param name="hostname"> Specific hostname. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response<CustomHostnameSitesCollection> ListCustomHostNameSitesNextPage(string nextLink, string subscriptionId, string hostname = null, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+
+            using var message = CreateListCustomHostNameSitesNextPageRequest(nextLink, subscriptionId, hostname);
+            _pipeline.Send(message, cancellationToken);
+            switch (message.Response.Status)
+            {
+                case 200:
+                    {
+                        CustomHostnameSitesCollection value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = CustomHostnameSitesCollection.DeserializeCustomHostnameSitesCollection(document.RootElement);
+                        return Response.FromValue(value, message.Response);
+                    }
+                default:
+                    throw new RequestFailedException(message.Response);
+            }
+        }
+
+        internal RequestUriBuilder CreateListAseRegionsNextPageRequestUri(string nextLink, string subscriptionId)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
+        }
+
+        internal HttpMessage CreateListAseRegionsNextPageRequest(string nextLink, string subscriptionId)
+        {
+            var message = _pipeline.CreateMessage();
+            var request = message.Request;
+            request.Method = RequestMethod.Get;
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            request.Uri = uri;
+            request.Headers.Add("Accept", "application/json");
+            _userAgent.Apply(message);
+            return message;
+        }
+
+        /// <summary> Description for get a list of available ASE regions and its supported Skus. </summary>
+        /// <param name="nextLink"> The URL to the next page of results. </param>
+        /// <param name="subscriptionId"> Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response<AseRegionCollection>> ListAseRegionsNextPageAsync(string nextLink, string subscriptionId, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+
+            using var message = CreateListAseRegionsNextPageRequest(nextLink, subscriptionId);
+            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
+            switch (message.Response.Status)
+            {
+                case 200:
+                    {
+                        AseRegionCollection value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = AseRegionCollection.DeserializeAseRegionCollection(document.RootElement);
+                        return Response.FromValue(value, message.Response);
+                    }
+                default:
+                    throw new RequestFailedException(message.Response);
+            }
+        }
+
+        /// <summary> Description for get a list of available ASE regions and its supported Skus. </summary>
+        /// <param name="nextLink"> The URL to the next page of results. </param>
+        /// <param name="subscriptionId"> Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response<AseRegionCollection> ListAseRegionsNextPage(string nextLink, string subscriptionId, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+
+            using var message = CreateListAseRegionsNextPageRequest(nextLink, subscriptionId);
+            _pipeline.Send(message, cancellationToken);
+            switch (message.Response.Status)
+            {
+                case 200:
+                    {
+                        AseRegionCollection value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = AseRegionCollection.DeserializeAseRegionCollection(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -1404,7 +1724,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceGeoRegionListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AppServiceGeoRegionListResult.DeserializeAppServiceGeoRegionListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1435,7 +1755,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceGeoRegionListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AppServiceGeoRegionListResult.DeserializeAppServiceGeoRegionListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1486,7 +1806,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceIdentifierListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AppServiceIdentifierListResult.DeserializeAppServiceIdentifierListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1515,7 +1835,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         AppServiceIdentifierListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AppServiceIdentifierListResult.DeserializeAppServiceIdentifierListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1564,7 +1884,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         PremierAddOnOfferListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = PremierAddOnOfferListResult.DeserializePremierAddOnOfferListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -1591,7 +1911,7 @@ namespace Azure.ResourceManager.AppService
                 case 200:
                     {
                         PremierAddOnOfferListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = PremierAddOnOfferListResult.DeserializePremierAddOnOfferListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

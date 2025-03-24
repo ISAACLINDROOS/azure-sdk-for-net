@@ -21,7 +21,7 @@ namespace Azure.Search.Documents.Indexes.Models
                 writer.WriteObjectValue(AMLParameters);
             }
             writer.WritePropertyName("name"u8);
-            writer.WriteStringValue(Name);
+            writer.WriteStringValue(VectorizerName);
             writer.WritePropertyName("kind"u8);
             writer.WriteStringValue(Kind.ToString());
             writer.WriteEndObject();
@@ -65,7 +65,7 @@ namespace Azure.Search.Documents.Indexes.Models
         /// <param name="response"> The response to deserialize the model from. </param>
         internal static new AzureMachineLearningVectorizer FromResponse(Response response)
         {
-            using var document = JsonDocument.Parse(response.Content);
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
             return DeserializeAzureMachineLearningVectorizer(document.RootElement);
         }
 

@@ -33,7 +33,7 @@ namespace Azure.AI.Translation.Document
         public static bool operator ==(FileFormatType left, FileFormatType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="FileFormatType"/> values are not the same. </summary>
         public static bool operator !=(FileFormatType left, FileFormatType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="FileFormatType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="FileFormatType"/>. </summary>
         public static implicit operator FileFormatType(string value) => new FileFormatType(value);
 
         /// <inheritdoc />
@@ -44,7 +44,7 @@ namespace Azure.AI.Translation.Document
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

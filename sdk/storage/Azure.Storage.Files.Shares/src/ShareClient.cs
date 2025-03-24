@@ -158,8 +158,11 @@ namespace Azure.Storage.Files.Shares
             Argument.AssertNotNullOrWhiteSpace(shareName, nameof(shareName));
             options ??= new ShareClientOptions();
             var conn = StorageConnectionString.Parse(connectionString);
+            ShareErrors.AssertNotDevelopment(conn, nameof(connectionString));
             ShareUriBuilder uriBuilder = new ShareUriBuilder(conn.FileEndpoint) { ShareName = shareName };
             _uri = uriBuilder.ToUri();
+            _accountName = conn.AccountName;
+            _name = shareName;
             _clientConfiguration = new ShareClientConfiguration(
                 pipeline: options.Build(conn.Credentials),
                 sharedKeyCredential: conn.Credentials as StorageSharedKeyCredential,
@@ -222,6 +225,7 @@ namespace Azure.Storage.Files.Shares
                   sasCredential: default,
                   tokenCredential: default)
         {
+            _accountName ??= credential?.AccountName;
         }
 
         /// <summary>
@@ -447,8 +451,8 @@ namespace Azure.Storage.Files.Shares
             if (_name == null || _accountName == null)
             {
                 var builder = new ShareUriBuilder(Uri);
-                _name = builder.ShareName;
-                _accountName = builder.AccountName;
+                _name ??= builder.ShareName;
+                _accountName ??= builder.AccountName;
             }
         }
 
@@ -476,6 +480,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual Response<ShareInfo> Create(
             ShareCreateOptions options,
@@ -487,6 +493,11 @@ namespace Azure.Storage.Files.Shares
                 options?.Protocols,
                 options?.RootSquash,
                 options?.EnableSnapshotVirtualDirectoryAccess,
+                options?.EnablePaidBursting,
+                options?.PaidBurstingMaxIops,
+                options?.PaidBurstingMaxBandwidthMibps,
+                options?.ProvisionedMaxIops,
+                options?.ProvisionedMaxBandwidthMibps,
                 async: false,
                 cancellationToken)
                 .EnsureCompleted();
@@ -514,6 +525,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual async Task<Response<ShareInfo>> CreateAsync(
             ShareCreateOptions options,
@@ -525,6 +538,11 @@ namespace Azure.Storage.Files.Shares
                 options?.Protocols,
                 options?.RootSquash,
                 options?.EnableSnapshotVirtualDirectoryAccess,
+                options?.EnablePaidBursting,
+                options?.PaidBurstingMaxIops,
+                options?.PaidBurstingMaxBandwidthMibps,
+                options?.ProvisionedMaxIops,
+                options?.ProvisionedMaxBandwidthMibps,
                 async: true,
                 cancellationToken)
                 .ConfigureAwait(false);
@@ -555,6 +573,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual Response<ShareInfo> Create(
@@ -568,6 +588,11 @@ namespace Azure.Storage.Files.Shares
                 enabledProtocols: default,
                 rootSquash: default,
                 enableSnapshotVirtualDirectoryAccess: default,
+                enablePaidBursting: default,
+                paidBurstingMaxIops: default,
+                paidBurstingMaxBandwidthMibps: default,
+                provisionedMaxIops: default,
+                provisionedMaxBandwidthMibps: default,
                 async: false,
                 cancellationToken)
                 .EnsureCompleted();
@@ -598,6 +623,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual async Task<Response<ShareInfo>> CreateAsync(
@@ -611,6 +638,11 @@ namespace Azure.Storage.Files.Shares
                 enabledProtocols: default,
                 rootSquash: default,
                 enableSnapshotVirtualDirectoryAccess: default,
+                enablePaidBursting: default,
+                paidBurstingMaxIops: default,
+                paidBurstingMaxBandwidthMibps: default,
+                provisionedMaxIops: default,
+                provisionedMaxBandwidthMibps: default,
                 async: true,
                 cancellationToken)
                 .ConfigureAwait(false);
@@ -644,6 +676,24 @@ namespace Azure.Storage.Files.Shares
         /// Specifies whether the snapshot virtual directory should be accessible at the root of share mount point when NFS is enabled.
         /// If not specified, the default is true.
         /// </param>
+        /// <param name="enablePaidBursting">
+        ///  Optional. Supported in version 2024-11-04 and above.  Only applicable for premium file storage accounts.
+        ///  This property enables paid bursting on premium file storage accounts.
+        /// </param>
+        /// <param name="paidBurstingMaxIops">
+        ///  Optional. Supported in version 2024-11-04 and above.  Only applicable for premium file storage accounts.
+        ///  Default if not specified is the maximum IOPS the file share can support. Current maximum for a file share is 102,400 IOPS.
+        /// </param>
+        /// <param name="paidBurstingMaxBandwidthMibps">
+        ///  Optional. Supported in version 2024-11-04 and above.  Only applicable for premium file storage accounts.
+        ///  Default if not specified is the maximum throughput the file share can support. Current maximum for a file share is 10,340 MiB/sec.
+        /// </param>
+        /// <param name="provisionedMaxIops">
+        /// Provisioned max IOPS.
+        /// </param>
+        /// <param name="provisionedMaxBandwidthMibps">
+        /// Provisioned max bandwidth MiBps.
+        /// </param>
         /// <param name="async">
         /// Whether to invoke the operation asynchronously.
         /// </param>
@@ -661,6 +711,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         internal async Task<Response<ShareInfo>> CreateInternal(
             Metadata metadata,
@@ -669,6 +721,11 @@ namespace Azure.Storage.Files.Shares
             ShareProtocols? enabledProtocols,
             ShareRootSquash? rootSquash,
             bool? enableSnapshotVirtualDirectoryAccess,
+            bool? enablePaidBursting,
+            long? paidBurstingMaxIops,
+            long? paidBurstingMaxBandwidthMibps,
+            long? provisionedMaxIops,
+            long? provisionedMaxBandwidthMibps,
             bool async,
             CancellationToken cancellationToken,
             string operationName = default)
@@ -698,6 +755,11 @@ namespace Azure.Storage.Files.Shares
                             enabledProtocols: enabledProtocols.ToShareEnableProtocolsString(),
                             rootSquash: rootSquash,
                             enableSnapshotVirtualDirectoryAccess: enableSnapshotVirtualDirectoryAccess,
+                            paidBurstingEnabled: enablePaidBursting,
+                            paidBurstingMaxIops: paidBurstingMaxIops,
+                            paidBurstingMaxBandwidthMibps: paidBurstingMaxBandwidthMibps,
+                            shareProvisionedIops: provisionedMaxIops,
+                            shareProvisionedBandwidthMibps: provisionedMaxBandwidthMibps,
                             cancellationToken: cancellationToken)
                             .ConfigureAwait(false);
                     }
@@ -710,6 +772,11 @@ namespace Azure.Storage.Files.Shares
                             enabledProtocols: enabledProtocols.ToShareEnableProtocolsString(),
                             rootSquash: rootSquash,
                             enableSnapshotVirtualDirectoryAccess: enableSnapshotVirtualDirectoryAccess,
+                            paidBurstingEnabled: enablePaidBursting,
+                            paidBurstingMaxIops: paidBurstingMaxIops,
+                            paidBurstingMaxBandwidthMibps: paidBurstingMaxBandwidthMibps,
+                            shareProvisionedIops: provisionedMaxIops,
+                            shareProvisionedBandwidthMibps: provisionedMaxBandwidthMibps,
                             cancellationToken: cancellationToken);
                     }
 
@@ -756,9 +823,11 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual Response<ShareInfo> CreateIfNotExists(
-            ShareCreateOptions options,
+            ShareCreateOptions options = default,
             CancellationToken cancellationToken = default) =>
             CreateIfNotExistsInternal(
                 options?.Metadata,
@@ -767,6 +836,11 @@ namespace Azure.Storage.Files.Shares
                 options?.Protocols,
                 options?.RootSquash,
                 options?.EnableSnapshotVirtualDirectoryAccess,
+                options?.EnablePaidBursting,
+                options?.PaidBurstingMaxIops,
+                options?.PaidBurstingMaxBandwidthMibps,
+                options?.ProvisionedMaxIops,
+                options?.ProvisionedMaxBandwidthMibps,
                 async: false,
                 cancellationToken).EnsureCompleted();
 
@@ -793,9 +867,11 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual async Task<Response<ShareInfo>> CreateIfNotExistsAsync(
-            ShareCreateOptions options,
+            ShareCreateOptions options = default,
             CancellationToken cancellationToken = default) =>
             await CreateIfNotExistsInternal(
                 options?.Metadata,
@@ -804,6 +880,11 @@ namespace Azure.Storage.Files.Shares
                 options?.Protocols,
                 options?.RootSquash,
                 options?.EnableSnapshotVirtualDirectoryAccess,
+                options?.EnablePaidBursting,
+                options?.PaidBurstingMaxIops,
+                options?.PaidBurstingMaxBandwidthMibps,
+                options?.ProvisionedMaxIops,
+                options?.ProvisionedMaxBandwidthMibps,
                 async: true,
                 cancellationToken).ConfigureAwait(false);
 
@@ -833,12 +914,16 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
+#pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
         public virtual Response<ShareInfo> CreateIfNotExists(
-            Metadata metadata = default,
-            int? quotaInGB = default,
-            CancellationToken cancellationToken = default) =>
+#pragma warning restore AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
+            Metadata metadata,
+            int? quotaInGB,
+            CancellationToken cancellationToken) =>
             CreateIfNotExistsInternal(
                 metadata,
                 quotaInGB,
@@ -846,6 +931,11 @@ namespace Azure.Storage.Files.Shares
                 enabledProtocols: default,
                 squashRoot: default,
                 enableSnapshotVirtualDirectoryAccess: default,
+                enablePaidBursting: default,
+                paidBurstingMaxIops: default,
+                paidBurstingMaxBandwidthMibps: default,
+                provisionedMaxIops: default,
+                provisionedMaxBandwidthMibps: default,
                 async: false,
                 cancellationToken).EnsureCompleted();
 
@@ -875,11 +965,17 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+#pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
         public virtual async Task<Response<ShareInfo>> CreateIfNotExistsAsync(
-            Metadata metadata = default,
-            int? quotaInGB = default,
-            CancellationToken cancellationToken = default) =>
+#pragma warning restore AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
+
+            Metadata metadata,
+            int? quotaInGB,
+            CancellationToken cancellationToken) =>
             await CreateIfNotExistsInternal(
                 metadata,
                 quotaInGB,
@@ -887,6 +983,11 @@ namespace Azure.Storage.Files.Shares
                 enabledProtocols: default,
                 squashRoot: default,
                 enableSnapshotVirtualDirectoryAccess: default,
+                enablePaidBursting: default,
+                paidBurstingMaxIops: default,
+                paidBurstingMaxBandwidthMibps: default,
+                provisionedMaxIops: default,
+                provisionedMaxBandwidthMibps: default,
                 async: true,
                 cancellationToken).ConfigureAwait(false);
 
@@ -919,6 +1020,24 @@ namespace Azure.Storage.Files.Shares
         /// Specifies whether the snapshot virtual directory should be accessible at the root of share mount point when NFS is enabled.
         /// If not specified, the default is true.
         /// </param>
+        /// <param name="enablePaidBursting">
+        ///  Optional. Supported in version 2024-11-04 and above.  Only applicable for premium file storage accounts.
+        ///  This property enables paid bursting on premium file storage accounts.
+        /// </param>
+        /// <param name="paidBurstingMaxIops">
+        ///  Optional. Supported in version 2024-11-04 and above.  Only applicable for premium file storage accounts.
+        ///  Default if not specified is the maximum IOPS the file share can support. Current maximum for a file share is 102,400 IOPS.
+        /// </param>
+        /// <param name="paidBurstingMaxBandwidthMibps">
+        ///  Optional. Supported in version 2024-11-04 and above.  Only applicable for premium file storage accounts.
+        ///  Default if not specified is the maximum throughput the file share can support. Current maximum for a file share is 10,340 MiB/sec.
+        /// </param>
+        /// <param name="provisionedMaxIops">
+        /// Provisioned max IOPS.
+        /// </param>
+        /// <param name="provisionedMaxBandwidthMibps">
+        /// Provisioned max bandwidth MiBps.
+        /// </param>
         /// <param name="async">
         /// Whether to invoke the operation asynchronously.
         /// </param>
@@ -933,6 +1052,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         private async Task<Response<ShareInfo>> CreateIfNotExistsInternal(
             Metadata metadata,
@@ -941,6 +1062,11 @@ namespace Azure.Storage.Files.Shares
             ShareProtocols? enabledProtocols,
             ShareRootSquash? squashRoot,
             bool? enableSnapshotVirtualDirectoryAccess,
+            bool? enablePaidBursting,
+            long? paidBurstingMaxIops,
+            long? paidBurstingMaxBandwidthMibps,
+            long? provisionedMaxIops,
+            long? provisionedMaxBandwidthMibps,
             bool async,
             CancellationToken cancellationToken)
         {
@@ -961,6 +1087,11 @@ namespace Azure.Storage.Files.Shares
                         enabledProtocols,
                         squashRoot,
                         enableSnapshotVirtualDirectoryAccess,
+                        enablePaidBursting,
+                        paidBurstingMaxIops,
+                        paidBurstingMaxBandwidthMibps,
+                        provisionedMaxIops,
+                        provisionedMaxBandwidthMibps,
                         async,
                         cancellationToken,
                         operationName: $"{nameof(ShareClient)}.{nameof(CreateIfNotExists)}")
@@ -1001,6 +1132,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual Response<bool> Exists(
             CancellationToken cancellationToken = default) =>
@@ -1023,6 +1156,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual async Task<Response<bool>> ExistsAsync(
             CancellationToken cancellationToken = default) =>
@@ -1048,6 +1183,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         private async Task<Response<bool>> ExistsInternal(
             bool async,
@@ -1110,6 +1247,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual Response<bool> DeleteIfExists(
             ShareDeleteOptions options,
@@ -1141,6 +1280,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual async Task<Response<bool>> DeleteIfExistsAsync(
             ShareDeleteOptions options,
@@ -1173,6 +1314,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual Response<bool> DeleteIfExists(
@@ -1206,6 +1349,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual async Task<Response<bool>> DeleteIfExistsAsync(
@@ -1249,6 +1394,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         private async Task<Response<bool>> DeleteIfExistsInternal(
             bool includeSnapshots,
@@ -1315,6 +1462,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual Response<ShareSnapshotInfo> CreateSnapshot(
             Metadata metadata = default,
@@ -1346,6 +1495,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual async Task<Response<ShareSnapshotInfo>> CreateSnapshotAsync(
             Metadata metadata = default,
@@ -1380,6 +1531,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         private async Task<Response<ShareSnapshotInfo>> CreateSnapshotInternal(
             Metadata metadata,
@@ -1436,8 +1589,6 @@ namespace Azure.Storage.Files.Shares
         #region Delete
         /// <summary>
         /// Marks the specified share or share snapshot for deletion.
-        /// The share or share snapshot and any files contained within it are later deleted during garbage collection
-        /// which could take several minutes.
         ///
         /// For more information, see
         /// <see href="https://docs.microsoft.com/rest/api/storageservices/delete-share">
@@ -1456,6 +1607,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual Response Delete(
             ShareDeleteOptions options,
@@ -1470,8 +1623,6 @@ namespace Azure.Storage.Files.Shares
 
         /// <summary>
         /// Marks the specified share or share snapshot for deletion.
-        /// The share or share snapshot and any files contained within it are later deleted during garbage collection
-        /// which could take several minutes.
         ///
         /// For more information, see
         /// <see href="https://docs.microsoft.com/rest/api/storageservices/delete-share">
@@ -1490,6 +1641,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual async Task<Response> DeleteAsync(
             ShareDeleteOptions options,
@@ -1504,8 +1657,6 @@ namespace Azure.Storage.Files.Shares
 
         /// <summary>
         /// Marks the specified share or share snapshot for deletion.
-        /// The share or share snapshot and any files contained within it are later deleted during garbage collection
-        /// which could take several minutes.
         ///
         /// For more information, see
         /// <see href="https://docs.microsoft.com/rest/api/storageservices/delete-share">
@@ -1525,6 +1676,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual Response Delete(
@@ -1540,8 +1693,6 @@ namespace Azure.Storage.Files.Shares
 
         /// <summary>
         /// Marks the specified share or share snapshot for deletion.
-        /// The share or share snapshot and any files contained within it are later deleted during garbage collection
-        /// which could take several minutes.
         ///
         /// For more information, see
         /// <see href="https://docs.microsoft.com/rest/api/storageservices/delete-share">
@@ -1561,6 +1712,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual async Task<Response> DeleteAsync(
@@ -1576,8 +1729,6 @@ namespace Azure.Storage.Files.Shares
 
         /// <summary>
         /// Marks the specified share or share snapshot for deletion.
-        /// The share or share snapshot and any files contained within it are later deleted during garbage collection
-        /// which could take several minutes.
         ///
         /// For more information, see
         /// <see href="https://docs.microsoft.com/rest/api/storageservices/delete-share">
@@ -1609,6 +1760,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         internal async Task<Response> DeleteInternal(
             bool? includeSnapshots,
@@ -1649,7 +1802,7 @@ namespace Azure.Storage.Files.Shares
                     {
                         response = await ShareRestClient.DeleteAsync(
                             deleteSnapshots: shareSnapshotsDeleteOption.ToShareSnapshotsDeleteOptionInternal(),
-                            leaseAccessConditions: conditions,
+                            shareFileRequestConditions: conditions,
                             cancellationToken: cancellationToken)
                             .ConfigureAwait(false);
                     }
@@ -1657,7 +1810,7 @@ namespace Azure.Storage.Files.Shares
                     {
                         response = ShareRestClient.Delete(
                             deleteSnapshots: shareSnapshotsDeleteOption.ToShareSnapshotsDeleteOptionInternal(),
-                            leaseAccessConditions: conditions,
+                            shareFileRequestConditions: conditions,
                             cancellationToken: cancellationToken);
                     }
 
@@ -1703,6 +1856,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual Response<ShareProperties> GetProperties(
             ShareFileRequestConditions conditions = default,
@@ -1737,6 +1892,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual async Task<Response<ShareProperties>> GetPropertiesAsync(
             ShareFileRequestConditions conditions = default,
@@ -1767,6 +1924,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
 #pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
@@ -1799,6 +1958,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
 #pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
@@ -1841,6 +2002,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         private async Task<Response<ShareProperties>> GetPropertiesInternal(
             ShareFileRequestConditions conditions,
@@ -1866,14 +2029,14 @@ namespace Azure.Storage.Files.Shares
                     if (async)
                     {
                         response = await ShareRestClient.GetPropertiesAsync(
-                            leaseAccessConditions: conditions,
+                            shareFileRequestConditions: conditions,
                             cancellationToken: cancellationToken)
                             .ConfigureAwait(false);
                     }
                     else
                     {
                         response = ShareRestClient.GetProperties(
-                            leaseAccessConditions: conditions,
+                            shareFileRequestConditions: conditions,
                             cancellationToken: cancellationToken);
                     }
 
@@ -1918,6 +2081,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual Response<ShareInfo> SetProperties(
             ShareSetPropertiesOptions options,
@@ -1927,6 +2092,11 @@ namespace Azure.Storage.Files.Shares
                 accessTier: options?.AccessTier,
                 rootSquash: options?.RootSquash,
                 enableSnapshotVirtualDirectoryAccess: options?.EnableSnapshotVirtualDirectoryAccess,
+                enablePaidBursting: options?.EnablePaidBursting,
+                paidBurstingMaxIops: options?.PaidBurstingMaxIops,
+                paidBurstingMaxBandwidthMibps: options?.PaidBurstingMaxBandwidthMibps,
+                provisionedMaxIops: options?.ProvisionedMaxIops,
+                provisionedMaxBandwidthBandwidthMibps: options?.ProvisionedMaxBandwidthMibps,
                 conditions: options?.Conditions,
                 operationName: $"{nameof(ShareClient)}.{nameof(SetProperties)}",
                 async: false,
@@ -1954,6 +2124,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual async Task<Response<ShareInfo>> SetPropertiesAsync(
             ShareSetPropertiesOptions options,
@@ -1963,6 +2135,11 @@ namespace Azure.Storage.Files.Shares
                 accessTier: options?.AccessTier,
                 rootSquash: options?.RootSquash,
                 enableSnapshotVirtualDirectoryAccess: options?.EnableSnapshotVirtualDirectoryAccess,
+                enablePaidBursting: options?.EnablePaidBursting,
+                paidBurstingMaxIops: options?.PaidBurstingMaxIops,
+                paidBurstingMaxBandwidthMibps: options?.PaidBurstingMaxBandwidthMibps,
+                provisionedMaxIops: options?.ProvisionedMaxIops,
+                provisionedMaxBandwidthBandwidthMibps: options?.ProvisionedMaxBandwidthMibps,
                 conditions: options?.Conditions,
                 operationName: $"{nameof(ShareClient)}.{nameof(SetProperties)}",
                 async: true,
@@ -1991,6 +2168,28 @@ namespace Azure.Storage.Files.Shares
         /// Specifies whether the snapshot virtual directory should be accessible at the root of share mount point when NFS is enabled.
         /// If not specified, the default is true.
         /// </param>
+        /// <param name="enablePaidBursting">
+        ///  Optional. Supported in version 2024-11-04 and above.  Only applicable for premium file storage accounts.
+        ///  This property enables paid bursting on premium file storage accounts.
+        /// </param>
+        /// <param name="paidBurstingMaxIops">
+        ///  Optional. Supported in version 2024-11-04 and above.  Only applicable for premium file storage accounts.
+        ///  Default if not specified is the maximum IOPS the file share can support. Current maximum for a file share is 102,400 IOPS.
+        /// </param>
+        /// <param name="paidBurstingMaxBandwidthMibps">
+        ///  Optional. Supported in version 2024-11-04 and above.  Only applicable for premium file storage accounts.
+        ///  Default if not specified is the maximum throughput the file share can support. Current maximum for a file share is 10,340 MiB/sec.
+        /// </param>
+        /// <param name="provisionedMaxIops">
+        /// Optional.  Supported in version 2025-01-05 and above.  Only applicable to provisioned v2 storage accounts.
+        /// Sets the max provisioned IOPs for a share. For SSD, min IOPs is 3,000 and max is 100,000.
+        /// For HDD, min IOPs is 500 and max is 50,000.
+        /// </param>
+        /// <param name="provisionedMaxBandwidthBandwidthMibps">
+        /// Optional.  Supported in version 2025-01-05 and above.  Only applicable to provisioned v2 storage accounts.
+        /// Sets the max provisioned brandwith for a share.  For SSD, min bandwidth is 125 MiB/sec and max is 10,340 MiB/sec.
+        /// For HDD, min bandwidth is 60 MiB/sec and max is 5,120 MiB/sec.
+        /// </param>
         /// <param name="conditions">
         /// Optional <see cref="ShareFileRequestConditions"/> to add conditions
         /// on setting the quota.
@@ -2012,12 +2211,19 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         internal virtual async Task<Response<ShareInfo>> SetPropertiesInternal(
             int? quotaInGB,
             ShareAccessTier? accessTier,
             ShareRootSquash? rootSquash,
             bool? enableSnapshotVirtualDirectoryAccess,
+            bool? enablePaidBursting,
+            long? paidBurstingMaxIops,
+            long? paidBurstingMaxBandwidthMibps,
+            long? provisionedMaxIops,
+            long? provisionedMaxBandwidthBandwidthMibps,
             ShareFileRequestConditions conditions,
             string operationName,
             bool async,
@@ -2047,7 +2253,12 @@ namespace Azure.Storage.Files.Shares
                             accessTier: accessTier,
                             rootSquash: rootSquash,
                             enableSnapshotVirtualDirectoryAccess: enableSnapshotVirtualDirectoryAccess,
-                            leaseAccessConditions: conditions,
+                            paidBurstingEnabled: enablePaidBursting,
+                            paidBurstingMaxIops: paidBurstingMaxIops,
+                            paidBurstingMaxBandwidthMibps: paidBurstingMaxBandwidthMibps,
+                            shareProvisionedIops: provisionedMaxIops,
+                            shareProvisionedBandwidthMibps: provisionedMaxBandwidthBandwidthMibps,
+                            shareFileRequestConditions: conditions,
                             cancellationToken: cancellationToken)
                             .ConfigureAwait(false);
                     }
@@ -2058,7 +2269,12 @@ namespace Azure.Storage.Files.Shares
                             accessTier: accessTier,
                             rootSquash: rootSquash,
                             enableSnapshotVirtualDirectoryAccess: enableSnapshotVirtualDirectoryAccess,
-                            leaseAccessConditions: conditions,
+                            paidBurstingEnabled: enablePaidBursting,
+                            paidBurstingMaxIops: paidBurstingMaxIops,
+                            paidBurstingMaxBandwidthMibps: paidBurstingMaxBandwidthMibps,
+                            shareProvisionedIops: provisionedMaxIops,
+                            shareProvisionedBandwidthMibps: provisionedMaxBandwidthBandwidthMibps,
+                            shareFileRequestConditions: conditions,
                             cancellationToken: cancellationToken);
                     }
 
@@ -2108,6 +2324,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual Response<ShareInfo> SetQuota(
@@ -2119,6 +2337,11 @@ namespace Azure.Storage.Files.Shares
                 accessTier: default,
                 rootSquash: default,
                 enableSnapshotVirtualDirectoryAccess: default,
+                enablePaidBursting: default,
+                paidBurstingMaxIops: default,
+                paidBurstingMaxBandwidthMibps: default,
+                provisionedMaxIops: default,
+                provisionedMaxBandwidthBandwidthMibps: default,
                 conditions: conditions,
                 operationName: $"{nameof(ShareClient)}.{nameof(SetQuota)}",
                 async: false,
@@ -2151,6 +2374,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual async Task<Response<ShareInfo>> SetQuotaAsync(
@@ -2162,6 +2387,11 @@ namespace Azure.Storage.Files.Shares
                 accessTier: default,
                 rootSquash: default,
                 enableSnapshotVirtualDirectoryAccess: default,
+                enablePaidBursting: default,
+                paidBurstingMaxIops: default,
+                paidBurstingMaxBandwidthMibps: default,
+                provisionedMaxIops: default,
+                provisionedMaxBandwidthBandwidthMibps: default,
                 conditions: conditions,
                 operationName: $"{nameof(ShareClient)}.{nameof(SetQuota)}",
                 async: true,
@@ -2190,6 +2420,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
 
@@ -2203,6 +2435,11 @@ namespace Azure.Storage.Files.Shares
                 accessTier: default,
                 rootSquash: default,
                 enableSnapshotVirtualDirectoryAccess: default,
+                enablePaidBursting: default,
+                paidBurstingMaxIops: default,
+                paidBurstingMaxBandwidthMibps: default,
+                provisionedMaxIops: default,
+                provisionedMaxBandwidthBandwidthMibps: default,
                 conditions: default,
                 operationName: $"{nameof(ShareClient)}.{nameof(SetQuota)}",
                 async: false,
@@ -2231,6 +2468,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
 #pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
@@ -2243,6 +2482,11 @@ namespace Azure.Storage.Files.Shares
                 accessTier: default,
                 rootSquash: default,
                 enableSnapshotVirtualDirectoryAccess: default,
+                enablePaidBursting: default,
+                paidBurstingMaxIops: default,
+                paidBurstingMaxBandwidthMibps: default,
+                provisionedMaxIops: default,
+                provisionedMaxBandwidthBandwidthMibps: default,
                 conditions: default,
                 operationName: $"{nameof(ShareClient)}.{nameof(SetQuota)}",
                 async: true,
@@ -2277,6 +2521,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual Response<ShareInfo> SetMetadata(
             Metadata metadata,
@@ -2315,6 +2561,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual async Task<Response<ShareInfo>> SetMetadataAsync(
             Metadata metadata,
@@ -2349,6 +2597,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
 
@@ -2386,6 +2636,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
 #pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
@@ -2429,6 +2681,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         private async Task<Response<ShareInfo>> SetMetadataInternal(
             Metadata metadata,
@@ -2454,7 +2708,7 @@ namespace Azure.Storage.Files.Shares
                     {
                         response = await ShareRestClient.SetMetadataAsync(
                             metadata: metadata,
-                            leaseAccessConditions: conditions,
+                            shareFileRequestConditions: conditions,
                             cancellationToken: cancellationToken)
                             .ConfigureAwait(false);
                     }
@@ -2462,7 +2716,7 @@ namespace Azure.Storage.Files.Shares
                     {
                         response = ShareRestClient.SetMetadata(
                             metadata: metadata,
-                            leaseAccessConditions: conditions,
+                            shareFileRequestConditions: conditions,
                             cancellationToken: cancellationToken);
                     }
 
@@ -2510,6 +2764,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual Response<IEnumerable<ShareSignedIdentifier>> GetAccessPolicy(
             ShareFileRequestConditions conditions = default,
@@ -2544,6 +2800,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual async Task<Response<IEnumerable<ShareSignedIdentifier>>> GetAccessPolicyAsync(
             ShareFileRequestConditions conditions = default,
@@ -2574,6 +2832,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
 #pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
@@ -2606,6 +2866,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
 #pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
@@ -2645,6 +2907,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         private async Task<Response<IEnumerable<ShareSignedIdentifier>>> GetAccessPolicyInternal(
             ShareFileRequestConditions conditions,
@@ -2667,14 +2931,14 @@ namespace Azure.Storage.Files.Shares
                     if (async)
                     {
                         response = await ShareRestClient.GetAccessPolicyAsync(
-                            leaseAccessConditions: conditions,
+                            shareFileRequestConditions: conditions,
                             cancellationToken: cancellationToken)
                             .ConfigureAwait(false);
                     }
                     else
                     {
                         response = ShareRestClient.GetAccessPolicy(
-                            leaseAccessConditions: conditions,
+                            shareFileRequestConditions: conditions,
                             cancellationToken: cancellationToken);
                     }
 
@@ -2728,6 +2992,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
         public virtual Response<ShareInfo> SetAccessPolicy(
@@ -2769,6 +3035,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
         public virtual async Task<Response<ShareInfo>> SetAccessPolicyAsync(
@@ -2806,6 +3074,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
@@ -2845,6 +3115,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
@@ -2891,6 +3163,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         private async Task<Response<ShareInfo>> SetAccessPolicyInternal(
             IEnumerable<ShareSignedIdentifier> permissions,
@@ -2915,7 +3189,7 @@ namespace Azure.Storage.Files.Shares
                     {
                         response = await ShareRestClient.SetAccessPolicyAsync(
                             shareAcl: permissions,
-                            leaseAccessConditions: conditions,
+                            shareFileRequestConditions: conditions,
                             cancellationToken: cancellationToken)
                             .ConfigureAwait(false);
                     }
@@ -2923,7 +3197,7 @@ namespace Azure.Storage.Files.Shares
                     {
                         response = ShareRestClient.SetAccessPolicy(
                             shareAcl: permissions,
-                            leaseAccessConditions: conditions,
+                            shareFileRequestConditions: conditions,
                             cancellationToken: cancellationToken);
                     }
 
@@ -2969,6 +3243,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual Response<ShareStatistics> GetStatistics(
             ShareFileRequestConditions conditions = default,
@@ -3001,6 +3277,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual async Task<Response<ShareStatistics>> GetStatisticsAsync(
             ShareFileRequestConditions conditions = default,
@@ -3029,6 +3307,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
 #pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
@@ -3059,6 +3339,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
 #pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
@@ -3096,6 +3378,8 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         private async Task<Response<ShareStatistics>> GetStatisticsInternal(
             ShareFileRequestConditions conditions,
@@ -3119,14 +3403,14 @@ namespace Azure.Storage.Files.Shares
                     if (async)
                     {
                         response = await ShareRestClient.GetStatisticsAsync(
-                            leaseAccessConditions: conditions,
+                            shareFileRequestConditions: conditions,
                             cancellationToken: cancellationToken)
                             .ConfigureAwait(false);
                     }
                     else
                     {
                         response = ShareRestClient.GetStatistics(
-                            leaseAccessConditions: conditions,
+                            shareFileRequestConditions: conditions,
                             cancellationToken: cancellationToken);
                     }
 
@@ -3157,6 +3441,13 @@ namespace Azure.Storage.Files.Shares
         /// <param name="filePermissionKey">
         /// The file permission key.
         /// </param>
+        /// <param name="filePermissionFormat">
+        /// Optional. Available for version 2024-11-04 and later. Specifies the format in which the permission is returned.
+        /// If filePermissionFormat is unspecified or explicityly set to <see cref="FilePermissionFormat.Sddl"/>, the permission will be
+        /// returned in SSDL format.
+        /// If filePermissionFormat is explicity set to <see cref="FilePermissionFormat.Binary"/>, the permission is returned as a
+        /// base64 string representing the binary encoding of the permission in self-relative format.
+        /// </param>
         /// <param name="cancellationToken">
         /// Optional <see cref="CancellationToken"/> to propagate
         /// notifications that the operation should be cancelled.
@@ -3164,14 +3455,48 @@ namespace Azure.Storage.Files.Shares
         /// <returns>
         /// A <see cref="Response{String}"/> file permission.
         /// </returns>
-        public virtual Response<string> GetPermission(
-            string filePermissionKey = default,
+        public virtual Response<ShareFilePermission> GetPermission(
+            string filePermissionKey,
+            FilePermissionFormat? filePermissionFormat = default,
             CancellationToken cancellationToken = default) =>
             GetPermissionInternal(
-                filePermissionKey,
+                filePermissionKey: filePermissionKey,
+                filePermissionFormat: filePermissionFormat,
                 async: false,
                 cancellationToken)
                 .EnsureCompleted();
+
+        /// <summary>
+        /// Gets the file permission in Security Descriptor Definition Language (SDDL).
+        /// Note that this API is not applicable for Share Snapshots.
+        /// </summary>
+        /// <param name="filePermissionKey">
+        /// The file permission key.
+        /// </param>
+        /// <param name="filePermissionFormat">
+        /// Optional. Available for version 2024-11-04 and later. Specifies the format in which the permission is returned.
+        /// If filePermissionFormat is unspecified or explicityly set to <see cref="FilePermissionFormat.Sddl"/>, the permission will be
+        /// returned in SSDL format.
+        /// If filePermissionFormat is explicity set to <see cref="FilePermissionFormat.Binary"/>, the permission is returned as a
+        /// base64 string representing the binary encoding of the permission in self-relative format.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Optional <see cref="CancellationToken"/> to propagate
+        /// notifications that the operation should be cancelled.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Response{String}"/> file permission.
+        /// </returns>
+        public virtual async Task<Response<ShareFilePermission>> GetPermissionAsync(
+            string filePermissionKey,
+            FilePermissionFormat? filePermissionFormat = default,
+            CancellationToken cancellationToken = default) =>
+            await GetPermissionInternal(
+                filePermissionKey: filePermissionKey,
+                filePermissionFormat: filePermissionFormat,
+                async: true,
+                cancellationToken)
+                .ConfigureAwait(false);
 
         /// <summary>
         /// Gets the file permission in Security Descriptor Definition Language (SDDL).
@@ -3187,17 +3512,61 @@ namespace Azure.Storage.Files.Shares
         /// <returns>
         /// A <see cref="Response{String}"/> file permission.
         /// </returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+#pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
+        public virtual Response<string> GetPermission(
+#pragma warning restore AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
+            string filePermissionKey,
+            CancellationToken cancellationToken)
+        {
+            Response<ShareFilePermission> response = GetPermissionInternal(
+                filePermissionKey: filePermissionKey,
+                filePermissionFormat: default,
+                async: false,
+                cancellationToken)
+                .EnsureCompleted();
+
+            return Response.FromValue(
+                response.Value.Permission,
+                response.GetRawResponse());
+        }
+
+        /// <summary>
+        /// Gets the file permission in Security Descriptor Definition Language (SDDL).
+        /// Note that this API is not applicable for Share Snapshots.
+        /// </summary>
+        /// <param name="filePermissionKey">
+        /// The file permission key.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Optional <see cref="CancellationToken"/> to propagate
+        /// notifications that the operation should be cancelled.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Response{String}"/> file permission.
+        /// </returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+#pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
         public virtual async Task<Response<string>> GetPermissionAsync(
-            string filePermissionKey = default,
-            CancellationToken cancellationToken = default) =>
-            await GetPermissionInternal(
-                filePermissionKey,
+#pragma warning restore AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
+            string filePermissionKey,
+            CancellationToken cancellationToken)
+        {
+            Response<ShareFilePermission> response = await GetPermissionInternal(
+                filePermissionKey: filePermissionKey,
+                filePermissionFormat: default,
                 async: true,
                 cancellationToken)
                 .ConfigureAwait(false);
 
-        private async Task<Response<string>> GetPermissionInternal(
+            return Response.FromValue(
+                response.Value.Permission,
+                response.GetRawResponse());
+        }
+
+        private async Task<Response<ShareFilePermission>> GetPermissionInternal(
             string filePermissionKey,
+            FilePermissionFormat? filePermissionFormat,
             bool async,
             CancellationToken cancellationToken)
         {
@@ -3219,6 +3588,7 @@ namespace Azure.Storage.Files.Shares
                     {
                         response = await ShareRestClient.GetPermissionAsync(
                             filePermissionKey: filePermissionKey,
+                            filePermissionFormat: filePermissionFormat,
                             cancellationToken: cancellationToken)
                             .ConfigureAwait(false);
                     }
@@ -3226,12 +3596,11 @@ namespace Azure.Storage.Files.Shares
                     {
                         response = ShareRestClient.GetPermission(
                             filePermissionKey: filePermissionKey,
+                            filePermissionFormat: filePermissionFormat,
                             cancellationToken: cancellationToken);
                     }
 
-                    return Response.FromValue(
-                        response.Value.Permission,
-                        response.GetRawResponse());
+                    return response.ToShareFilePermission();
                 }
                 catch (Exception ex)
                 {
@@ -3254,6 +3623,57 @@ namespace Azure.Storage.Files.Shares
         /// can be used for the files/directories in the share.
         /// </summary>
         /// <param name="permission">
+        /// A <see cref="ShareFilePermission"/>.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Optional <see cref="CancellationToken"/> to propagate
+        /// notifications that the operation should be cancelled.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Response{PermissionInfo}"/> with ID of the newly created file permission.
+        /// </returns>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
+        public virtual Response<PermissionInfo> CreatePermission(
+            ShareFilePermission permission,
+            CancellationToken cancellationToken = default) =>
+            CreatePermissionInternal(
+                permission: permission?.Permission,
+                permissionFormat: permission?.PermissionFormat,
+                async: false,
+                cancellationToken)
+                .EnsureCompleted();
+
+        /// <summary>
+        /// Creates a permission (a security descriptor) at the share level. The created security descriptor
+        /// can be used for the files/directories in the share.
+        /// </summary>
+        /// <param name="permission">
+        /// A <see cref="ShareFilePermission"/>.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Optional <see cref="CancellationToken"/> to propagate
+        /// notifications that the operation should be cancelled.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Response{PermissionInfo}"/> with ID of the newly created file permission.
+        /// </returns>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public virtual async Task<Response<PermissionInfo>> CreatePermissionAsync(
+            ShareFilePermission permission,
+            CancellationToken cancellationToken = default) =>
+            await CreatePermissionInternal(
+                permission: permission?.Permission,
+                permissionFormat: permission?.PermissionFormat,
+                async: true,
+                cancellationToken)
+                .ConfigureAwait(false);
+
+        /// <summary>
+        /// Creates a permission (a security descriptor) at the share level. The created security descriptor
+        /// can be used for the files/directories in the share.
+        /// </summary>
+        /// <param name="permission">
         /// File permission in the Security Descriptor Definition Language (SDDL). SDDL must have an owner, group,
         /// and discretionary access control list (DACL). The provided SDDL string format of the security descriptor
         /// should not have domain relative identifier (like 'DU', 'DA', 'DD' etc) in it.
@@ -3266,11 +3686,15 @@ namespace Azure.Storage.Files.Shares
         /// A <see cref="Response{PermissionInfo}"/> with ID of the newly created file permission.
         /// </returns>
         [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+#pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
         public virtual Response<PermissionInfo> CreatePermission(
+#pragma warning restore AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
             string permission,
-            CancellationToken cancellationToken = default) =>
+            CancellationToken cancellationToken) =>
             CreatePermissionInternal(
                 permission,
+                permissionFormat: null,
                 async: false,
                 cancellationToken)
                 .EnsureCompleted();
@@ -3292,17 +3716,22 @@ namespace Azure.Storage.Files.Shares
         /// A <see cref="Response{PermissionInfo}"/> with ID of the newly created file permission.
         /// </returns>
         [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+#pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
         public virtual async Task<Response<PermissionInfo>> CreatePermissionAsync(
+#pragma warning restore AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
             string permission,
-            CancellationToken cancellationToken = default) =>
+            CancellationToken cancellationToken) =>
             await CreatePermissionInternal(
                 permission,
+                permissionFormat: null,
                 async: true,
                 cancellationToken)
                 .ConfigureAwait(false);
 
         internal async Task<Response<PermissionInfo>> CreatePermissionInternal(
             string permission,
+            FilePermissionFormat? permissionFormat,
             bool async,
             CancellationToken cancellationToken)
         {
@@ -3318,7 +3747,7 @@ namespace Azure.Storage.Files.Shares
                 {
                     scope.Start();
                     ResponseWithHeaders<ShareCreatePermissionHeaders> response;
-                    SharePermission sharePermission = new SharePermission(permission);
+                    SharePermission sharePermission = new SharePermission(permission, permissionFormat);
 
                     if (async)
                     {
@@ -3355,24 +3784,18 @@ namespace Azure.Storage.Files.Shares
 
         #region CreateDirectory
         /// <summary>
-        /// The <see cref="CreateDirectory"/> operation creates a new
+        /// The <see cref="CreateDirectoryAsync(string, ShareDirectoryCreateOptions, CancellationToken)"/> operation creates a new
         /// directory in this share.
         ///
         /// For more information, see
         /// <see href="https://docs.microsoft.com/rest/api/storageservices/create-directory">
         /// Create Directory</see>.
         /// </summary>
-        /// <param name="directoryName">T
+        /// <param name="directoryName">
         /// The name of the directory to create.
         /// </param>
-        /// <param name="metadata">
-        /// Optional custom metadata to set for the directory.
-        /// </param>
-        /// <param name="smbProperties">
-        /// Optional SMB properties to set for the directory.
-        /// </param>
-        /// <param name="filePermission">
-        /// Optional file permission to set on the directory.
+        /// <param name="options">
+        /// Optional parameters.
         /// </param>
         /// <param name="cancellationToken">
         /// Optional <see cref="CancellationToken"/> to propagate
@@ -3385,19 +3808,21 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual Response<ShareDirectoryClient> CreateDirectory(
-           string directoryName,
-           IDictionary<string, string> metadata = default,
-           FileSmbProperties smbProperties = default,
-           string filePermission = default,
+            string directoryName,
+           ShareDirectoryCreateOptions options = default,
            CancellationToken cancellationToken = default)
         {
             ShareDirectoryClient directory = GetDirectoryClient(directoryName);
             Response<ShareDirectoryInfo> response = directory.CreateInternal(
-                metadata,
-                smbProperties,
-                filePermission,
+                metadata: options?.Metadata,
+                smbProperties: options?.SmbProperties,
+                filePermission: options?.FilePermission?.Permission,
+                filePermissionFormat: options?.FilePermission?.PermissionFormat,
+                posixProperties: options?.PosixProperties,
                 async: false,
                 cancellationToken,
                 operationName: $"{nameof(ShareClient)}.{nameof(CreateDirectory)}")
@@ -3406,14 +3831,14 @@ namespace Azure.Storage.Files.Shares
         }
 
         /// <summary>
-        /// The <see cref="CreateDirectoryAsync"/> operation creates a new
+        /// The <see cref="CreateDirectory(string, Metadata, FileSmbProperties, string, CancellationToken)"/> operation creates a new
         /// directory in this share.
         ///
         /// For more information, see
         /// <see href="https://docs.microsoft.com/rest/api/storageservices/create-directory">
         /// Create Directory</see>.
         /// </summary>
-        /// <param name="directoryName">T
+        /// <param name="directoryName">
         /// The name of the directory to create.
         /// </param>
         /// <param name="metadata">
@@ -3436,19 +3861,131 @@ namespace Azure.Storage.Files.Shares
         /// <remarks>
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+#pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
+        public virtual Response<ShareDirectoryClient> CreateDirectory(
+#pragma warning restore AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
+            string directoryName,
+           IDictionary<string, string> metadata,
+           FileSmbProperties smbProperties,
+           string filePermission,
+           CancellationToken cancellationToken)
+        {
+            ShareDirectoryClient directory = GetDirectoryClient(directoryName);
+            Response<ShareDirectoryInfo> response = directory.CreateInternal(
+                metadata,
+                smbProperties,
+                filePermission,
+                filePermissionFormat: null,
+                posixProperties: null,
+                async: false,
+                cancellationToken,
+                operationName: $"{nameof(ShareClient)}.{nameof(CreateDirectory)}")
+                .EnsureCompleted();
+            return Response.FromValue(directory, response.GetRawResponse());
+        }
+
+        /// <summary>
+        /// The <see cref="CreateDirectoryAsync(string, ShareDirectoryCreateOptions, CancellationToken)"/> operation creates a new
+        /// directory in this share.
+        ///
+        /// For more information, see
+        /// <see href="https://docs.microsoft.com/rest/api/storageservices/create-directory">
+        /// Create Directory</see>.
+        /// </summary>
+        /// <param name="directoryName">
+        /// The name of the directory to create.
+        /// </param>
+        /// <param name="options">
+        /// Optional parameters.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Optional <see cref="CancellationToken"/> to propagate
+        /// notifications that the operation should be cancelled.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Response{DirectoryClient}"/> referencing the
+        /// newly created directory.
+        /// </returns>
+        /// <remarks>
+        /// A <see cref="RequestFailedException"/> will be thrown if
+        /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
         /// </remarks>
         public virtual async Task<Response<ShareDirectoryClient>> CreateDirectoryAsync(
            string directoryName,
-           IDictionary<string, string> metadata = default,
-           FileSmbProperties smbProperties = default,
-           string filePermission = default,
+           ShareDirectoryCreateOptions options = default,
            CancellationToken cancellationToken = default)
+        {
+            ShareDirectoryClient directory = GetDirectoryClient(directoryName);
+            Response<ShareDirectoryInfo> response = await directory.CreateInternal(
+                metadata: options?.Metadata,
+                smbProperties: options?.SmbProperties,
+                filePermission: options?.FilePermission?.Permission,
+                filePermissionFormat: options?.FilePermission?.PermissionFormat,
+                posixProperties: options?.PosixProperties,
+                async: true,
+                cancellationToken,
+                operationName: $"{nameof(ShareClient)}.{nameof(CreateDirectory)}")
+                .ConfigureAwait(false);
+            return Response.FromValue(directory, response.GetRawResponse());
+        }
+
+        /// <summary>
+        /// The <see cref="CreateDirectoryAsync(string, Metadata, FileSmbProperties, string, CancellationToken)"/> operation creates a new
+        /// directory in this share.
+        ///
+        /// For more information, see
+        /// <see href="https://docs.microsoft.com/rest/api/storageservices/create-directory">
+        /// Create Directory</see>.
+        /// </summary>
+        /// <param name="directoryName">
+        /// The name of the directory to create.
+        /// </param>
+        /// <param name="metadata">
+        /// Optional custom metadata to set for the directory.
+        /// </param>
+        /// <param name="smbProperties">
+        /// Optional SMB properties to set for the directory.
+        /// </param>
+        /// <param name="filePermission">
+        /// Optional file permission to set on the directory.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Optional <see cref="CancellationToken"/> to propagate
+        /// notifications that the operation should be cancelled.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Response{DirectoryClient}"/> referencing the
+        /// newly created directory.
+        /// </returns>
+        /// <remarks>
+        /// A <see cref="RequestFailedException"/> will be thrown if
+        /// a failure occurs.
+        /// If multiple failures occur, an <see cref="AggregateException"/> will be thrown,
+        /// containing each failure instance.
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+#pragma warning disable AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
+        public virtual async Task<Response<ShareDirectoryClient>> CreateDirectoryAsync(
+#pragma warning restore AZC0002 // DO ensure all service methods, both asynchronous and synchronous, take an optional CancellationToken parameter called cancellationToken.
+            string directoryName,
+           IDictionary<string, string> metadata,
+           FileSmbProperties smbProperties,
+           string filePermission,
+           CancellationToken cancellationToken)
         {
             ShareDirectoryClient directory = GetDirectoryClient(directoryName);
             Response<ShareDirectoryInfo> response = await directory.CreateInternal(
                 metadata,
                 smbProperties,
                 filePermission,
+                filePermissionFormat: null,
+                posixProperties: null,
                 async: true,
                 cancellationToken,
                 operationName: $"{nameof(ShareClient)}.{nameof(CreateDirectory)}")
@@ -3466,7 +4003,7 @@ namespace Azure.Storage.Files.Shares
         /// <see href="https://docs.microsoft.com/rest/api/storageservices/delete-directory">
         /// Delete Directory</see>.
         /// </summary>
-        /// <param name="directoryName">T
+        /// <param name="directoryName">
         /// The name of the directory to delete.
         /// </param>
         /// <param name="cancellationToken">
@@ -3496,7 +4033,7 @@ namespace Azure.Storage.Files.Shares
         /// <see href="https://docs.microsoft.com/rest/api/storageservices/delete-directory">
         /// Delete Directory</see>.
         /// </summary>
-        /// <param name="directoryName">T
+        /// <param name="directoryName">
         /// The name of the directory to delete.
         /// </param>
         /// <param name="cancellationToken">
@@ -3551,7 +4088,43 @@ namespace Azure.Storage.Files.Shares
         /// </remarks>
         [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
         public virtual Uri GenerateSasUri(ShareSasPermissions permissions, DateTimeOffset expiresOn) =>
-            GenerateSasUri(new ShareSasBuilder(permissions, expiresOn) { ShareName = Name });
+            GenerateSasUri(permissions, expiresOn, out _);
+
+        /// <summary>
+        /// The <see cref="GenerateSasUri(ShareSasPermissions, DateTimeOffset)"/>
+        /// returns a <see cref="Uri"/> that generates a Share Service
+        /// Shared Access Signature (SAS) Uri based on the
+        /// Client properties and parameters passed.
+        /// The SAS is signed by the shared key credential of the client.
+        ///
+        /// To check if the client is able to sign a Service Sas see
+        /// <see cref="CanGenerateSasUri"/>.
+        ///
+        /// For more information, see
+        /// <see href="https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas">
+        /// Constructing a service SAS</see>.
+        /// </summary>
+        /// <param name="permissions">
+        /// Required. Specifies the list of permissions to be associated with the SAS.
+        /// See <see cref="ShareSasPermissions"/>.
+        /// </param>
+        /// <param name="expiresOn">
+        /// Required. Specifies the time at which the SAS becomes invalid. This field
+        /// must be omitted if it has been specified in an associated stored access policy.
+        /// </param>
+        /// <param name="stringToSign">
+        /// For debugging purposes only.  This string will be overwritten with the string to sign that was used to generate the SAS Uri.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Uri"/> containing the SAS Uri.
+        /// </returns>
+        /// <remarks>
+        /// A <see cref="Exception"/> will be thrown if a failure occurs.
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
+        public virtual Uri GenerateSasUri(ShareSasPermissions permissions, DateTimeOffset expiresOn, out string stringToSign) =>
+            GenerateSasUri(new ShareSasBuilder(permissions, expiresOn) { ShareName = Name }, out stringToSign);
 
         /// <summary>
         /// The <see cref="GenerateSasUri(ShareSasBuilder)"/> returns a <see cref="Uri"/>
@@ -3577,6 +4150,36 @@ namespace Azure.Storage.Files.Shares
         /// </remarks>
         [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
         public virtual Uri GenerateSasUri(ShareSasBuilder builder)
+            => GenerateSasUri(builder, out _);
+
+        /// <summary>
+        /// The <see cref="GenerateSasUri(ShareSasBuilder)"/> returns a <see cref="Uri"/>
+        /// that generates a Blob Container Service Shared Access Signature (SAS) Uri
+        /// based on the Client properties and builder passed.
+        /// The SAS is signed by the shared key credential of the client.
+        ///
+        /// To check if the client is able to sign a Service Sas see
+        /// <see cref="CanGenerateSasUri"/>.
+        ///
+        /// For more information, see
+        /// <see href="https://docs.microsoft.com/en-us/rest/api/storageservices/constructing-a-service-sas">
+        /// Constructing a Service SAS</see>.
+        /// </summary>
+        /// <param name="builder">
+        /// Used to generate a Shared Access Signature (SAS)
+        /// </param>
+        /// <param name="stringToSign">
+        /// For debugging purposes only.  This string will be overwritten with the string to sign that was used to generate the SAS Uri.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Uri"/> containing the SAS Uri.
+        /// </returns>
+        /// <remarks>
+        /// A <see cref="Exception"/> will be thrown if a failure occurs.
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-shares")]
+        public virtual Uri GenerateSasUri(ShareSasBuilder builder, out string stringToSign)
         {
             builder = builder ?? throw Errors.ArgumentNull(nameof(builder));
 
@@ -3602,7 +4205,7 @@ namespace Azure.Storage.Files.Shares
             }
             ShareUriBuilder sasUri = new ShareUriBuilder(Uri)
             {
-                Query = builder.ToSasQueryParameters(ClientConfiguration.SharedKeyCredential).ToString()
+                Query = builder.ToSasQueryParameters(ClientConfiguration.SharedKeyCredential, out stringToSign).ToString()
             };
             return sasUri.ToUri();
         }

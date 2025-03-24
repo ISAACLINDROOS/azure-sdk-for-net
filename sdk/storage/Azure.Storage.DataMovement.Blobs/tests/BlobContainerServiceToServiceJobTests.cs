@@ -28,10 +28,10 @@ namespace Azure.Storage.DataMovement.Blobs.Tests
             Mock <BlobStorageResourceContainer> mock = new Mock<BlobStorageResourceContainer>();
             mock.Setup(r => r.Uri).Returns(new Uri("https://account.blob.core.windows.net/container"));
             mock.Setup(r => r.ProviderId).Returns("blob");
-            mock.Setup(r => r.GetSourceCheckpointData())
-                .Returns(new MockResourceCheckpointData());
-            mock.Setup(r => r.GetDestinationCheckpointData())
-                .Returns(new MockResourceCheckpointData());
+            mock.Setup(r => r.GetSourceCheckpointDetails())
+                .Returns(new MockResourceCheckpointDetails());
+            mock.Setup(r => r.GetDestinationCheckpointDetails())
+                .Returns(new MockResourceCheckpointDetails());
             mock.Setup(r => r.GetStorageResourceReference(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns<string,string>((path,resourceId) =>
                 {
@@ -45,10 +45,10 @@ namespace Azure.Storage.DataMovement.Blobs.Tests
             Mock<BlockBlobStorageResource> mock = new Mock<BlockBlobStorageResource>();
             mock.Setup(r => r.Uri).Returns(new Uri($"https://account.blob.core.windows.net/container/{blobName}"));
             mock.Setup(r => r.ResourceId).Returns("BlockBlob");
-            mock.Setup(r => r.GetSourceCheckpointData())
-                .Returns(new MockResourceCheckpointData());
-            mock.Setup(r => r.GetDestinationCheckpointData())
-                .Returns(new MockResourceCheckpointData());
+            mock.Setup(r => r.GetSourceCheckpointDetails())
+                .Returns(new MockResourceCheckpointDetails());
+            mock.Setup(r => r.GetDestinationCheckpointDetails())
+                .Returns(new MockResourceCheckpointDetails());
             return mock;
         }
 
@@ -57,10 +57,10 @@ namespace Azure.Storage.DataMovement.Blobs.Tests
             Mock<PageBlobStorageResource> mock = new Mock<PageBlobStorageResource>();
             mock.Setup(r => r.Uri).Returns(new Uri($"https://account.blob.core.windows.net/container/{blobName}"));
             mock.Setup(r => r.ResourceId).Returns("PageBlob");
-            mock.Setup(r => r.GetSourceCheckpointData())
-                .Returns(new MockResourceCheckpointData());
-            mock.Setup(r => r.GetDestinationCheckpointData())
-                .Returns(new MockResourceCheckpointData());
+            mock.Setup(r => r.GetSourceCheckpointDetails())
+                .Returns(new MockResourceCheckpointDetails());
+            mock.Setup(r => r.GetDestinationCheckpointDetails())
+                .Returns(new MockResourceCheckpointDetails());
             return mock;
         }
 
@@ -69,10 +69,10 @@ namespace Azure.Storage.DataMovement.Blobs.Tests
             Mock<AppendBlobStorageResource> mock = new Mock<AppendBlobStorageResource>();
             mock.Setup(r => r.Uri).Returns(new Uri($"https://account.blob.core.windows.net/container/{blobName}"));
             mock.Setup(r => r.ResourceId).Returns("AppendBlob");
-            mock.Setup(r => r.GetSourceCheckpointData())
-                .Returns(new MockResourceCheckpointData());
-            mock.Setup(r => r.GetDestinationCheckpointData())
-                .Returns(new MockResourceCheckpointData());
+            mock.Setup(r => r.GetSourceCheckpointDetails())
+                .Returns(new MockResourceCheckpointDetails());
+            mock.Setup(r => r.GetDestinationCheckpointDetails())
+                .Returns(new MockResourceCheckpointDetails());
             return mock;
         }
 
@@ -92,8 +92,6 @@ namespace Azure.Storage.DataMovement.Blobs.Tests
             Mock<BlobStorageResourceContainer> sourceMock = GetMockBlobContainerResource();
             Mock<BlobStorageResourceContainer> destinationMock = GetMockBlobContainerResource();
 
-            Mock<TransferJobInternal.QueueChunkTaskInternal> mockPartQueueChunkTask = MockQueueInternalTasks.GetQueueChunkTask();
-
             // Set up default checkpointer with transfer job
             LocalTransferCheckpointer checkpointer = new(default);
             await checkpointer.AddNewJobAsync(
@@ -108,18 +106,19 @@ namespace Azure.Storage.DataMovement.Blobs.Tests
                 GetMockBlockBlobResource("blob2").Object,
                 GetMockBlockBlobResource("blob3").Object,
             };
-            sourceMock.Setup(r => r.GetStorageResourcesAsync(It.IsAny<CancellationToken>()))
+            sourceMock.Setup(r => r.GetStorageResourcesAsync(
+                It.IsAny<StorageResourceContainer>(),
+                It.IsAny<CancellationToken>()))
                 .Returns(GetStorageResourceItemsAsyncEnumerable(blobItems));
-            ServiceToServiceTransferJob transferJob = new ServiceToServiceTransferJob(
-                new DataTransfer(
-                    id: transferId,
-                    transferManager: new TransferManager()),
+            TransferJobInternal transferJob = new(
+                new TransferOperation(id: transferId),
                 sourceMock.Object,
                 destinationMock.Object,
-                new DataTransferOptions(),
-                mockPartQueueChunkTask.Object,
+                ServiceToServiceJobPart.CreateJobPartAsync,
+                ServiceToServiceJobPart.CreateJobPartAsync,
+                new TransferOptions(),
                 checkpointer,
-                DataTransferErrorMode.StopOnAnyFailure,
+                TransferErrorMode.StopOnAnyFailure,
                 ArrayPool<byte>.Shared,
                 new ClientDiagnostics(ClientOptions.Default));
 
@@ -146,8 +145,6 @@ namespace Azure.Storage.DataMovement.Blobs.Tests
             Mock<BlobStorageResourceContainer> sourceMock = GetMockBlobContainerResource();
             Mock<BlobStorageResourceContainer> destinationMock = GetMockBlobContainerResource();
 
-            Mock<TransferJobInternal.QueueChunkTaskInternal> mockPartQueueChunkTask = MockQueueInternalTasks.GetQueueChunkTask();
-
             // Set up default checkpointer with transfer job
             LocalTransferCheckpointer checkpointer = new(default);
             await checkpointer.AddNewJobAsync(
@@ -165,18 +162,19 @@ namespace Azure.Storage.DataMovement.Blobs.Tests
                 GetMockAppendBlobResource("appendblob2").Object,
                 GetMockBlockBlobResource("blockblob3").Object,
             };
-            sourceMock.Setup(r => r.GetStorageResourcesAsync(It.IsAny<CancellationToken>()))
+            sourceMock.Setup(r => r.GetStorageResourcesAsync(
+                It.IsAny<StorageResourceContainer>(),
+                It.IsAny<CancellationToken>()))
                 .Returns(GetStorageResourceItemsAsyncEnumerable(blobItems));
-            ServiceToServiceTransferJob transferJob = new ServiceToServiceTransferJob(
-                new DataTransfer(
-                    id: transferId,
-                    transferManager: new TransferManager()),
+            TransferJobInternal transferJob = new(
+                new TransferOperation(id: transferId),
                 sourceMock.Object,
                 destinationMock.Object,
-                new DataTransferOptions(),
-                mockPartQueueChunkTask.Object,
+                ServiceToServiceJobPart.CreateJobPartAsync,
+                ServiceToServiceJobPart.CreateJobPartAsync,
+                new TransferOptions(),
                 checkpointer,
-                DataTransferErrorMode.StopOnAnyFailure,
+                TransferErrorMode.StopOnAnyFailure,
                 ArrayPool<byte>.Shared,
                 new ClientDiagnostics(ClientOptions.Default));
 

@@ -19,13 +19,21 @@ namespace Azure.ResourceManager.DataBox.Models
 
         void IJsonModel<DataBoxShippingAddress>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<DataBoxShippingAddress>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(DataBoxShippingAddress)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             writer.WritePropertyName("streetAddress1"u8);
             writer.WriteStringValue(StreetAddress1);
             if (Optional.IsDefined(StreetAddress2))
@@ -50,8 +58,11 @@ namespace Azure.ResourceManager.DataBox.Models
             }
             writer.WritePropertyName("country"u8);
             writer.WriteStringValue(Country);
-            writer.WritePropertyName("postalCode"u8);
-            writer.WriteStringValue(PostalCode);
+            if (Optional.IsDefined(PostalCode))
+            {
+                writer.WritePropertyName("postalCode"u8);
+                writer.WriteStringValue(PostalCode);
+            }
             if (Optional.IsDefined(ZipExtendedCode))
             {
                 writer.WritePropertyName("zipExtendedCode"u8);
@@ -85,14 +96,13 @@ namespace Azure.ResourceManager.DataBox.Models
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(item.Value);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
                     {
                         JsonSerializer.Serialize(writer, document.RootElement);
                     }
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         DataBoxShippingAddress IJsonModel<DataBoxShippingAddress>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -242,7 +252,7 @@ namespace Azure.ResourceManager.DataBox.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeDataBoxShippingAddress(document.RootElement, options);
                     }
                 default:

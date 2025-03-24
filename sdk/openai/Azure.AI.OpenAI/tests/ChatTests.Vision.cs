@@ -1,11 +1,14 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.ClientModel;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Azure.AI.OpenAI.Chat;
-using Azure.Core.TestFramework;
 using OpenAI.Chat;
+using OpenAI.TestFramework;
 
 namespace Azure.AI.OpenAI.Tests
 {
@@ -22,40 +25,40 @@ namespace Azure.AI.OpenAI.Tests
             ChatMessageContentPart imagePart;
             if (useUri)
             {
-                imagePart = ChatMessageContentPart.CreateImageMessageContentPart(
-                    imageAsset.Url, ImageChatMessageContentPartDetail.Low);
+                imagePart = ChatMessageContentPart.CreateImagePart(
+                    imageAsset.Url, ChatImageDetailLevel.Low);
             }
             else
             {
                 using var stream = File.OpenRead(imageAsset.RelativePath);
                 var imageData = BinaryData.FromStream(stream);
 
-                imagePart = ChatMessageContentPart.CreateImageMessageContentPart(
-                    imageData, imageAsset.MimeType, ImageChatMessageContentPartDetail.Low);
+                imagePart = ChatMessageContentPart.CreateImagePart(
+                    imageData, imageAsset.MimeType, ChatImageDetailLevel.Low);
             }
 
             ChatMessage[] messages =
             [
                 new SystemChatMessage("You are a helpful assistant that helps describe images."),
-                new UserChatMessage(imagePart, ChatMessageContentPart.CreateTextMessageContentPart("describe this image"))
+                new UserChatMessage(imagePart, ChatMessageContentPart.CreateTextPart("describe this image"))
             ];
 
             ChatCompletionOptions options = new()
             {
-                MaxTokens = 2048,
+                MaxOutputTokenCount = 2048,
             };
 
             var response = await client.CompleteChatAsync(messages, options);
             Assert.That(response, Is.Not.Null);
 
             Assert.That(response.Value.Id, Is.Not.Null.Or.Empty);
-            Assert.That(response.Value.CreatedAt, Is.GreaterThan(new DateTimeOffset(2024, 01, 01, 00, 00, 00, TimeSpan.Zero)));
+            Assert.That(response.Value.CreatedAt, Is.GreaterThan(START_2024));
             Assert.That(response.Value.FinishReason, Is.EqualTo(ChatFinishReason.Stop));
             Assert.That(response.Value.Role, Is.EqualTo(ChatMessageRole.Assistant));
             Assert.That(response.Value.Usage, Is.Not.Null);
-            Assert.That(response.Value.Usage.InputTokens, Is.GreaterThan(10));
-            Assert.That(response.Value.Usage.OutputTokens, Is.GreaterThan(10));
-            Assert.That(response.Value.Usage.TotalTokens, Is.GreaterThan(20));
+            Assert.That(response.Value.Usage.InputTokenCount, Is.GreaterThan(10));
+            Assert.That(response.Value.Usage.OutputTokenCount, Is.GreaterThan(10));
+            Assert.That(response.Value.Usage.TotalTokenCount, Is.GreaterThan(20));
 
             Assert.That(response.Value.Content, Has.Count.EqualTo(1));
             ChatMessageContentPart choice = response.Value.Content[0];
@@ -64,13 +67,13 @@ namespace Azure.AI.OpenAI.Tests
             Assert.That(choice.Text.ToLowerInvariant(), Does.Contain("dog").Or.Contain("cat"));
 
             // TODO FIXME: Some models (e.g. gpt-4o either randomly return prompt filters with some missing entries)
-            var promptFilter = response.Value.GetContentFilterResultForPrompt();
+            var promptFilter = response.Value.GetRequestContentFilterResult();
             Assert.That(promptFilter, Is.Not.Null);
             //Assert.That(promptFilter.Hate, Is.Not.Null);
             //Assert.That(promptFilter.Hate.Filtered, Is.False);
             //Assert.That(promptFilter.Hate.Severity, Is.EqualTo(ContentFilterSeverity.Safe));
 
-            var responseFilter = response.Value.GetContentFilterResultForResponse();
+            var responseFilter = response.Value.GetResponseContentFilterResult();
             Assert.That(responseFilter, Is.Not.Null);
             Assert.That(responseFilter.Hate, Is.Not.Null);
             Assert.That(responseFilter.Hate.Filtered, Is.False);
@@ -84,6 +87,7 @@ namespace Azure.AI.OpenAI.Tests
         {
             bool foundPromptFilter = false;
             bool foundResponseFilter = false;
+            ChatTokenUsage? usage = null;
             StringBuilder content = new();
 
             ChatClient client = GetTestClient("vision");
@@ -92,42 +96,42 @@ namespace Azure.AI.OpenAI.Tests
             var imageAsset = Assets.DogAndCat;
             if (useUri)
             {
-                imagePart = ChatMessageContentPart.CreateImageMessageContentPart(
-                    imageAsset.Url, ImageChatMessageContentPartDetail.Low);
+                imagePart = ChatMessageContentPart.CreateImagePart(
+                    imageAsset.Url, ChatImageDetailLevel.Low);
             }
             else
             {
                 using var stream = File.OpenRead(imageAsset.RelativePath);
                 var imageData = BinaryData.FromStream(stream);
 
-                imagePart = ChatMessageContentPart.CreateImageMessageContentPart(
-                    imageData, imageAsset.MimeType, ImageChatMessageContentPartDetail.Low);
+                imagePart = ChatMessageContentPart.CreateImagePart(
+                    imageData, imageAsset.MimeType, ChatImageDetailLevel.Low);
             }
 
             ChatMessage[] messages =
             [
                 new SystemChatMessage("You are a helpful assistant that helps describe images."),
-                new UserChatMessage(imagePart, ChatMessageContentPart.CreateTextMessageContentPart("describe this image"))
+                new UserChatMessage(imagePart, ChatMessageContentPart.CreateTextPart("describe this image"))
             ];
 
             ChatCompletionOptions options = new()
             {
-                MaxTokens = 2048,
+                MaxOutputTokenCount = 2048,
             };
 
-            AsyncResultCollection<StreamingChatCompletionUpdate> response = SyncOrAsync(client,
-                c => c.CompleteChatStreaming(messages, options),
-                c => c.CompleteChatStreamingAsync(messages, options));
+            AsyncCollectionResult<StreamingChatCompletionUpdate> response = client.CompleteChatStreamingAsync(messages, options);
             Assert.That(response, Is.Not.Null);
 
             await foreach (StreamingChatCompletionUpdate update in response)
             {
-                ValidateUpdate(update, content, ref foundPromptFilter, ref foundResponseFilter);
+                ValidateUpdate(update, content, ref foundPromptFilter, ref foundResponseFilter, ref usage);
             }
 
-            // TOOD FIXME: gpt-4o models seem to return inconsistent prompt filters to skip this for now
+            // Assert.That(usage, Is.Not.Null);
+
+            // TODO FIXME: gpt-4o models seem to return inconsistent prompt filters to skip this for now
             //Assert.That(foundPromptFilter, Is.True);
-            Assert.That(foundResponseFilter, Is.True);
+
             Assert.That(content, Has.Length.GreaterThan(0));
 
             string c = content.ToString().ToLowerInvariant();

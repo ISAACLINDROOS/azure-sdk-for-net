@@ -23,13 +23,22 @@ namespace Azure.ResourceManager.AppService
 
         void IJsonModel<StaticSiteData>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<StaticSiteData>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(StaticSiteData)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsDefined(Sku))
             {
                 writer.WritePropertyName("sku"u8);
@@ -44,39 +53,6 @@ namespace Azure.ResourceManager.AppService
             {
                 writer.WritePropertyName("kind"u8);
                 writer.WriteStringValue(Kind);
-            }
-            if (Optional.IsCollectionDefined(Tags))
-            {
-                writer.WritePropertyName("tags"u8);
-                writer.WriteStartObject();
-                foreach (var item in Tags)
-                {
-                    writer.WritePropertyName(item.Key);
-                    writer.WriteStringValue(item.Value);
-                }
-                writer.WriteEndObject();
-            }
-            writer.WritePropertyName("location"u8);
-            writer.WriteStringValue(Location);
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("id"u8);
-                writer.WriteStringValue(Id);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("name"u8);
-                writer.WriteStringValue(Name);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("type"u8);
-                writer.WriteStringValue(ResourceType);
-            }
-            if (options.Format != "W" && Optional.IsDefined(SystemData))
-            {
-                writer.WritePropertyName("systemData"u8);
-                JsonSerializer.Serialize(writer, SystemData);
             }
             writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
@@ -160,26 +136,40 @@ namespace Azure.ResourceManager.AppService
                 }
                 writer.WriteEndArray();
             }
-            if (options.Format != "W" && Optional.IsDefined(Provider))
+            if (options.Format != "W" && Optional.IsCollectionDefined(LinkedBackends))
+            {
+                writer.WritePropertyName("linkedBackends"u8);
+                writer.WriteStartArray();
+                foreach (var item in LinkedBackends)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsDefined(Provider))
             {
                 writer.WritePropertyName("provider"u8);
                 writer.WriteStringValue(Provider);
             }
-            writer.WriteEndObject();
-            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            if (Optional.IsDefined(EnterpriseGradeCdnStatus))
             {
-                foreach (var item in _serializedAdditionalRawData)
+                writer.WritePropertyName("enterpriseGradeCdnStatus"u8);
+                writer.WriteStringValue(EnterpriseGradeCdnStatus.Value.ToString());
+            }
+            if (Optional.IsDefined(PublicNetworkAccess))
+            {
+                writer.WritePropertyName("publicNetworkAccess"u8);
+                writer.WriteStringValue(PublicNetworkAccess);
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(DatabaseConnections))
+            {
+                writer.WritePropertyName("databaseConnections"u8);
+                writer.WriteStartArray();
+                foreach (var item in DatabaseConnections)
                 {
-                    writer.WritePropertyName(item.Key);
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(item.Value);
-#else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
+                    writer.WriteObjectValue(item, options);
                 }
+                writer.WriteEndArray();
             }
             writer.WriteEndObject();
         }
@@ -226,7 +216,11 @@ namespace Azure.ResourceManager.AppService
             string contentDistributionEndpoint = default;
             string keyVaultReferenceIdentity = default;
             IReadOnlyList<StaticSiteUserProvidedFunctionAppData> userProvidedFunctionApps = default;
+            IReadOnlyList<StaticSiteLinkedBackendInfo> linkedBackends = default;
             string provider = default;
+            EnterpriseGradeCdnStatus? enterpriseGradeCdnStatus = default;
+            string publicNetworkAccess = default;
+            IReadOnlyList<StaticSiteDatabaseConnectionOverview> databaseConnections = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -418,9 +412,51 @@ namespace Azure.ResourceManager.AppService
                             userProvidedFunctionApps = array;
                             continue;
                         }
+                        if (property0.NameEquals("linkedBackends"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            List<StaticSiteLinkedBackendInfo> array = new List<StaticSiteLinkedBackendInfo>();
+                            foreach (var item in property0.Value.EnumerateArray())
+                            {
+                                array.Add(StaticSiteLinkedBackendInfo.DeserializeStaticSiteLinkedBackendInfo(item, options));
+                            }
+                            linkedBackends = array;
+                            continue;
+                        }
                         if (property0.NameEquals("provider"u8))
                         {
                             provider = property0.Value.GetString();
+                            continue;
+                        }
+                        if (property0.NameEquals("enterpriseGradeCdnStatus"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            enterpriseGradeCdnStatus = new EnterpriseGradeCdnStatus(property0.Value.GetString());
+                            continue;
+                        }
+                        if (property0.NameEquals("publicNetworkAccess"u8))
+                        {
+                            publicNetworkAccess = property0.Value.GetString();
+                            continue;
+                        }
+                        if (property0.NameEquals("databaseConnections"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            List<StaticSiteDatabaseConnectionOverview> array = new List<StaticSiteDatabaseConnectionOverview>();
+                            foreach (var item in property0.Value.EnumerateArray())
+                            {
+                                array.Add(StaticSiteDatabaseConnectionOverview.DeserializeStaticSiteDatabaseConnectionOverview(item, options));
+                            }
+                            databaseConnections = array;
                             continue;
                         }
                     }
@@ -454,7 +490,11 @@ namespace Azure.ResourceManager.AppService
                 contentDistributionEndpoint,
                 keyVaultReferenceIdentity,
                 userProvidedFunctionApps ?? new ChangeTrackingList<StaticSiteUserProvidedFunctionAppData>(),
+                linkedBackends ?? new ChangeTrackingList<StaticSiteLinkedBackendInfo>(),
                 provider,
+                enterpriseGradeCdnStatus,
+                publicNetworkAccess,
+                databaseConnections ?? new ChangeTrackingList<StaticSiteDatabaseConnectionOverview>(),
                 kind,
                 serializedAdditionalRawData);
         }
@@ -900,6 +940,29 @@ namespace Azure.ResourceManager.AppService
                 }
             }
 
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(LinkedBackends), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    linkedBackends: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(LinkedBackends))
+                {
+                    if (LinkedBackends.Any())
+                    {
+                        builder.Append("    linkedBackends: ");
+                        builder.AppendLine("[");
+                        foreach (var item in LinkedBackends)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 6, true, "    linkedBackends: ");
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
             hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Provider), out propertyOverride);
             if (hasPropertyOverride)
             {
@@ -919,6 +982,67 @@ namespace Azure.ResourceManager.AppService
                     else
                     {
                         builder.AppendLine($"'{Provider}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EnterpriseGradeCdnStatus), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    enterpriseGradeCdnStatus: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(EnterpriseGradeCdnStatus))
+                {
+                    builder.Append("    enterpriseGradeCdnStatus: ");
+                    builder.AppendLine($"'{EnterpriseGradeCdnStatus.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(PublicNetworkAccess), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    publicNetworkAccess: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(PublicNetworkAccess))
+                {
+                    builder.Append("    publicNetworkAccess: ");
+                    if (PublicNetworkAccess.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{PublicNetworkAccess}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{PublicNetworkAccess}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DatabaseConnections), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    databaseConnections: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(DatabaseConnections))
+                {
+                    if (DatabaseConnections.Any())
+                    {
+                        builder.Append("    databaseConnections: ");
+                        builder.AppendLine("[");
+                        foreach (var item in DatabaseConnections)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 6, true, "    databaseConnections: ");
+                        }
+                        builder.AppendLine("    ]");
                     }
                 }
             }
@@ -951,7 +1075,7 @@ namespace Azure.ResourceManager.AppService
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeStaticSiteData(document.RootElement, options);
                     }
                 default:

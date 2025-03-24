@@ -19,13 +19,22 @@ namespace Azure.ResourceManager.DataBox.Models
 
         void IJsonModel<DataBoxValidateAddressContent>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<DataBoxValidateAddressContent>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(DataBoxValidateAddressContent)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
+            base.JsonModelWriteCore(writer, options);
             writer.WritePropertyName("shippingAddress"u8);
             writer.WriteObjectValue(ShippingAddress, options);
             writer.WritePropertyName("deviceType"u8);
@@ -35,24 +44,11 @@ namespace Azure.ResourceManager.DataBox.Models
                 writer.WritePropertyName("transportPreferences"u8);
                 writer.WriteObjectValue(TransportPreferences, options);
             }
-            writer.WritePropertyName("validationType"u8);
-            writer.WriteStringValue(ValidationType.ToSerialString());
-            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            if (Optional.IsDefined(Model))
             {
-                foreach (var item in _serializedAdditionalRawData)
-                {
-                    writer.WritePropertyName(item.Key);
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(item.Value);
-#else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
-                }
+                writer.WritePropertyName("model"u8);
+                writer.WriteStringValue(Model.Value.ToSerialString());
             }
-            writer.WriteEndObject();
         }
 
         DataBoxValidateAddressContent IJsonModel<DataBoxValidateAddressContent>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -78,6 +74,7 @@ namespace Azure.ResourceManager.DataBox.Models
             DataBoxShippingAddress shippingAddress = default;
             DataBoxSkuName deviceType = default;
             TransportPreferences transportPreferences = default;
+            DeviceModelName? model = default;
             DataBoxValidationInputDiscriminator validationType = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
@@ -102,6 +99,15 @@ namespace Azure.ResourceManager.DataBox.Models
                     transportPreferences = TransportPreferences.DeserializeTransportPreferences(property.Value, options);
                     continue;
                 }
+                if (property.NameEquals("model"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    model = property.Value.GetString().ToDeviceModelName();
+                    continue;
+                }
                 if (property.NameEquals("validationType"u8))
                 {
                     validationType = property.Value.GetString().ToDataBoxValidationInputDiscriminator();
@@ -113,7 +119,13 @@ namespace Azure.ResourceManager.DataBox.Models
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new DataBoxValidateAddressContent(validationType, serializedAdditionalRawData, shippingAddress, deviceType, transportPreferences);
+            return new DataBoxValidateAddressContent(
+                validationType,
+                serializedAdditionalRawData,
+                shippingAddress,
+                deviceType,
+                transportPreferences,
+                model);
         }
 
         BinaryData IPersistableModel<DataBoxValidateAddressContent>.Write(ModelReaderWriterOptions options)
@@ -137,7 +149,7 @@ namespace Azure.ResourceManager.DataBox.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeDataBoxValidateAddressContent(document.RootElement, options);
                     }
                 default:

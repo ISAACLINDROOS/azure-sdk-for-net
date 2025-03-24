@@ -33,7 +33,7 @@ namespace Azure.ResourceManager.EventHubs.Models
         public static bool operator ==(CleanupPolicyRetentionDescription left, CleanupPolicyRetentionDescription right) => left.Equals(right);
         /// <summary> Determines if two <see cref="CleanupPolicyRetentionDescription"/> values are not the same. </summary>
         public static bool operator !=(CleanupPolicyRetentionDescription left, CleanupPolicyRetentionDescription right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="CleanupPolicyRetentionDescription"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="CleanupPolicyRetentionDescription"/>. </summary>
         public static implicit operator CleanupPolicyRetentionDescription(string value) => new CleanupPolicyRetentionDescription(value);
 
         /// <inheritdoc />
@@ -44,7 +44,7 @@ namespace Azure.ResourceManager.EventHubs.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

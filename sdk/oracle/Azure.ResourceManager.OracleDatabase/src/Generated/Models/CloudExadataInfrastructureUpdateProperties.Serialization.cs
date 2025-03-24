@@ -19,13 +19,21 @@ namespace Azure.ResourceManager.OracleDatabase.Models
 
         void IJsonModel<CloudExadataInfrastructureUpdateProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<CloudExadataInfrastructureUpdateProperties>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(CloudExadataInfrastructureUpdateProperties)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsDefined(ComputeCount))
             {
                 writer.WritePropertyName("computeCount"u8);
@@ -64,14 +72,13 @@ namespace Azure.ResourceManager.OracleDatabase.Models
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(item.Value);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
                     {
                         JsonSerializer.Serialize(writer, document.RootElement);
                     }
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         CloudExadataInfrastructureUpdateProperties IJsonModel<CloudExadataInfrastructureUpdateProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -96,8 +103,8 @@ namespace Azure.ResourceManager.OracleDatabase.Models
             }
             int? computeCount = default;
             int? storageCount = default;
-            MaintenanceWindow maintenanceWindow = default;
-            IList<CustomerContact> customerContacts = default;
+            OracleDatabaseMaintenanceWindow maintenanceWindow = default;
+            IList<OracleCustomerContact> customerContacts = default;
             string displayName = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
@@ -127,7 +134,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                     {
                         continue;
                     }
-                    maintenanceWindow = MaintenanceWindow.DeserializeMaintenanceWindow(property.Value, options);
+                    maintenanceWindow = OracleDatabaseMaintenanceWindow.DeserializeOracleDatabaseMaintenanceWindow(property.Value, options);
                     continue;
                 }
                 if (property.NameEquals("customerContacts"u8))
@@ -136,10 +143,10 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                     {
                         continue;
                     }
-                    List<CustomerContact> array = new List<CustomerContact>();
+                    List<OracleCustomerContact> array = new List<OracleCustomerContact>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(CustomerContact.DeserializeCustomerContact(item, options));
+                        array.Add(OracleCustomerContact.DeserializeOracleCustomerContact(item, options));
                     }
                     customerContacts = array;
                     continue;
@@ -159,7 +166,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                 computeCount,
                 storageCount,
                 maintenanceWindow,
-                customerContacts ?? new ChangeTrackingList<CustomerContact>(),
+                customerContacts ?? new ChangeTrackingList<OracleCustomerContact>(),
                 displayName,
                 serializedAdditionalRawData);
         }
@@ -185,7 +192,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeCloudExadataInfrastructureUpdateProperties(document.RootElement, options);
                     }
                 default:

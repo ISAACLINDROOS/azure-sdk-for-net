@@ -32,7 +32,7 @@ namespace Azure.ResourceManager.Hci
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2023-02-01";
+            _apiVersion = apiVersion ?? "2024-04-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -89,7 +89,7 @@ namespace Azure.ResourceManager.Hci
         }
 
         /// <summary> List Skus available for a offer within the HCI Cluster. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="clusterName"> The name of the cluster. </param>
         /// <param name="publisherName"> The name of the publisher available within HCI cluster. </param>
@@ -113,7 +113,7 @@ namespace Azure.ResourceManager.Hci
                 case 200:
                     {
                         HciSkuList value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = HciSkuList.DeserializeHciSkuList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -123,7 +123,7 @@ namespace Azure.ResourceManager.Hci
         }
 
         /// <summary> List Skus available for a offer within the HCI Cluster. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="clusterName"> The name of the cluster. </param>
         /// <param name="publisherName"> The name of the publisher available within HCI cluster. </param>
@@ -147,7 +147,7 @@ namespace Azure.ResourceManager.Hci
                 case 200:
                     {
                         HciSkuList value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = HciSkuList.DeserializeHciSkuList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -211,7 +211,7 @@ namespace Azure.ResourceManager.Hci
         }
 
         /// <summary> Get SKU resource details within a offer of HCI Cluster. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="clusterName"> The name of the cluster. </param>
         /// <param name="publisherName"> The name of the publisher available within HCI cluster. </param>
@@ -237,7 +237,7 @@ namespace Azure.ResourceManager.Hci
                 case 200:
                     {
                         HciSkuData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = HciSkuData.DeserializeHciSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -249,7 +249,7 @@ namespace Azure.ResourceManager.Hci
         }
 
         /// <summary> Get SKU resource details within a offer of HCI Cluster. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="clusterName"> The name of the cluster. </param>
         /// <param name="publisherName"> The name of the publisher available within HCI cluster. </param>
@@ -275,7 +275,7 @@ namespace Azure.ResourceManager.Hci
                 case 200:
                     {
                         HciSkuData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = HciSkuData.DeserializeHciSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -310,7 +310,7 @@ namespace Azure.ResourceManager.Hci
 
         /// <summary> List Skus available for a offer within the HCI Cluster. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="clusterName"> The name of the cluster. </param>
         /// <param name="publisherName"> The name of the publisher available within HCI cluster. </param>
@@ -335,7 +335,7 @@ namespace Azure.ResourceManager.Hci
                 case 200:
                     {
                         HciSkuList value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = HciSkuList.DeserializeHciSkuList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -346,7 +346,7 @@ namespace Azure.ResourceManager.Hci
 
         /// <summary> List Skus available for a offer within the HCI Cluster. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="clusterName"> The name of the cluster. </param>
         /// <param name="publisherName"> The name of the publisher available within HCI cluster. </param>
@@ -371,7 +371,7 @@ namespace Azure.ResourceManager.Hci
                 case 200:
                     {
                         HciSkuList value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = HciSkuList.DeserializeHciSkuList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

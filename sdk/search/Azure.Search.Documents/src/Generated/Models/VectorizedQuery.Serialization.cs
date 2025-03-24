@@ -55,6 +55,11 @@ namespace Azure.Search.Documents.Models
                 writer.WritePropertyName("threshold"u8);
                 writer.WriteObjectValue(Threshold);
             }
+            if (Optional.IsDefined(FilterOverride))
+            {
+                writer.WritePropertyName("filterOverride"u8);
+                writer.WriteStringValue(FilterOverride);
+            }
             writer.WriteEndObject();
         }
 
@@ -72,6 +77,7 @@ namespace Azure.Search.Documents.Models
             double? oversampling = default;
             float? weight = default;
             VectorThreshold threshold = default;
+            string filterOverride = default;
             foreach (var property in element.EnumerateObject())
             {
                 if (property.NameEquals("vector"u8))
@@ -145,6 +151,11 @@ namespace Azure.Search.Documents.Models
                     threshold = VectorThreshold.DeserializeVectorThreshold(property.Value);
                     continue;
                 }
+                if (property.NameEquals("filterOverride"u8))
+                {
+                    filterOverride = property.Value.GetString();
+                    continue;
+                }
             }
             return new VectorizedQuery(
                 kind,
@@ -154,6 +165,7 @@ namespace Azure.Search.Documents.Models
                 oversampling,
                 weight,
                 threshold,
+                filterOverride,
                 vector);
         }
 
@@ -161,7 +173,7 @@ namespace Azure.Search.Documents.Models
         /// <param name="response"> The response to deserialize the model from. </param>
         internal static new VectorizedQuery FromResponse(Response response)
         {
-            using var document = JsonDocument.Parse(response.Content);
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
             return DeserializeVectorizedQuery(document.RootElement);
         }
 

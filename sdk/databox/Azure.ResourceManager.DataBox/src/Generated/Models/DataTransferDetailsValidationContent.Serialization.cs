@@ -19,13 +19,22 @@ namespace Azure.ResourceManager.DataBox.Models
 
         void IJsonModel<DataTransferDetailsValidationContent>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<DataTransferDetailsValidationContent>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(DataTransferDetailsValidationContent)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsCollectionDefined(DataExportDetails))
             {
                 writer.WritePropertyName("dataExportDetails"u8);
@@ -50,24 +59,11 @@ namespace Azure.ResourceManager.DataBox.Models
             writer.WriteStringValue(DeviceType.ToSerialString());
             writer.WritePropertyName("transferType"u8);
             writer.WriteStringValue(TransferType.ToSerialString());
-            writer.WritePropertyName("validationType"u8);
-            writer.WriteStringValue(ValidationType.ToSerialString());
-            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            if (Optional.IsDefined(Model))
             {
-                foreach (var item in _serializedAdditionalRawData)
-                {
-                    writer.WritePropertyName(item.Key);
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(item.Value);
-#else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
-                }
+                writer.WritePropertyName("model"u8);
+                writer.WriteStringValue(Model.Value.ToSerialString());
             }
-            writer.WriteEndObject();
         }
 
         DataTransferDetailsValidationContent IJsonModel<DataTransferDetailsValidationContent>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -94,6 +90,7 @@ namespace Azure.ResourceManager.DataBox.Models
             IList<DataImportDetails> dataImportDetails = default;
             DataBoxSkuName deviceType = default;
             DataBoxJobTransferType transferType = default;
+            DeviceModelName? model = default;
             DataBoxValidationInputDiscriminator validationType = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
@@ -137,6 +134,15 @@ namespace Azure.ResourceManager.DataBox.Models
                     transferType = property.Value.GetString().ToDataBoxJobTransferType();
                     continue;
                 }
+                if (property.NameEquals("model"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    model = property.Value.GetString().ToDeviceModelName();
+                    continue;
+                }
                 if (property.NameEquals("validationType"u8))
                 {
                     validationType = property.Value.GetString().ToDataBoxValidationInputDiscriminator();
@@ -154,7 +160,8 @@ namespace Azure.ResourceManager.DataBox.Models
                 dataExportDetails ?? new ChangeTrackingList<DataExportDetails>(),
                 dataImportDetails ?? new ChangeTrackingList<DataImportDetails>(),
                 deviceType,
-                transferType);
+                transferType,
+                model);
         }
 
         BinaryData IPersistableModel<DataTransferDetailsValidationContent>.Write(ModelReaderWriterOptions options)
@@ -178,7 +185,7 @@ namespace Azure.ResourceManager.DataBox.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeDataTransferDetailsValidationContent(document.RootElement, options);
                     }
                 default:

@@ -21,13 +21,21 @@ namespace Azure.ResourceManager.AppService.Models
 
         void IJsonModel<SiteConfigProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<SiteConfigProperties>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(SiteConfigProperties)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsDefined(NumberOfWorkers))
             {
                 if (NumberOfWorkers != null)
@@ -276,6 +284,23 @@ namespace Azure.ResourceManager.AppService.Models
                 else
                 {
                     writer.WriteNull("appSettings");
+                }
+            }
+            if (Optional.IsCollectionDefined(Metadata))
+            {
+                if (Metadata != null)
+                {
+                    writer.WritePropertyName("metadata"u8);
+                    writer.WriteStartArray();
+                    foreach (var item in Metadata)
+                    {
+                        writer.WriteObjectValue(item, options);
+                    }
+                    writer.WriteEndArray();
+                }
+                else
+                {
+                    writer.WriteNull("metadata");
                 }
             }
             if (Optional.IsCollectionDefined(ConnectionStrings))
@@ -694,6 +719,18 @@ namespace Azure.ResourceManager.AppService.Models
                     writer.WriteNull("ipSecurityRestrictions");
                 }
             }
+            if (Optional.IsDefined(IPSecurityRestrictionsDefaultAction))
+            {
+                if (IPSecurityRestrictionsDefaultAction != null)
+                {
+                    writer.WritePropertyName("ipSecurityRestrictionsDefaultAction"u8);
+                    writer.WriteStringValue(IPSecurityRestrictionsDefaultAction.Value.ToString());
+                }
+                else
+                {
+                    writer.WriteNull("ipSecurityRestrictionsDefaultAction");
+                }
+            }
             if (Optional.IsCollectionDefined(ScmIPSecurityRestrictions))
             {
                 if (ScmIPSecurityRestrictions != null)
@@ -709,6 +746,18 @@ namespace Azure.ResourceManager.AppService.Models
                 else
                 {
                     writer.WriteNull("scmIpSecurityRestrictions");
+                }
+            }
+            if (Optional.IsDefined(ScmIPSecurityRestrictionsDefaultAction))
+            {
+                if (ScmIPSecurityRestrictionsDefaultAction != null)
+                {
+                    writer.WritePropertyName("scmIpSecurityRestrictionsDefaultAction"u8);
+                    writer.WriteStringValue(ScmIPSecurityRestrictionsDefaultAction.Value.ToString());
+                }
+                else
+                {
+                    writer.WriteNull("scmIpSecurityRestrictionsDefaultAction");
                 }
             }
             if (Optional.IsDefined(AllowIPSecurityRestrictionsForScmToUseMain))
@@ -745,6 +794,18 @@ namespace Azure.ResourceManager.AppService.Models
                 else
                 {
                     writer.WriteNull("minTlsVersion");
+                }
+            }
+            if (Optional.IsDefined(MinTlsCipherSuite))
+            {
+                if (MinTlsCipherSuite != null)
+                {
+                    writer.WritePropertyName("minTlsCipherSuite"u8);
+                    writer.WriteStringValue(MinTlsCipherSuite.Value.ToString());
+                }
+                else
+                {
+                    writer.WriteNull("minTlsCipherSuite");
                 }
             }
             if (Optional.IsDefined(ScmMinTlsVersion))
@@ -793,6 +854,18 @@ namespace Azure.ResourceManager.AppService.Models
                 else
                 {
                     writer.WriteNull("functionAppScaleLimit");
+                }
+            }
+            if (Optional.IsDefined(ElasticWebAppScaleLimit))
+            {
+                if (ElasticWebAppScaleLimit != null)
+                {
+                    writer.WritePropertyName("elasticWebAppScaleLimit"u8);
+                    writer.WriteNumberValue(ElasticWebAppScaleLimit.Value);
+                }
+                else
+                {
+                    writer.WriteNull("elasticWebAppScaleLimit");
                 }
             }
             if (Optional.IsDefined(HealthCheckPath))
@@ -881,14 +954,13 @@ namespace Azure.ResourceManager.AppService.Models
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(item.Value);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
                     {
                         JsonSerializer.Serialize(writer, document.RootElement);
                     }
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         SiteConfigProperties IJsonModel<SiteConfigProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -931,6 +1003,7 @@ namespace Azure.ResourceManager.AppService.Models
             bool? detailedErrorLoggingEnabled = default;
             string publishingUsername = default;
             IList<AppServiceNameValuePair> appSettings = default;
+            IList<AppServiceNameValuePair> metadata = default;
             IList<ConnStringInfo> connectionStrings = default;
             SiteMachineKey machineKey = default;
             IList<HttpRequestHandlerMapping> handlerMappings = default;
@@ -964,14 +1037,18 @@ namespace Azure.ResourceManager.AppService.Models
             int? xManagedServiceIdentityId = default;
             string keyVaultReferenceIdentity = default;
             IList<AppServiceIPSecurityRestriction> ipSecurityRestrictions = default;
+            SiteDefaultAction? ipSecurityRestrictionsDefaultAction = default;
             IList<AppServiceIPSecurityRestriction> scmIPSecurityRestrictions = default;
+            SiteDefaultAction? scmIPSecurityRestrictionsDefaultAction = default;
             bool? scmIPSecurityRestrictionsUseMain = default;
             bool? http20Enabled = default;
             AppServiceSupportedTlsVersion? minTlsVersion = default;
+            AppServiceTlsCipherSuite? minTlsCipherSuite = default;
             AppServiceSupportedTlsVersion? scmMinTlsVersion = default;
             AppServiceFtpsState? ftpsState = default;
             int? preWarmedInstanceCount = default;
             int? functionAppScaleLimit = default;
+            int? elasticWebAppScaleLimit = default;
             string healthCheckPath = default;
             bool? functionsRuntimeScaleMonitoringEnabled = default;
             string websiteTimeZone = default;
@@ -1190,6 +1267,21 @@ namespace Azure.ResourceManager.AppService.Models
                         array.Add(AppServiceNameValuePair.DeserializeAppServiceNameValuePair(item, options));
                     }
                     appSettings = array;
+                    continue;
+                }
+                if (property.NameEquals("metadata"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        metadata = null;
+                        continue;
+                    }
+                    List<AppServiceNameValuePair> array = new List<AppServiceNameValuePair>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(AppServiceNameValuePair.DeserializeAppServiceNameValuePair(item, options));
+                    }
+                    metadata = array;
                     continue;
                 }
                 if (property.NameEquals("connectionStrings"u8))
@@ -1542,6 +1634,16 @@ namespace Azure.ResourceManager.AppService.Models
                     ipSecurityRestrictions = array;
                     continue;
                 }
+                if (property.NameEquals("ipSecurityRestrictionsDefaultAction"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        ipSecurityRestrictionsDefaultAction = null;
+                        continue;
+                    }
+                    ipSecurityRestrictionsDefaultAction = new SiteDefaultAction(property.Value.GetString());
+                    continue;
+                }
                 if (property.NameEquals("scmIpSecurityRestrictions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
@@ -1555,6 +1657,16 @@ namespace Azure.ResourceManager.AppService.Models
                         array.Add(AppServiceIPSecurityRestriction.DeserializeAppServiceIPSecurityRestriction(item, options));
                     }
                     scmIPSecurityRestrictions = array;
+                    continue;
+                }
+                if (property.NameEquals("scmIpSecurityRestrictionsDefaultAction"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        scmIPSecurityRestrictionsDefaultAction = null;
+                        continue;
+                    }
+                    scmIPSecurityRestrictionsDefaultAction = new SiteDefaultAction(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("scmIpSecurityRestrictionsUseMain"u8))
@@ -1585,6 +1697,16 @@ namespace Azure.ResourceManager.AppService.Models
                         continue;
                     }
                     minTlsVersion = new AppServiceSupportedTlsVersion(property.Value.GetString());
+                    continue;
+                }
+                if (property.NameEquals("minTlsCipherSuite"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        minTlsCipherSuite = null;
+                        continue;
+                    }
+                    minTlsCipherSuite = new AppServiceTlsCipherSuite(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("scmMinTlsVersion"u8))
@@ -1625,6 +1747,16 @@ namespace Azure.ResourceManager.AppService.Models
                         continue;
                     }
                     functionAppScaleLimit = property.Value.GetInt32();
+                    continue;
+                }
+                if (property.NameEquals("elasticWebAppScaleLimit"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        elasticWebAppScaleLimit = null;
+                        continue;
+                    }
+                    elasticWebAppScaleLimit = property.Value.GetInt32();
                     continue;
                 }
                 if (property.NameEquals("healthCheckPath"u8))
@@ -1719,6 +1851,7 @@ namespace Azure.ResourceManager.AppService.Models
                 detailedErrorLoggingEnabled,
                 publishingUsername,
                 appSettings ?? new ChangeTrackingList<AppServiceNameValuePair>(),
+                metadata ?? new ChangeTrackingList<AppServiceNameValuePair>(),
                 connectionStrings ?? new ChangeTrackingList<ConnStringInfo>(),
                 machineKey,
                 handlerMappings ?? new ChangeTrackingList<HttpRequestHandlerMapping>(),
@@ -1752,14 +1885,18 @@ namespace Azure.ResourceManager.AppService.Models
                 xManagedServiceIdentityId,
                 keyVaultReferenceIdentity,
                 ipSecurityRestrictions ?? new ChangeTrackingList<AppServiceIPSecurityRestriction>(),
+                ipSecurityRestrictionsDefaultAction,
                 scmIPSecurityRestrictions ?? new ChangeTrackingList<AppServiceIPSecurityRestriction>(),
+                scmIPSecurityRestrictionsDefaultAction,
                 scmIPSecurityRestrictionsUseMain,
                 http20Enabled,
                 minTlsVersion,
+                minTlsCipherSuite,
                 scmMinTlsVersion,
                 ftpsState,
                 preWarmedInstanceCount,
                 functionAppScaleLimit,
+                elasticWebAppScaleLimit,
                 healthCheckPath,
                 functionsRuntimeScaleMonitoringEnabled,
                 websiteTimeZone,
@@ -2189,6 +2326,29 @@ namespace Azure.ResourceManager.AppService.Models
                         foreach (var item in AppSettings)
                         {
                             BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  appSettings: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Metadata), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  metadata: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(Metadata))
+                {
+                    if (Metadata.Any())
+                    {
+                        builder.Append("  metadata: ");
+                        builder.AppendLine("[");
+                        foreach (var item in Metadata)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  metadata: ");
                         }
                         builder.AppendLine("  ]");
                     }
@@ -2809,6 +2969,21 @@ namespace Azure.ResourceManager.AppService.Models
                 }
             }
 
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IPSecurityRestrictionsDefaultAction), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  ipSecurityRestrictionsDefaultAction: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(IPSecurityRestrictionsDefaultAction))
+                {
+                    builder.Append("  ipSecurityRestrictionsDefaultAction: ");
+                    builder.AppendLine($"'{IPSecurityRestrictionsDefaultAction.Value.ToString()}'");
+                }
+            }
+
             hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ScmIPSecurityRestrictions), out propertyOverride);
             if (hasPropertyOverride)
             {
@@ -2829,6 +3004,21 @@ namespace Azure.ResourceManager.AppService.Models
                         }
                         builder.AppendLine("  ]");
                     }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ScmIPSecurityRestrictionsDefaultAction), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  scmIpSecurityRestrictionsDefaultAction: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ScmIPSecurityRestrictionsDefaultAction))
+                {
+                    builder.Append("  scmIpSecurityRestrictionsDefaultAction: ");
+                    builder.AppendLine($"'{ScmIPSecurityRestrictionsDefaultAction.Value.ToString()}'");
                 }
             }
 
@@ -2876,6 +3066,21 @@ namespace Azure.ResourceManager.AppService.Models
                 {
                     builder.Append("  minTlsVersion: ");
                     builder.AppendLine($"'{MinTlsVersion.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(MinTlsCipherSuite), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  minTlsCipherSuite: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(MinTlsCipherSuite))
+                {
+                    builder.Append("  minTlsCipherSuite: ");
+                    builder.AppendLine($"'{MinTlsCipherSuite.Value.ToString()}'");
                 }
             }
 
@@ -2936,6 +3141,21 @@ namespace Azure.ResourceManager.AppService.Models
                 {
                     builder.Append("  functionAppScaleLimit: ");
                     builder.AppendLine($"{FunctionAppScaleLimit.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ElasticWebAppScaleLimit), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  elasticWebAppScaleLimit: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ElasticWebAppScaleLimit))
+                {
+                    builder.Append("  elasticWebAppScaleLimit: ");
+                    builder.AppendLine($"{ElasticWebAppScaleLimit.Value}");
                 }
             }
 
@@ -3090,7 +3310,7 @@ namespace Azure.ResourceManager.AppService.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeSiteConfigProperties(document.RootElement, options);
                     }
                 default:

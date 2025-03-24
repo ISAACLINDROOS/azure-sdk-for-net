@@ -32,7 +32,7 @@ namespace Azure.ResourceManager.GuestConfiguration
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2022-01-25";
+            _apiVersion = apiVersion ?? "2024-04-05";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -98,7 +98,7 @@ namespace Azure.ResourceManager.GuestConfiguration
                 case 200:
                     {
                         GuestConfigurationAssignmentReportList value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = GuestConfigurationAssignmentReportList.DeserializeGuestConfigurationAssignmentReportList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -129,7 +129,7 @@ namespace Azure.ResourceManager.GuestConfiguration
                 case 200:
                     {
                         GuestConfigurationAssignmentReportList value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = GuestConfigurationAssignmentReportList.DeserializeGuestConfigurationAssignmentReportList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -204,7 +204,7 @@ namespace Azure.ResourceManager.GuestConfiguration
                 case 200:
                     {
                         GuestConfigurationAssignmentReport value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = GuestConfigurationAssignmentReport.DeserializeGuestConfigurationAssignmentReport(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -237,7 +237,7 @@ namespace Azure.ResourceManager.GuestConfiguration
                 case 200:
                     {
                         GuestConfigurationAssignmentReport value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = GuestConfigurationAssignmentReport.DeserializeGuestConfigurationAssignmentReport(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

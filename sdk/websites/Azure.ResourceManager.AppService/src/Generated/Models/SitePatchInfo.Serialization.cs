@@ -22,13 +22,22 @@ namespace Azure.ResourceManager.AppService.Models
 
         void IJsonModel<SitePatchInfo>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<SitePatchInfo>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(SitePatchInfo)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsDefined(Identity))
             {
                 writer.WritePropertyName("identity"u8);
@@ -38,26 +47,6 @@ namespace Azure.ResourceManager.AppService.Models
             {
                 writer.WritePropertyName("kind"u8);
                 writer.WriteStringValue(Kind);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("id"u8);
-                writer.WriteStringValue(Id);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("name"u8);
-                writer.WriteStringValue(Name);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("type"u8);
-                writer.WriteStringValue(ResourceType);
-            }
-            if (options.Format != "W" && Optional.IsDefined(SystemData))
-            {
-                writer.WritePropertyName("systemData"u8);
-                JsonSerializer.Serialize(writer, SystemData);
             }
             writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
@@ -140,6 +129,11 @@ namespace Azure.ResourceManager.AppService.Models
             {
                 writer.WritePropertyName("lastModifiedTimeUtc"u8);
                 writer.WriteStringValue(LastModifiedOn.Value, "O");
+            }
+            if (Optional.IsDefined(DnsConfiguration))
+            {
+                writer.WritePropertyName("dnsConfiguration"u8);
+                writer.WriteObjectValue(DnsConfiguration, options);
             }
             if (Optional.IsDefined(SiteConfig))
             {
@@ -287,22 +281,6 @@ namespace Azure.ResourceManager.AppService.Models
                 writer.WriteStringValue(VirtualNetworkSubnetId);
             }
             writer.WriteEndObject();
-            if (options.Format != "W" && _serializedAdditionalRawData != null)
-            {
-                foreach (var item in _serializedAdditionalRawData)
-                {
-                    writer.WritePropertyName(item.Key);
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(item.Value);
-#else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
-                }
-            }
-            writer.WriteEndObject();
         }
 
         SitePatchInfo IJsonModel<SitePatchInfo>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -344,6 +322,7 @@ namespace Azure.ResourceManager.AppService.Models
             bool? isXenon = default;
             bool? hyperV = default;
             DateTimeOffset? lastModifiedTimeUtc = default;
+            SiteDnsConfig dnsConfiguration = default;
             SiteConfigProperties siteConfig = default;
             IReadOnlyList<string> trafficManagerHostNames = default;
             bool? scmSiteAlsoStopped = default;
@@ -545,6 +524,15 @@ namespace Azure.ResourceManager.AppService.Models
                                 continue;
                             }
                             lastModifiedTimeUtc = property0.Value.GetDateTimeOffset("O");
+                            continue;
+                        }
+                        if (property0.NameEquals("dnsConfiguration"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            dnsConfiguration = SiteDnsConfig.DeserializeSiteDnsConfig(property0.Value, options);
                             continue;
                         }
                         if (property0.NameEquals("siteConfig"u8))
@@ -800,6 +788,7 @@ namespace Azure.ResourceManager.AppService.Models
                 isXenon,
                 hyperV,
                 lastModifiedTimeUtc,
+                dnsConfiguration,
                 siteConfig,
                 trafficManagerHostNames ?? new ChangeTrackingList<string>(),
                 scmSiteAlsoStopped,
@@ -1199,6 +1188,21 @@ namespace Azure.ResourceManager.AppService.Models
                     builder.Append("    lastModifiedTimeUtc: ");
                     var formattedDateTimeString = TypeFormatters.ToString(LastModifiedOn.Value, "o");
                     builder.AppendLine($"'{formattedDateTimeString}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DnsConfiguration), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    dnsConfiguration: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DnsConfiguration))
+                {
+                    builder.Append("    dnsConfiguration: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, DnsConfiguration, options, 4, false, "    dnsConfiguration: ");
                 }
             }
 
@@ -1743,7 +1747,7 @@ namespace Azure.ResourceManager.AppService.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeSitePatchInfo(document.RootElement, options);
                     }
                 default:

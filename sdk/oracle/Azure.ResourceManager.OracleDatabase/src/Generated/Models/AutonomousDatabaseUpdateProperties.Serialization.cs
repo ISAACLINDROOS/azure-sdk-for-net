@@ -19,13 +19,21 @@ namespace Azure.ResourceManager.OracleDatabase.Models
 
         void IJsonModel<AutonomousDatabaseUpdateProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<AutonomousDatabaseUpdateProperties>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(AutonomousDatabaseUpdateProperties)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsDefined(AdminPassword))
             {
                 writer.WritePropertyName("adminPassword"u8);
@@ -81,10 +89,10 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                 writer.WritePropertyName("isAutoScalingForStorageEnabled"u8);
                 writer.WriteBooleanValue(IsAutoScalingForStorageEnabled.Value);
             }
-            if (Optional.IsDefined(PeerDbId))
+            if (Optional.IsDefined(PeerDBId))
             {
                 writer.WritePropertyName("peerDbId"u8);
-                writer.WriteStringValue(PeerDbId);
+                writer.WriteStringValue(PeerDBId);
             }
             if (Optional.IsDefined(IsLocalDataGuardEnabled))
             {
@@ -159,14 +167,13 @@ namespace Azure.ResourceManager.OracleDatabase.Models
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(item.Value);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
                     {
                         JsonSerializer.Serialize(writer, document.RootElement);
                     }
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         AutonomousDatabaseUpdateProperties IJsonModel<AutonomousDatabaseUpdateProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -193,23 +200,23 @@ namespace Azure.ResourceManager.OracleDatabase.Models
             AutonomousMaintenanceScheduleType? autonomousMaintenanceScheduleType = default;
             float? computeCount = default;
             int? cpuCoreCount = default;
-            IList<CustomerContact> customerContacts = default;
+            IList<OracleCustomerContact> customerContacts = default;
             int? dataStorageSizeInTbs = default;
             int? dataStorageSizeInGbs = default;
             string displayName = default;
             bool? isAutoScalingEnabled = default;
             bool? isAutoScalingForStorageEnabled = default;
-            string peerDbId = default;
+            string peerDBId = default;
             bool? isLocalDataGuardEnabled = default;
             bool? isMtlsConnectionRequired = default;
-            LicenseModel? licenseModel = default;
+            OracleLicenseModel? licenseModel = default;
             ScheduledOperationsTypeUpdate scheduledOperations = default;
-            DatabaseEditionType? databaseEdition = default;
+            OracleDatabaseEditionType? databaseEdition = default;
             LongTermBackUpScheduleDetails longTermBackupSchedule = default;
             int? localAdgAutoFailoverMaxDataLossLimit = default;
-            OpenModeType? openMode = default;
-            PermissionLevelType? permissionLevel = default;
-            RoleType? role = default;
+            AutonomousDatabaseModeType? openMode = default;
+            AutonomousDatabasePermissionLevelType? permissionLevel = default;
+            DataGuardRoleType? role = default;
             int? backupRetentionPeriodInDays = default;
             IList<string> whitelistedIPs = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
@@ -254,10 +261,10 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                     {
                         continue;
                     }
-                    List<CustomerContact> array = new List<CustomerContact>();
+                    List<OracleCustomerContact> array = new List<OracleCustomerContact>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(CustomerContact.DeserializeCustomerContact(item, options));
+                        array.Add(OracleCustomerContact.DeserializeOracleCustomerContact(item, options));
                     }
                     customerContacts = array;
                     continue;
@@ -305,7 +312,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                 }
                 if (property.NameEquals("peerDbId"u8))
                 {
-                    peerDbId = property.Value.GetString();
+                    peerDBId = property.Value.GetString();
                     continue;
                 }
                 if (property.NameEquals("isLocalDataGuardEnabled"u8))
@@ -332,7 +339,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                     {
                         continue;
                     }
-                    licenseModel = new LicenseModel(property.Value.GetString());
+                    licenseModel = new OracleLicenseModel(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("scheduledOperations"u8))
@@ -350,7 +357,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                     {
                         continue;
                     }
-                    databaseEdition = new DatabaseEditionType(property.Value.GetString());
+                    databaseEdition = new OracleDatabaseEditionType(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("longTermBackupSchedule"u8))
@@ -377,7 +384,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                     {
                         continue;
                     }
-                    openMode = new OpenModeType(property.Value.GetString());
+                    openMode = new AutonomousDatabaseModeType(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("permissionLevel"u8))
@@ -386,7 +393,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                     {
                         continue;
                     }
-                    permissionLevel = new PermissionLevelType(property.Value.GetString());
+                    permissionLevel = new AutonomousDatabasePermissionLevelType(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("role"u8))
@@ -395,7 +402,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                     {
                         continue;
                     }
-                    role = new RoleType(property.Value.GetString());
+                    role = new DataGuardRoleType(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("backupRetentionPeriodInDays"u8))
@@ -432,13 +439,13 @@ namespace Azure.ResourceManager.OracleDatabase.Models
                 autonomousMaintenanceScheduleType,
                 computeCount,
                 cpuCoreCount,
-                customerContacts ?? new ChangeTrackingList<CustomerContact>(),
+                customerContacts ?? new ChangeTrackingList<OracleCustomerContact>(),
                 dataStorageSizeInTbs,
                 dataStorageSizeInGbs,
                 displayName,
                 isAutoScalingEnabled,
                 isAutoScalingForStorageEnabled,
-                peerDbId,
+                peerDBId,
                 isLocalDataGuardEnabled,
                 isMtlsConnectionRequired,
                 licenseModel,
@@ -475,7 +482,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeAutonomousDatabaseUpdateProperties(document.RootElement, options);
                     }
                 default:

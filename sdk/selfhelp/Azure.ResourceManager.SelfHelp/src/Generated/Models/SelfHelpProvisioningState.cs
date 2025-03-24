@@ -42,7 +42,7 @@ namespace Azure.ResourceManager.SelfHelp.Models
         public static bool operator ==(SelfHelpProvisioningState left, SelfHelpProvisioningState right) => left.Equals(right);
         /// <summary> Determines if two <see cref="SelfHelpProvisioningState"/> values are not the same. </summary>
         public static bool operator !=(SelfHelpProvisioningState left, SelfHelpProvisioningState right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="SelfHelpProvisioningState"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="SelfHelpProvisioningState"/>. </summary>
         public static implicit operator SelfHelpProvisioningState(string value) => new SelfHelpProvisioningState(value);
 
         /// <inheritdoc />
@@ -53,7 +53,7 @@ namespace Azure.ResourceManager.SelfHelp.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

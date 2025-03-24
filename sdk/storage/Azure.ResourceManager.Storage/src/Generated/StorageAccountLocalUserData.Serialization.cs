@@ -23,33 +23,22 @@ namespace Azure.ResourceManager.Storage
 
         void IJsonModel<StorageAccountLocalUserData>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<StorageAccountLocalUserData>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(StorageAccountLocalUserData)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("id"u8);
-                writer.WriteStringValue(Id);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("name"u8);
-                writer.WriteStringValue(Name);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("type"u8);
-                writer.WriteStringValue(ResourceType);
-            }
-            if (options.Format != "W" && Optional.IsDefined(SystemData))
-            {
-                writer.WritePropertyName("systemData"u8);
-                JsonSerializer.Serialize(writer, SystemData);
-            }
+            base.JsonModelWriteCore(writer, options);
             writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsCollectionDefined(PermissionScopes))
@@ -97,21 +86,35 @@ namespace Azure.ResourceManager.Storage
                 writer.WritePropertyName("hasSshPassword"u8);
                 writer.WriteBooleanValue(HasSshPassword.Value);
             }
-            writer.WriteEndObject();
-            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            if (options.Format != "W" && Optional.IsDefined(UserId))
             {
-                foreach (var item in _serializedAdditionalRawData)
+                writer.WritePropertyName("userId"u8);
+                writer.WriteNumberValue(UserId.Value);
+            }
+            if (Optional.IsDefined(GroupId))
+            {
+                writer.WritePropertyName("groupId"u8);
+                writer.WriteNumberValue(GroupId.Value);
+            }
+            if (Optional.IsDefined(IsAclAuthorizationAllowed))
+            {
+                writer.WritePropertyName("allowAclAuthorization"u8);
+                writer.WriteBooleanValue(IsAclAuthorizationAllowed.Value);
+            }
+            if (Optional.IsCollectionDefined(ExtendedGroups))
+            {
+                writer.WritePropertyName("extendedGroups"u8);
+                writer.WriteStartArray();
+                foreach (var item in ExtendedGroups)
                 {
-                    writer.WritePropertyName(item.Key);
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(item.Value);
-#else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
+                    writer.WriteNumberValue(item);
                 }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsDefined(IsNfsV3Enabled))
+            {
+                writer.WritePropertyName("isNFSv3Enabled"u8);
+                writer.WriteBooleanValue(IsNfsV3Enabled.Value);
             }
             writer.WriteEndObject();
         }
@@ -147,6 +150,11 @@ namespace Azure.ResourceManager.Storage
             bool? hasSharedKey = default;
             bool? hasSshKey = default;
             bool? hasSshPassword = default;
+            int? userId = default;
+            int? groupId = default;
+            bool? allowAclAuthorization = default;
+            IList<int> extendedGroups = default;
+            bool? isNFSv3Enabled = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -249,6 +257,56 @@ namespace Azure.ResourceManager.Storage
                             hasSshPassword = property0.Value.GetBoolean();
                             continue;
                         }
+                        if (property0.NameEquals("userId"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            userId = property0.Value.GetInt32();
+                            continue;
+                        }
+                        if (property0.NameEquals("groupId"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            groupId = property0.Value.GetInt32();
+                            continue;
+                        }
+                        if (property0.NameEquals("allowAclAuthorization"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            allowAclAuthorization = property0.Value.GetBoolean();
+                            continue;
+                        }
+                        if (property0.NameEquals("extendedGroups"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            List<int> array = new List<int>();
+                            foreach (var item in property0.Value.EnumerateArray())
+                            {
+                                array.Add(item.GetInt32());
+                            }
+                            extendedGroups = array;
+                            continue;
+                        }
+                        if (property0.NameEquals("isNFSv3Enabled"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            isNFSv3Enabled = property0.Value.GetBoolean();
+                            continue;
+                        }
                     }
                     continue;
                 }
@@ -270,6 +328,11 @@ namespace Azure.ResourceManager.Storage
                 hasSharedKey,
                 hasSshKey,
                 hasSshPassword,
+                userId,
+                groupId,
+                allowAclAuthorization,
+                extendedGroups ?? new ChangeTrackingList<int>(),
+                isNFSv3Enabled,
                 serializedAdditionalRawData);
         }
 
@@ -479,6 +542,91 @@ namespace Azure.ResourceManager.Storage
                 }
             }
 
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(UserId), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    userId: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(UserId))
+                {
+                    builder.Append("    userId: ");
+                    builder.AppendLine($"{UserId.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(GroupId), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    groupId: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(GroupId))
+                {
+                    builder.Append("    groupId: ");
+                    builder.AppendLine($"{GroupId.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IsAclAuthorizationAllowed), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    allowAclAuthorization: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(IsAclAuthorizationAllowed))
+                {
+                    builder.Append("    allowAclAuthorization: ");
+                    var boolValue = IsAclAuthorizationAllowed.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ExtendedGroups), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    extendedGroups: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(ExtendedGroups))
+                {
+                    if (ExtendedGroups.Any())
+                    {
+                        builder.Append("    extendedGroups: ");
+                        builder.AppendLine("[");
+                        foreach (var item in ExtendedGroups)
+                        {
+                            builder.AppendLine($"      {item}");
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IsNfsV3Enabled), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    isNFSv3Enabled: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(IsNfsV3Enabled))
+                {
+                    builder.Append("    isNFSv3Enabled: ");
+                    var boolValue = IsNfsV3Enabled.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
             builder.AppendLine("  }");
             builder.AppendLine("}");
             return BinaryData.FromString(builder.ToString());
@@ -507,7 +655,7 @@ namespace Azure.ResourceManager.Storage
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeStorageAccountLocalUserData(document.RootElement, options);
                     }
                 default:

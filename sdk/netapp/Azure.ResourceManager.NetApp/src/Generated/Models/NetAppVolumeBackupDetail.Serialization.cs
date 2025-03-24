@@ -19,17 +19,30 @@ namespace Azure.ResourceManager.NetApp.Models
 
         void IJsonModel<NetAppVolumeBackupDetail>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<NetAppVolumeBackupDetail>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(NetAppVolumeBackupDetail)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsDefined(VolumeName))
             {
                 writer.WritePropertyName("volumeName"u8);
                 writer.WriteStringValue(VolumeName);
+            }
+            if (Optional.IsDefined(VolumeResourceId))
+            {
+                writer.WritePropertyName("volumeResourceId"u8);
+                writer.WriteStringValue(VolumeResourceId);
             }
             if (Optional.IsDefined(BackupsCount))
             {
@@ -49,14 +62,13 @@ namespace Azure.ResourceManager.NetApp.Models
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(item.Value);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
                     {
                         JsonSerializer.Serialize(writer, document.RootElement);
                     }
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         NetAppVolumeBackupDetail IJsonModel<NetAppVolumeBackupDetail>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -80,6 +92,7 @@ namespace Azure.ResourceManager.NetApp.Models
                 return null;
             }
             string volumeName = default;
+            ResourceIdentifier volumeResourceId = default;
             int? backupsCount = default;
             bool? policyEnabled = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
@@ -89,6 +102,15 @@ namespace Azure.ResourceManager.NetApp.Models
                 if (property.NameEquals("volumeName"u8))
                 {
                     volumeName = property.Value.GetString();
+                    continue;
+                }
+                if (property.NameEquals("volumeResourceId"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    volumeResourceId = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
                 if (property.NameEquals("backupsCount"u8))
@@ -115,7 +137,7 @@ namespace Azure.ResourceManager.NetApp.Models
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new NetAppVolumeBackupDetail(volumeName, backupsCount, policyEnabled, serializedAdditionalRawData);
+            return new NetAppVolumeBackupDetail(volumeName, volumeResourceId, backupsCount, policyEnabled, serializedAdditionalRawData);
         }
 
         BinaryData IPersistableModel<NetAppVolumeBackupDetail>.Write(ModelReaderWriterOptions options)
@@ -139,7 +161,7 @@ namespace Azure.ResourceManager.NetApp.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeNetAppVolumeBackupDetail(document.RootElement, options);
                     }
                 default:

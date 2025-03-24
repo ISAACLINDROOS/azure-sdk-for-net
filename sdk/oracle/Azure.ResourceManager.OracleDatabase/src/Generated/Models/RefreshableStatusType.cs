@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.OracleDatabase.Models
 {
-    /// <summary>
-    /// Refreshable status type enum.
-    /// Serialized Name: RefreshableStatusType
-    /// </summary>
+    /// <summary> Refreshable status type enum. </summary>
     public readonly partial struct RefreshableStatusType : IEquatable<RefreshableStatusType>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.OracleDatabase.Models
         private const string RefreshingValue = "Refreshing";
         private const string NotRefreshingValue = "NotRefreshing";
 
-        /// <summary>
-        /// Refreshing status
-        /// Serialized Name: RefreshableStatusType.Refreshing
-        /// </summary>
+        /// <summary> Refreshing status. </summary>
         public static RefreshableStatusType Refreshing { get; } = new RefreshableStatusType(RefreshingValue);
-        /// <summary>
-        /// NotRefreshing status
-        /// Serialized Name: RefreshableStatusType.NotRefreshing
-        /// </summary>
+        /// <summary> NotRefreshing status. </summary>
         public static RefreshableStatusType NotRefreshing { get; } = new RefreshableStatusType(NotRefreshingValue);
         /// <summary> Determines if two <see cref="RefreshableStatusType"/> values are the same. </summary>
         public static bool operator ==(RefreshableStatusType left, RefreshableStatusType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="RefreshableStatusType"/> values are not the same. </summary>
         public static bool operator !=(RefreshableStatusType left, RefreshableStatusType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="RefreshableStatusType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="RefreshableStatusType"/>. </summary>
         public static implicit operator RefreshableStatusType(string value) => new RefreshableStatusType(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.OracleDatabase.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

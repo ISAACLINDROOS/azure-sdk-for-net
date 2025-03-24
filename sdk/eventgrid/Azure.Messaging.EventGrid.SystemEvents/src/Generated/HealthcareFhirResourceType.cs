@@ -510,7 +510,7 @@ namespace Azure.Messaging.EventGrid.SystemEvents
         public static bool operator ==(HealthcareFhirResourceType left, HealthcareFhirResourceType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="HealthcareFhirResourceType"/> values are not the same. </summary>
         public static bool operator !=(HealthcareFhirResourceType left, HealthcareFhirResourceType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="HealthcareFhirResourceType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="HealthcareFhirResourceType"/>. </summary>
         public static implicit operator HealthcareFhirResourceType(string value) => new HealthcareFhirResourceType(value);
 
         /// <inheritdoc />
@@ -521,7 +521,7 @@ namespace Azure.Messaging.EventGrid.SystemEvents
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

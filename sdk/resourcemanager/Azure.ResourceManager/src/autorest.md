@@ -13,6 +13,7 @@ head-as-boolean: false
 modelerfour:
   lenient-model-deduplication: true
 use-model-reader-writer: true
+use-write-core: true
 deserialize-null-collection-as-null-value: true
 enable-bicep-serialization: true
 
@@ -133,6 +134,7 @@ directive:
   - from: types.json
     where: $.definitions.OperationStatusResult
     transform: >
+      $["x-namespace"] = "Azure.ResourceManager.Models";
       $["x-csharp-formats"] = "json";
       $["x-csharp-usage"] = "model,input,output";
   - from: types.json
@@ -370,6 +372,10 @@ directive:
   - from: policySetDefinitions.json
     where: $.definitions.PolicySetDefinition.properties.systemData
     transform: return undefined;
+  - from: resources.json
+    where: $.definitions.ExtendedLocation
+    transform: >
+      $["x-namespace"] = "Azure.ResourceManager.Resources.Models";
 
   - rename-model:
       from: Provider

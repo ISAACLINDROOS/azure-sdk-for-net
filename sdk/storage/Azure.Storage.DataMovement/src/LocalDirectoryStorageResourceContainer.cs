@@ -7,7 +7,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Core;
 using Azure.Storage.Common;
 
 namespace Azure.Storage.DataMovement
@@ -65,10 +64,12 @@ namespace Azure.Storage.DataMovement
         /// <summary>
         /// Lists storage resource in the filesystem.
         /// </summary>
+        /// <param name="destinationContainer"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         protected internal override async IAsyncEnumerable<StorageResource> GetStorageResourcesAsync(
+            StorageResourceContainer destinationContainer = default,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
@@ -91,14 +92,14 @@ namespace Azure.Storage.DataMovement
             }
         }
 
-        protected internal override StorageResourceCheckpointData GetSourceCheckpointData()
+        protected internal override StorageResourceCheckpointDetails GetSourceCheckpointDetails()
         {
-            return new LocalSourceCheckpointData();
+            return new LocalSourceCheckpointDetails();
         }
 
-        protected internal override StorageResourceCheckpointData GetDestinationCheckpointData()
+        protected internal override StorageResourceCheckpointDetails GetDestinationCheckpointDetails()
         {
-            return new LocalDestinationCheckpointData();
+            return new LocalDestinationCheckpointDetails();
         }
 
         protected internal override Task CreateIfNotExistsAsync(CancellationToken cancellationToken = default)

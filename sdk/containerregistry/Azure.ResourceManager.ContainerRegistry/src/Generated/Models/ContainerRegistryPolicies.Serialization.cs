@@ -8,6 +8,7 @@
 using System;
 using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
@@ -19,13 +20,21 @@ namespace Azure.ResourceManager.ContainerRegistry.Models
 
         void IJsonModel<ContainerRegistryPolicies>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<ContainerRegistryPolicies>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(ContainerRegistryPolicies)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
             if (Optional.IsDefined(QuarantinePolicy))
             {
                 writer.WritePropertyName("quarantinePolicy"u8);
@@ -46,6 +55,16 @@ namespace Azure.ResourceManager.ContainerRegistry.Models
                 writer.WritePropertyName("exportPolicy"u8);
                 writer.WriteObjectValue(ExportPolicy, options);
             }
+            if (Optional.IsDefined(AzureADAuthenticationAsArmPolicy))
+            {
+                writer.WritePropertyName("azureADAuthenticationAsArmPolicy"u8);
+                writer.WriteObjectValue(AzureADAuthenticationAsArmPolicy, options);
+            }
+            if (Optional.IsDefined(SoftDeletePolicy))
+            {
+                writer.WritePropertyName("softDeletePolicy"u8);
+                writer.WriteObjectValue(SoftDeletePolicy, options);
+            }
             if (options.Format != "W" && _serializedAdditionalRawData != null)
             {
                 foreach (var item in _serializedAdditionalRawData)
@@ -54,14 +73,13 @@ namespace Azure.ResourceManager.ContainerRegistry.Models
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(item.Value);
 #else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
                     {
                         JsonSerializer.Serialize(writer, document.RootElement);
                     }
 #endif
                 }
             }
-            writer.WriteEndObject();
         }
 
         ContainerRegistryPolicies IJsonModel<ContainerRegistryPolicies>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -88,6 +106,8 @@ namespace Azure.ResourceManager.ContainerRegistry.Models
             ContainerRegistryTrustPolicy trustPolicy = default;
             ContainerRegistryRetentionPolicy retentionPolicy = default;
             ContainerRegistryExportPolicy exportPolicy = default;
+            AzureADAuthenticationAsArmPolicy azureADAuthenticationAsArmPolicy = default;
+            ContainerRegistrySoftDeletePolicy softDeletePolicy = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
@@ -128,13 +148,152 @@ namespace Azure.ResourceManager.ContainerRegistry.Models
                     exportPolicy = ContainerRegistryExportPolicy.DeserializeContainerRegistryExportPolicy(property.Value, options);
                     continue;
                 }
+                if (property.NameEquals("azureADAuthenticationAsArmPolicy"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    azureADAuthenticationAsArmPolicy = AzureADAuthenticationAsArmPolicy.DeserializeAzureADAuthenticationAsArmPolicy(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("softDeletePolicy"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    softDeletePolicy = ContainerRegistrySoftDeletePolicy.DeserializeContainerRegistrySoftDeletePolicy(property.Value, options);
+                    continue;
+                }
                 if (options.Format != "W")
                 {
                     rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
                 }
             }
             serializedAdditionalRawData = rawDataDictionary;
-            return new ContainerRegistryPolicies(quarantinePolicy, trustPolicy, retentionPolicy, exportPolicy, serializedAdditionalRawData);
+            return new ContainerRegistryPolicies(
+                quarantinePolicy,
+                trustPolicy,
+                retentionPolicy,
+                exportPolicy,
+                azureADAuthenticationAsArmPolicy,
+                softDeletePolicy,
+                serializedAdditionalRawData);
+        }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("QuarantineStatus", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  quarantinePolicy: ");
+                builder.AppendLine("{");
+                builder.Append("    status: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("  }");
+            }
+            else
+            {
+                if (Optional.IsDefined(QuarantinePolicy))
+                {
+                    builder.Append("  quarantinePolicy: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, QuarantinePolicy, options, 2, false, "  quarantinePolicy: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(TrustPolicy), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  trustPolicy: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(TrustPolicy))
+                {
+                    builder.Append("  trustPolicy: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, TrustPolicy, options, 2, false, "  trustPolicy: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RetentionPolicy), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  retentionPolicy: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(RetentionPolicy))
+                {
+                    builder.Append("  retentionPolicy: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, RetentionPolicy, options, 2, false, "  retentionPolicy: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("ExportStatus", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  exportPolicy: ");
+                builder.AppendLine("{");
+                builder.Append("    status: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("  }");
+            }
+            else
+            {
+                if (Optional.IsDefined(ExportPolicy))
+                {
+                    builder.Append("  exportPolicy: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, ExportPolicy, options, 2, false, "  exportPolicy: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("AzureADAuthenticationAsArmStatus", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  azureADAuthenticationAsArmPolicy: ");
+                builder.AppendLine("{");
+                builder.Append("    status: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("  }");
+            }
+            else
+            {
+                if (Optional.IsDefined(AzureADAuthenticationAsArmPolicy))
+                {
+                    builder.Append("  azureADAuthenticationAsArmPolicy: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, AzureADAuthenticationAsArmPolicy, options, 2, false, "  azureADAuthenticationAsArmPolicy: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SoftDeletePolicy), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  softDeletePolicy: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(SoftDeletePolicy))
+                {
+                    builder.Append("  softDeletePolicy: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, SoftDeletePolicy, options, 2, false, "  softDeletePolicy: ");
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
         }
 
         BinaryData IPersistableModel<ContainerRegistryPolicies>.Write(ModelReaderWriterOptions options)
@@ -145,6 +304,8 @@ namespace Azure.ResourceManager.ContainerRegistry.Models
             {
                 case "J":
                     return ModelReaderWriter.Write(this, options);
+                case "bicep":
+                    return SerializeBicep(options);
                 default:
                     throw new FormatException($"The model {nameof(ContainerRegistryPolicies)} does not support writing '{options.Format}' format.");
             }
@@ -158,7 +319,7 @@ namespace Azure.ResourceManager.ContainerRegistry.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeContainerRegistryPolicies(document.RootElement, options);
                     }
                 default:

@@ -21,40 +21,22 @@ namespace Azure.ResourceManager.AppService.Models
 
         void IJsonModel<AppServiceCertificateEmail>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
             var format = options.Format == "W" ? ((IPersistableModel<AppServiceCertificateEmail>)this).GetFormatFromOptions(options) : options.Format;
             if (format != "J")
             {
                 throw new FormatException($"The model {nameof(AppServiceCertificateEmail)} does not support writing '{format}' format.");
             }
 
-            writer.WriteStartObject();
-            if (Optional.IsDefined(Kind))
-            {
-                writer.WritePropertyName("kind"u8);
-                writer.WriteStringValue(Kind);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("id"u8);
-                writer.WriteStringValue(Id);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("name"u8);
-                writer.WriteStringValue(Name);
-            }
-            if (options.Format != "W")
-            {
-                writer.WritePropertyName("type"u8);
-                writer.WriteStringValue(ResourceType);
-            }
-            if (options.Format != "W" && Optional.IsDefined(SystemData))
-            {
-                writer.WritePropertyName("systemData"u8);
-                JsonSerializer.Serialize(writer, SystemData);
-            }
-            writer.WritePropertyName("properties"u8);
-            writer.WriteStartObject();
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsDefined(EmailId))
             {
                 writer.WritePropertyName("emailId"u8);
@@ -65,23 +47,6 @@ namespace Azure.ResourceManager.AppService.Models
                 writer.WritePropertyName("timeStamp"u8);
                 writer.WriteStringValue(TimeStamp.Value, "O");
             }
-            writer.WriteEndObject();
-            if (options.Format != "W" && _serializedAdditionalRawData != null)
-            {
-                foreach (var item in _serializedAdditionalRawData)
-                {
-                    writer.WritePropertyName(item.Key);
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(item.Value);
-#else
-                    using (JsonDocument document = JsonDocument.Parse(item.Value))
-                    {
-                        JsonSerializer.Serialize(writer, document.RootElement);
-                    }
-#endif
-                }
-            }
-            writer.WriteEndObject();
         }
 
         AppServiceCertificateEmail IJsonModel<AppServiceCertificateEmail>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
@@ -104,20 +69,28 @@ namespace Azure.ResourceManager.AppService.Models
             {
                 return null;
             }
-            string kind = default;
+            string emailId = default;
+            DateTimeOffset? timeStamp = default;
             ResourceIdentifier id = default;
             string name = default;
             ResourceType type = default;
             SystemData systemData = default;
-            string emailId = default;
-            DateTimeOffset? timeStamp = default;
             IDictionary<string, BinaryData> serializedAdditionalRawData = default;
             Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("kind"u8))
+                if (property.NameEquals("emailId"u8))
                 {
-                    kind = property.Value.GetString();
+                    emailId = property.Value.GetString();
+                    continue;
+                }
+                if (property.NameEquals("timeStamp"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    timeStamp = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
                 if (property.NameEquals("id"u8))
@@ -144,32 +117,6 @@ namespace Azure.ResourceManager.AppService.Models
                     systemData = JsonSerializer.Deserialize<SystemData>(property.Value.GetRawText());
                     continue;
                 }
-                if (property.NameEquals("properties"u8))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    foreach (var property0 in property.Value.EnumerateObject())
-                    {
-                        if (property0.NameEquals("emailId"u8))
-                        {
-                            emailId = property0.Value.GetString();
-                            continue;
-                        }
-                        if (property0.NameEquals("timeStamp"u8))
-                        {
-                            if (property0.Value.ValueKind == JsonValueKind.Null)
-                            {
-                                continue;
-                            }
-                            timeStamp = property0.Value.GetDateTimeOffset("O");
-                            continue;
-                        }
-                    }
-                    continue;
-                }
                 if (options.Format != "W")
                 {
                     rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
@@ -183,7 +130,6 @@ namespace Azure.ResourceManager.AppService.Models
                 systemData,
                 emailId,
                 timeStamp,
-                kind,
                 serializedAdditionalRawData);
         }
 
@@ -221,26 +167,42 @@ namespace Azure.ResourceManager.AppService.Models
                 }
             }
 
-            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Kind), out propertyOverride);
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EmailId), out propertyOverride);
             if (hasPropertyOverride)
             {
-                builder.Append("  kind: ");
+                builder.Append("  emailId: ");
                 builder.AppendLine(propertyOverride);
             }
             else
             {
-                if (Optional.IsDefined(Kind))
+                if (Optional.IsDefined(EmailId))
                 {
-                    builder.Append("  kind: ");
-                    if (Kind.Contains(Environment.NewLine))
+                    builder.Append("  emailId: ");
+                    if (EmailId.Contains(Environment.NewLine))
                     {
                         builder.AppendLine("'''");
-                        builder.AppendLine($"{Kind}'''");
+                        builder.AppendLine($"{EmailId}'''");
                     }
                     else
                     {
-                        builder.AppendLine($"'{Kind}'");
+                        builder.AppendLine($"'{EmailId}'");
                     }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(TimeStamp), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  timeStamp: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(TimeStamp))
+                {
+                    builder.Append("  timeStamp: ");
+                    var formattedDateTimeString = TypeFormatters.ToString(TimeStamp.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
                 }
             }
 
@@ -274,48 +236,6 @@ namespace Azure.ResourceManager.AppService.Models
                 }
             }
 
-            builder.Append("  properties:");
-            builder.AppendLine(" {");
-            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EmailId), out propertyOverride);
-            if (hasPropertyOverride)
-            {
-                builder.Append("    emailId: ");
-                builder.AppendLine(propertyOverride);
-            }
-            else
-            {
-                if (Optional.IsDefined(EmailId))
-                {
-                    builder.Append("    emailId: ");
-                    if (EmailId.Contains(Environment.NewLine))
-                    {
-                        builder.AppendLine("'''");
-                        builder.AppendLine($"{EmailId}'''");
-                    }
-                    else
-                    {
-                        builder.AppendLine($"'{EmailId}'");
-                    }
-                }
-            }
-
-            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(TimeStamp), out propertyOverride);
-            if (hasPropertyOverride)
-            {
-                builder.Append("    timeStamp: ");
-                builder.AppendLine(propertyOverride);
-            }
-            else
-            {
-                if (Optional.IsDefined(TimeStamp))
-                {
-                    builder.Append("    timeStamp: ");
-                    var formattedDateTimeString = TypeFormatters.ToString(TimeStamp.Value, "o");
-                    builder.AppendLine($"'{formattedDateTimeString}'");
-                }
-            }
-
-            builder.AppendLine("  }");
             builder.AppendLine("}");
             return BinaryData.FromString(builder.ToString());
         }
@@ -343,7 +263,7 @@ namespace Azure.ResourceManager.AppService.Models
             {
                 case "J":
                     {
-                        using JsonDocument document = JsonDocument.Parse(data);
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
                         return DeserializeAppServiceCertificateEmail(document.RootElement, options);
                     }
                 default:

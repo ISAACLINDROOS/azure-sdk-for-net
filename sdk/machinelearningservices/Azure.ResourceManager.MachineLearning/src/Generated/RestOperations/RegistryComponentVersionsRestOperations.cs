@@ -32,11 +32,11 @@ namespace Azure.ResourceManager.MachineLearning
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2023-06-01-preview";
+            _apiVersion = apiVersion ?? "2024-04-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
-        internal RequestUriBuilder CreateListRequestUri(string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy, int? top, string skip, string stage)
+        internal RequestUriBuilder CreateListRequestUri(string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy, int? top, string skip)
         {
             var uri = new RawRequestUriBuilder();
             uri.Reset(_endpoint);
@@ -62,14 +62,10 @@ namespace Azure.ResourceManager.MachineLearning
             {
                 uri.AppendQuery("$skip", skip, true);
             }
-            if (stage != null)
-            {
-                uri.AppendQuery("stage", stage, true);
-            }
             return uri;
         }
 
-        internal HttpMessage CreateListRequest(string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy, int? top, string skip, string stage)
+        internal HttpMessage CreateListRequest(string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy, int? top, string skip)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -98,10 +94,6 @@ namespace Azure.ResourceManager.MachineLearning
             {
                 uri.AppendQuery("$skip", skip, true);
             }
-            if (stage != null)
-            {
-                uri.AppendQuery("stage", stage, true);
-            }
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             _userAgent.Apply(message);
@@ -116,25 +108,24 @@ namespace Azure.ResourceManager.MachineLearning
         /// <param name="orderBy"> Ordering of list. </param>
         /// <param name="top"> Maximum number of records to return. </param>
         /// <param name="skip"> Continuation token for pagination. </param>
-        /// <param name="stage"> Component stage. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="componentName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="componentName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<ComponentVersionResourceArmPaginatedResult>> ListAsync(string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy = null, int? top = null, string skip = null, string stage = null, CancellationToken cancellationToken = default)
+        public async Task<Response<ComponentVersionResourceArmPaginatedResult>> ListAsync(string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy = null, int? top = null, string skip = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
             Argument.AssertNotNullOrEmpty(componentName, nameof(componentName));
 
-            using var message = CreateListRequest(subscriptionId, resourceGroupName, registryName, componentName, orderBy, top, skip, stage);
+            using var message = CreateListRequest(subscriptionId, resourceGroupName, registryName, componentName, orderBy, top, skip);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         ComponentVersionResourceArmPaginatedResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ComponentVersionResourceArmPaginatedResult.DeserializeComponentVersionResourceArmPaginatedResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -151,25 +142,24 @@ namespace Azure.ResourceManager.MachineLearning
         /// <param name="orderBy"> Ordering of list. </param>
         /// <param name="top"> Maximum number of records to return. </param>
         /// <param name="skip"> Continuation token for pagination. </param>
-        /// <param name="stage"> Component stage. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="componentName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="componentName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<ComponentVersionResourceArmPaginatedResult> List(string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy = null, int? top = null, string skip = null, string stage = null, CancellationToken cancellationToken = default)
+        public Response<ComponentVersionResourceArmPaginatedResult> List(string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy = null, int? top = null, string skip = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
             Argument.AssertNotNullOrEmpty(componentName, nameof(componentName));
 
-            using var message = CreateListRequest(subscriptionId, resourceGroupName, registryName, componentName, orderBy, top, skip, stage);
+            using var message = CreateListRequest(subscriptionId, resourceGroupName, registryName, componentName, orderBy, top, skip);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         ComponentVersionResourceArmPaginatedResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ComponentVersionResourceArmPaginatedResult.DeserializeComponentVersionResourceArmPaginatedResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -346,7 +336,7 @@ namespace Azure.ResourceManager.MachineLearning
                 case 200:
                     {
                         MachineLearningComponentVersionData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = MachineLearningComponentVersionData.DeserializeMachineLearningComponentVersionData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -381,7 +371,7 @@ namespace Azure.ResourceManager.MachineLearning
                 case 200:
                     {
                         MachineLearningComponentVersionData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = MachineLearningComponentVersionData.DeserializeMachineLearningComponentVersionData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -500,7 +490,7 @@ namespace Azure.ResourceManager.MachineLearning
             }
         }
 
-        internal RequestUriBuilder CreateListNextPageRequestUri(string nextLink, string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy, int? top, string skip, string stage)
+        internal RequestUriBuilder CreateListNextPageRequestUri(string nextLink, string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy, int? top, string skip)
         {
             var uri = new RawRequestUriBuilder();
             uri.Reset(_endpoint);
@@ -508,7 +498,7 @@ namespace Azure.ResourceManager.MachineLearning
             return uri;
         }
 
-        internal HttpMessage CreateListNextPageRequest(string nextLink, string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy, int? top, string skip, string stage)
+        internal HttpMessage CreateListNextPageRequest(string nextLink, string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy, int? top, string skip)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -531,11 +521,10 @@ namespace Azure.ResourceManager.MachineLearning
         /// <param name="orderBy"> Ordering of list. </param>
         /// <param name="top"> Maximum number of records to return. </param>
         /// <param name="skip"> Continuation token for pagination. </param>
-        /// <param name="stage"> Component stage. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="componentName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="componentName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<ComponentVersionResourceArmPaginatedResult>> ListNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy = null, int? top = null, string skip = null, string stage = null, CancellationToken cancellationToken = default)
+        public async Task<Response<ComponentVersionResourceArmPaginatedResult>> ListNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy = null, int? top = null, string skip = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -543,14 +532,14 @@ namespace Azure.ResourceManager.MachineLearning
             Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
             Argument.AssertNotNullOrEmpty(componentName, nameof(componentName));
 
-            using var message = CreateListNextPageRequest(nextLink, subscriptionId, resourceGroupName, registryName, componentName, orderBy, top, skip, stage);
+            using var message = CreateListNextPageRequest(nextLink, subscriptionId, resourceGroupName, registryName, componentName, orderBy, top, skip);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         ComponentVersionResourceArmPaginatedResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ComponentVersionResourceArmPaginatedResult.DeserializeComponentVersionResourceArmPaginatedResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -568,11 +557,10 @@ namespace Azure.ResourceManager.MachineLearning
         /// <param name="orderBy"> Ordering of list. </param>
         /// <param name="top"> Maximum number of records to return. </param>
         /// <param name="skip"> Continuation token for pagination. </param>
-        /// <param name="stage"> Component stage. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="componentName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="componentName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<ComponentVersionResourceArmPaginatedResult> ListNextPage(string nextLink, string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy = null, int? top = null, string skip = null, string stage = null, CancellationToken cancellationToken = default)
+        public Response<ComponentVersionResourceArmPaginatedResult> ListNextPage(string nextLink, string subscriptionId, string resourceGroupName, string registryName, string componentName, string orderBy = null, int? top = null, string skip = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -580,14 +568,14 @@ namespace Azure.ResourceManager.MachineLearning
             Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
             Argument.AssertNotNullOrEmpty(componentName, nameof(componentName));
 
-            using var message = CreateListNextPageRequest(nextLink, subscriptionId, resourceGroupName, registryName, componentName, orderBy, top, skip, stage);
+            using var message = CreateListNextPageRequest(nextLink, subscriptionId, resourceGroupName, registryName, componentName, orderBy, top, skip);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         ComponentVersionResourceArmPaginatedResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ComponentVersionResourceArmPaginatedResult.DeserializeComponentVersionResourceArmPaginatedResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

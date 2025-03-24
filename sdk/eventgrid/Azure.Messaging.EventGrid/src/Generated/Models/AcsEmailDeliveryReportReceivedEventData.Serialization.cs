@@ -22,10 +22,11 @@ namespace Azure.Messaging.EventGrid.SystemEvents
             }
             string sender = default;
             string recipient = default;
+            string internetMessageId = default;
             string messageId = default;
             AcsEmailDeliveryReportStatus? status = default;
             AcsEmailDeliveryReportStatusDetails deliveryStatusDetails = default;
-            DateTimeOffset? deliveryAttemptTimeStamp = default;
+            DateTimeOffset? deliveryAttemptTimestamp = default;
             foreach (var property in element.EnumerateObject())
             {
                 if (property.NameEquals("sender"u8))
@@ -36,6 +37,11 @@ namespace Azure.Messaging.EventGrid.SystemEvents
                 if (property.NameEquals("recipient"u8))
                 {
                     recipient = property.Value.GetString();
+                    continue;
+                }
+                if (property.NameEquals("internetMessageId"u8))
+                {
+                    internetMessageId = property.Value.GetString();
                     continue;
                 }
                 if (property.NameEquals("messageId"u8))
@@ -61,30 +67,31 @@ namespace Azure.Messaging.EventGrid.SystemEvents
                     deliveryStatusDetails = AcsEmailDeliveryReportStatusDetails.DeserializeAcsEmailDeliveryReportStatusDetails(property.Value);
                     continue;
                 }
-                if (property.NameEquals("deliveryAttemptTimeStamp"u8))
+                if (property.NameEquals("deliveryAttemptTimestamp"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
                         continue;
                     }
-                    deliveryAttemptTimeStamp = property.Value.GetDateTimeOffset("O");
+                    deliveryAttemptTimestamp = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
             }
             return new AcsEmailDeliveryReportReceivedEventData(
                 sender,
                 recipient,
+                internetMessageId,
                 messageId,
                 status,
                 deliveryStatusDetails,
-                deliveryAttemptTimeStamp);
+                deliveryAttemptTimestamp);
         }
 
         /// <summary> Deserializes the model from a raw response. </summary>
         /// <param name="response"> The response to deserialize the model from. </param>
         internal static AcsEmailDeliveryReportReceivedEventData FromResponse(Response response)
         {
-            using var document = JsonDocument.Parse(response.Content);
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
             return DeserializeAcsEmailDeliveryReportReceivedEventData(document.RootElement);
         }
 
